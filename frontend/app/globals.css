@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --bg: #07090d;
+  --panel: #0d1118;
+  --line: #202937;
+  --muted: #8b97a8;
+  --accent: #63e6be;
+  --violet: #9b87f5;
+}
+* {
+  box-sizing: border-box;
+}
+html {
+  background: var(--bg);
+}
+body {
+  margin: 0;
+  color: #eef2f7;
+  background: radial-gradient(circle at 75% -10%, #162338 0, transparent 32rem), var(--bg);
+  font-family: Arial, Helvetica, sans-serif;
+}
+button,
+input,
+select {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
+.panel {
+  background: linear-gradient(145deg, rgba(17, 23, 33, 0.96), rgba(10, 14, 20, 0.96));
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+.metric {
+  color: var(--muted);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.btn {
+  border: 1px solid #344153;
+  color: #f3f6fa;
+  background: #151c27;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  transition: 0.18s ease;
+}
+.btn:hover {
+  border-color: #66758a;
+  transform: translateY(-1px);
+}
+.btn-primary {
+  background: var(--accent);
+  color: #04110d;
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.input {
+  width: 100%;
+  border: 1px solid #354256;
+  background: #090d13;
+  color: white;
+  border-radius: 10px;
+  padding: 0.7rem 0.85rem;
+  outline: none;
+}
+.input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px #63e6be18;
+}
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.enter {
+  animation: enter 0.28s ease both;
+}
