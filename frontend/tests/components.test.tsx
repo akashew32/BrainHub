@@ -17,6 +17,18 @@ describe("training UI", () => {
     expect(screen.getByText("820")).toBeInTheDocument();
   });
 
+  it("exposes all twelve games through the registry", () => {
+    expect(games).toHaveLength(12);
+    expect(games.slice(6).map((game) => game.slug)).toEqual([
+      "optimal-stopping",
+      "probability-betting",
+      "auction-arena",
+      "bayesian-trader",
+      "order-book-challenge",
+      "sequential-strategy",
+    ]);
+  });
+
   it("moves mental math from instructions into keyboard input", () => {
     vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("offline test")));
     render(<MentalMathGame />);
