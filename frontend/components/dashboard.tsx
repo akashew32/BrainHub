@@ -76,7 +76,7 @@ export function Dashboard() {
           <p className="metric text-[#63e6be]">Training floor</p>
           <h2 className="mt-1 text-2xl font-semibold">Choose your drill</h2>
         </div>
-        <span className="text-sm text-[#778398]">6 disciplines</span>
+        <span className="text-sm text-[#778398]">{games.length} disciplines</span>
       </div>
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {games.map((game, index) => {

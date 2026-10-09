@@ -207,7 +207,7 @@ def game_stats(game_slug: str, db: Database) -> dict[str, Any]:
     accuracies = [
         float(item.metrics["accuracy"])
         for item in attempts
-        if isinstance(item.metrics.get("accuracy"), (int, float))
+        if isinstance(item.metrics.get("accuracy"), int | float)
     ]
     return {
         "slug": game_slug,

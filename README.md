@@ -12,6 +12,12 @@ BrainHub is a dark-mode-first training platform for quantitative trading intervi
 - **Reaction** — simple, choice, and go/no-go modes using `performance.now()`, randomized waits, false-start penalties, median/best/consistency statistics.
 - **Fermi Estimation** — 40 curated questions with defensible ranges and decompositions, scored by logarithmic error rather than false precision.
 - **Liar's Dice** — one human and three strong computer opponents, five dice each, wild ones, legal bid ordering, elimination, probability-driven challenges, strategic raises, and post-round analysis.
+- **Optimal Stopping** — sequential dice, finite card-deck, and no-recall search problems scored with exact stop/continue expected values and state-by-state EV-regret review.
+- **Probability Betting** — generated take/pass, fair-price, odds-conversion, and Kelly-sizing drills that separate decision quality from realized outcomes.
+- **Auction Arena** — repeated first-price, second-price, and common-value auctions against rational bidders, with bidding-region guidance and winner's-curse analysis.
+- **Bayesian Trader** — sequential coin, abstract-signal, and fictional market-regime updates scored with posterior error, Brier score, and final trading EV.
+- **Order Book Challenge** — integer-tick limit-order books for spread, depth-sweep, limit-insertion, imbalance, execution-cost, and inventory questions.
+- **Sequential Strategy** — exact take-away solvers, Penney-style coin races, and non-transitive dice games against opponents using backward induction or exhaustive comparison.
 
 ## Architecture
 
@@ -24,6 +30,12 @@ frontend/                 Next.js App Router, React, strict TypeScript, Tailwind
 backend/                  FastAPI, Pydantic, SQLAlchemy, Alembic
   app/api/                REST session, action, completion, stats APIs
   app/games/              Shared engine protocol and isolated game engines
+    optimal_stopping.py   Bellman recursion for finite stopping problems
+    probability_betting.py EV, odds, Kelly, and logarithmic scoring
+    auction.py            Auction settlement and benchmark strategies
+    bayesian.py           Posterior updates, Brier scoring, and action EV
+    order_book.py         Integer-tick book mutations, sweeps, and PnL
+    sequential_strategy.py Exact take-away and sequence-game solvers
     market_order_flow.py  Counterparty policy kept separate from simulation
     market_scoring.py     Risk-adjusted market score and analysis metrics
   app/db/                 Models, sessions, catalog/demo seeding
@@ -72,7 +84,7 @@ pnpm install
 pnpm dev
 ```
 
-Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS` controls browser origins, `DEMO_USER_NAME` names the local profile, and `NEXT_PUBLIC_API_URL` points the browser to FastAPI. The backend defaults to SQLite only as a frictionless fallback; production/local Compose uses PostgreSQL.
+Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS` controls browser origins, `DEMO_USER_NAME` names the local profile, and `BACKEND_URL` points the Next.js same-origin proxy to FastAPI. The backend defaults to SQLite only as a frictionless fallback; production/local Compose uses PostgreSQL.
 
 ## APIs
 
@@ -111,6 +123,17 @@ GitHub Actions runs these gates on pushes and pull requests.
 Four players start with five private six-sided dice. A bid is a quantity and face, and raises are lexicographic: increase quantity, or keep quantity and increase face. A challenge reveals all dice. Ones count as wild for faces two through six; bids on ones count only literal ones. If the bid has enough matches the challenger loses a die, otherwise the bidder does. The loser opens the next round; the last player holding dice wins.
 
 Bots compute the exact binomial probability that a bid is true, conditioning on their private dice and the number of unknown dice. Personality-specific challenge thresholds create conservative, balanced, and aggressive styles without replacing rational play. Legal candidate raises are scored by probability and exposure, so obvious impossible bids are avoided. Post-round analysis reports the information-set probability and whether the challenge was statistically justified.
+
+## Quant solver notes
+
+The new drills use deterministic seeds so a scenario can be replayed and a failing case can be reproduced. Scores emphasize the quality of the decision rather than the luck of the realized outcome.
+
+- **Optimal Stopping:** finite dice and card states use the Bellman recurrence `V(state) = max(EV(stop), EV(continue))`. Card draws recurse over the remaining deck without replacement; finite search compares the current offer with the backward-inducted continuation value. Reviews report regret as `EV(optimal) - EV(chosen)`.
+- **Probability Betting:** take/pass questions use expected profit, price estimates use logarithmic relative-error scoring, odds use reciprocal conversions, and sizing compares the answer with the full-Kelly benchmark. Full Kelly is presented as analysis, not as a universal wagering recommendation.
+- **Auction Arena:** first-price private-value guidance uses the symmetric uniform benchmark `(n-1)/n × value`; second-price feedback explains truthful bidding under standard independent private values. Common-value bots shade noisy signals to account for the selection effect behind the winner's curse.
+- **Bayesian Trader:** every signal applies normalized Bayes updating. Probability estimates receive continuous posterior-error and Brier scoring; the final BUY/SELL/HOLD choice is evaluated by its expected payoff under the posterior.
+- **Order Book Challenge:** all prices are integer ticks internally. Market orders consume best prices first and support partial fills; spread, midpoint, average execution price, marked PnL, insertion, and cancellation are covered by unit tests.
+- **Sequential Strategy:** deterministic perfect-information states use memoized backward induction. Coin races use exact Penney-response structure, and the non-transitive dice opponent exhaustively compares all face pairs before choosing a counter-die.
 
 ## Adding a game
 

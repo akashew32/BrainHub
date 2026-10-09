@@ -1,5 +1,5 @@
 import type { Attempt, Difficulty } from "@/types/games";
-const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+const base = "/api";
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${base}${path}`, {
     ...init,

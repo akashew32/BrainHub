@@ -76,7 +76,7 @@ def aggregate_stats(db: Session, user_id: int) -> dict:
         accuracies = [
             float(attempt.metrics["accuracy"])
             for attempt in relevant
-            if isinstance(attempt.metrics.get("accuracy"), (int, float))
+            if isinstance(attempt.metrics.get("accuracy"), int | float)
         ]
         games.append(
             {
