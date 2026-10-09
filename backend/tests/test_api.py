@@ -1,10 +1,10 @@
 def test_game_registry_and_stats(client):
     games = client.get("/api/games")
     assert games.status_code == 200
-    assert len(games.json()) == 6
+    assert len(games.json()) == 12
     stats = client.get("/api/stats").json()
     assert stats["games_played"] == 0
-    assert len(stats["categories"]) == 6
+    assert len(stats["categories"]) == 11
 
 
 def test_fermi_seed_bank_and_hidden_dice(client):
