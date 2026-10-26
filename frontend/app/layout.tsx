@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BarChart3, BrainCircuit } from "lucide-react";
+import { BarChart3, BrainCircuit, Code2 } from "lucide-react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "BrainHub — Quant Training",
-  description: "Build the instincts quantitative interviews demand.",
+  title: "BrainHub — Quant & Programming Training",
+  description: "Train quantitative instincts and programming fundamentals.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
@@ -20,8 +20,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               </span>
               BrainHub
             </Link>
-            <nav className="flex gap-5 text-sm text-[#aeb8c6]">
-              <Link href="/">Train</Link>
+            <nav className="flex items-center gap-4 text-sm text-[#aeb8c6] sm:gap-5">
+              <Link href="/">Quant</Link>
+              <Link href="/programming" className="flex items-center gap-1.5">
+                <Code2 size={16} />
+                Programming
+              </Link>
               <Link href="/stats" className="flex items-center gap-1.5">
                 <BarChart3 size={16} />
                 Statistics

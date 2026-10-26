@@ -1,7 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Flame, Gauge, Trophy } from "lucide-react";
+import { Activity, Code2, Flame, Gauge, Trophy } from "lucide-react";
 import { api } from "@/lib/api";
 import { games } from "@/lib/games";
 import type { Attempt } from "@/types/games";
@@ -71,12 +72,17 @@ export function Dashboard() {
           <Metric icon={Trophy} label="Average score" value={overallAverage} />
         </div>
       </section>
-      <div className="mb-4 flex items-end justify-between">
+      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="metric text-[#63e6be]">Training floor</p>
           <h2 className="mt-1 text-2xl font-semibold">Choose your drill</h2>
         </div>
-        <span className="text-sm text-[#778398]">{games.length} playable drills</span>
+        <div className="flex items-center gap-3">
+          <Link href="/programming" className="btn flex items-center gap-2 text-sm">
+            <Code2 size={16} /> Programming trivia
+          </Link>
+          <span className="text-sm text-[#778398]">{games.length} playable drills</span>
+        </div>
       </div>
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {games.map((game, index) => {
