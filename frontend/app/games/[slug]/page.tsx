@@ -19,6 +19,21 @@ const components: Record<GameSlug, React.ComponentType> = {
   "liars-dice": dynamic(() =>
     import("@/components/games/liars-dice-game").then((module) => module.LiarsDiceGame),
   ),
+  "bayes-updating": dynamic(() =>
+    import("@/components/games/bayes-updating-game").then((module) => module.BayesUpdatingGame),
+  ),
+  "expected-value": dynamic(() =>
+    import("@/components/games/expected-value-game").then((module) => module.ExpectedValueGame),
+  ),
+  "order-book": dynamic(() =>
+    import("@/components/games/order-book-game").then((module) => module.OrderBookGame),
+  ),
+  "options-payoff": dynamic(() =>
+    import("@/components/games/options-payoff-game").then((module) => module.OptionsPayoffGame),
+  ),
+  "portfolio-risk": dynamic(() =>
+    import("@/components/games/portfolio-risk-game").then((module) => module.PortfolioRiskGame),
+  ),
 };
 export function generateStaticParams() {
   return Object.keys(gameMap).map((slug) => ({ slug }));

@@ -1,7 +1,32 @@
 import Link from "next/link";
-import { ArrowUpRight, CandlestickChart, Dice5, Shapes, Sigma, Telescope, Zap } from "lucide-react";
+import {
+  ArrowUpRight,
+  BookOpen,
+  Calculator,
+  CandlestickChart,
+  Dice5,
+  Percent,
+  PieChart,
+  Shapes,
+  Sigma,
+  Telescope,
+  TrendingUp,
+  Zap,
+} from "lucide-react";
 import type { GameDefinition } from "@/types/games";
-const icons = { CandlestickChart, Dice5, Shapes, Sigma, Telescope, Zap };
+const icons = {
+  BookOpen,
+  Calculator,
+  CandlestickChart,
+  Dice5,
+  Percent,
+  PieChart,
+  Shapes,
+  Sigma,
+  Telescope,
+  TrendingUp,
+  Zap,
+};
 export function GameCard({
   game,
   index,

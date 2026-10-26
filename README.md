@@ -12,6 +12,11 @@ BrainHub is a dark-mode-first training platform for quantitative trading intervi
 - **Reaction** — simple, choice, and go/no-go modes using `performance.now()`, randomized waits, false-start penalties, median/best/consistency statistics.
 - **Fermi Estimation** — 40 curated questions with defensible ranges and decompositions, scored by logarithmic error rather than false precision.
 - **Liar's Dice** — one human and three strong computer opponents, five dice each, wild ones, legal bid ordering, elimination, probability-driven challenges, strategic raises, and post-round analysis.
+- **Bayesian Updating** — prior, sensitivity, and specificity drills covering positive and negative evidence without base-rate neglect.
+- **Expected Value** — probability-weighted trading outcomes, asymmetric payoffs, and execution-cost-adjusted edge calculations.
+- **Order Book** — top-of-book midpoint/spread questions plus multi-level market-order VWAP and price-impact practice.
+- **Options Payoff** — call and put intrinsic value, premiums, long/short direction, and full contract multipliers.
+- **Portfolio Risk** — two-asset volatility calculations that make the contribution of weights, covariance, and correlation explicit.
 
 ## Architecture
 
@@ -19,6 +24,7 @@ BrainHub is a dark-mode-first training platform for quantitative trading intervi
 frontend/                 Next.js App Router, React, strict TypeScript, Tailwind
   app/                    Pages, layouts, global styling
   components/games/       Isolated playable game modules and shared shell
+    quant-drill.tsx       Shared lifecycle, scoring, explanations, and persistence for calculation drills
   lib/games.ts            Central frontend game registry
   tests/                  Vitest game-utility tests
 backend/                  FastAPI, Pydantic, SQLAlchemy, Alembic
@@ -143,7 +149,7 @@ No dashboard rewrite or global-navigation edit is required.
 - Optional account authentication and cloud profile synchronization
 - Shared seeded replay links and interview playlists
 - Expanded per-category rating calibration as attempt volume grows
-- More probability, options, order-book, and sequential-decision games
+- Multi-asset portfolio construction and path-dependent options exercises
 - Accessibility testing with additional assistive-technology combinations
 
 The current rating is intentionally transparent: an 800-point baseline plus capped contributions from average scores and training volume. It can evolve without changing persisted attempts.

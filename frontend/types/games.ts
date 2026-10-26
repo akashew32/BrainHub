@@ -1,6 +1,16 @@
 export type Difficulty = "easy" | "medium" | "hard" | "expert";
 export type GameSlug =
-  "pattern-recognition" | "market-making" | "mental-math" | "reaction" | "fermi" | "liars-dice";
+  | "pattern-recognition"
+  | "market-making"
+  | "mental-math"
+  | "reaction"
+  | "fermi"
+  | "liars-dice"
+  | "bayes-updating"
+  | "expected-value"
+  | "order-book"
+  | "options-payoff"
+  | "portfolio-risk";
 export interface GameDefinition {
   slug: GameSlug;
   name: string;

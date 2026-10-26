@@ -7,6 +7,8 @@ import { games } from "@/lib/games";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("training UI", () => {
+  it("registers all eleven playable games", () => expect(games).toHaveLength(11));
+
   it("renders registry-driven game metadata and play link", () => {
     render(<GameCard game={games[0]!} index={0} best={820} recent={740} />);
     expect(screen.getByRole("heading", { name: "Pattern Recognition" })).toBeInTheDocument();

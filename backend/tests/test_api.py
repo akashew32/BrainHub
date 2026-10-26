@@ -1,10 +1,30 @@
 def test_game_registry_and_stats(client):
     games = client.get("/api/games")
     assert games.status_code == 200
-    assert len(games.json()) == 6
+    assert len(games.json()) == 11
     stats = client.get("/api/stats").json()
     assert stats["games_played"] == 0
     assert len(stats["categories"]) == 6
+
+
+def test_local_quant_drill_persists_through_generic_session_api(client):
+    created = client.post(
+        "/api/games/bayes-updating/sessions", json={"difficulty": "hard", "seed": 17}
+    )
+    assert created.status_code == 200
+    assert created.json()["state"] == {"score": 0}
+    session_id = created.json()["id"]
+    completed = client.post(
+        f"/api/games/bayes-updating/sessions/{session_id}/complete",
+        json={
+            "score": 612,
+            "duration_ms": 42_000,
+            "metrics": {"accuracy": 83, "average_response_ms": 6200},
+        },
+    )
+    assert completed.status_code == 200
+    assert completed.json()["game_slug"] == "bayes-updating"
+    assert client.get("/api/stats/bayes-updating").json()["summary"]["attempts"] == 1
 
 
 def test_fermi_seed_bank_and_hidden_dice(client):
