@@ -1,6 +1,8 @@
 import { generatedProgrammingQuestions } from "@/lib/programming-question-bank";
+import extendedQuestions from "@/lib/extended-programming-questions.json";
 
-export type ProgrammingLanguage = "java" | "python" | "cpp";
+export type ProgrammingLanguage =
+  "java" | "python" | "cpp" | "python-libraries" | "computer-architecture" | "sql";
 export type ProgrammingTopic = "fundamentals" | "function-calls";
 export type TriviaMode = "mixed" | ProgrammingTopic;
 
@@ -22,8 +24,14 @@ export type ProgrammingTrack = {
   accent: string;
   description: string;
   focus: string;
+  topicLabels: Record<ProgrammingTopic, string>;
   questions: ProgrammingQuestion[];
 };
+
+const extendedProgrammingQuestions = extendedQuestions as Record<
+  "python-libraries" | "computer-architecture" | "sql",
+  ProgrammingQuestion[]
+>;
 
 const javaQuestions: ProgrammingQuestion[] = [
   {
@@ -382,6 +390,7 @@ export const programmingTracks: ProgrammingTrack[] = [
     accent: "#f97316",
     description: "Types, object semantics, collections, streams, and standard method calls.",
     focus: "Strong typing · collections · object behavior",
+    topicLabels: { fundamentals: "Fundamentals", "function-calls": "Function calls" },
     questions: [...javaQuestions, ...generatedProgrammingQuestions.java],
   },
   {
@@ -391,6 +400,7 @@ export const programmingTracks: ProgrammingTrack[] = [
     accent: "#facc15",
     description: "Core language behavior, built-ins, containers, iteration, and string operations.",
     focus: "Language fundamentals · built-in functions",
+    topicLabels: { fundamentals: "Fundamentals", "function-calls": "Function calls" },
     questions: [...pythonQuestions, ...generatedProgrammingQuestions.python],
   },
   {
@@ -400,7 +410,41 @@ export const programmingTracks: ProgrammingTrack[] = [
     accent: "#60a5fa",
     description: "Value semantics, memory safety, STL containers, iterators, and algorithms.",
     focus: "Modern C++ · standard library",
+    topicLabels: { fundamentals: "Fundamentals", "function-calls": "Function calls" },
     questions: [...cppQuestions, ...generatedProgrammingQuestions.cpp],
+  },
+  {
+    slug: "python-libraries",
+    name: "Python Libraries",
+    badge: "PY LIBS",
+    accent: "#a78bfa",
+    description:
+      "Important standard-library and ecosystem tools for data structures, files, dates, testing, databases, and async I/O.",
+    focus: "Standard library · APIs · testing · I/O",
+    topicLabels: { fundamentals: "Library concepts", "function-calls": "APIs and calls" },
+    questions: extendedProgrammingQuestions["python-libraries"],
+  },
+  {
+    slug: "computer-architecture",
+    name: "Computer Architecture",
+    badge: "ARCH",
+    accent: "#22d3ee",
+    description:
+      "Instruction execution, caches, memory translation, concurrency hardware, and performance reasoning.",
+    focus: "CPU · cache · memory · performance",
+    topicLabels: { fundamentals: "Architecture", "function-calls": "Systems reasoning" },
+    questions: extendedProgrammingQuestions["computer-architecture"],
+  },
+  {
+    slug: "sql",
+    name: "SQL",
+    badge: "SQL",
+    accent: "#34d399",
+    description:
+      "Relational design, transactions, indexes, joins, aggregation, window functions, and query behavior.",
+    focus: "Relational model · queries · indexes",
+    topicLabels: { fundamentals: "Database concepts", "function-calls": "Query behavior" },
+    questions: extendedProgrammingQuestions.sql,
   },
 ];
 

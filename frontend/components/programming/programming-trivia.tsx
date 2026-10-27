@@ -13,14 +13,10 @@ import {
 type Phase = "intro" | "quiz" | "results";
 type RecordedAnswer = { topic: ProgrammingTopic; correct: boolean };
 
-const modeLabels: Record<TriviaMode, string> = {
-  mixed: "Mixed",
-  fundamentals: "Fundamentals",
-  "function-calls": "Function calls",
-};
+const modes: TriviaMode[] = ["mixed", "fundamentals", "function-calls"];
 
-function topicLabel(topic: ProgrammingTopic) {
-  return topic === "fundamentals" ? "Fundamentals" : "Function calls";
+function modeLabel(track: ProgrammingTrack, mode: TriviaMode) {
+  return mode === "mixed" ? "Mixed" : track.topicLabels[mode];
 }
 
 export function ProgrammingTrivia({ track }: { track: ProgrammingTrack }) {
@@ -71,7 +67,7 @@ export function ProgrammingTrivia({ track }: { track: ProgrammingTrack }) {
       <div>
         <ProgrammingHeader track={track} />
         <div className="mb-4 flex flex-wrap gap-2" aria-label="Question mode">
-          {(Object.keys(modeLabels) as TriviaMode[]).map((item) => (
+          {modes.map((item) => (
             <button
               key={item}
               className="btn"
@@ -79,14 +75,14 @@ export function ProgrammingTrivia({ track }: { track: ProgrammingTrack }) {
               aria-pressed={mode === item}
               onClick={() => setMode(item)}
             >
-              {modeLabels[item]}
+              {modeLabel(track, item)}
             </button>
           ))}
         </div>
         <div className="panel grid min-h-[420px] place-items-center p-8 text-center">
           <div className="max-w-2xl">
             <p className="metric" style={{ color: track.accent }}>
-              {roundLength}-question {modeLabels[mode].toLowerCase()} round
+              {roundLength}-question {modeLabel(track, mode).toLowerCase()} round
             </p>
             <h2 className="mt-4 text-3xl font-semibold">Test what the code actually does.</h2>
             <p className="mt-3 leading-7 text-[#8995a7]">
@@ -145,8 +141,8 @@ export function ProgrammingTrivia({ track }: { track: ProgrammingTrack }) {
       <div className="mb-4 grid gap-2 sm:grid-cols-4">
         <QuizMetric label="Question" value={String(index + 1) + "/" + String(questions.length)} />
         <QuizMetric label="Correct" value={correctCount} />
-        <QuizMetric label="Mode" value={modeLabels[mode]} />
-        <QuizMetric label="Topic" value={topicLabel(question.topic)} />
+        <QuizMetric label="Mode" value={modeLabel(track, mode)} />
+        <QuizMetric label="Topic" value={track.topicLabels[question.topic]} />
       </div>
       <section className="panel overflow-hidden">
         <div className="h-1 bg-[#151d28]">
@@ -160,7 +156,7 @@ export function ProgrammingTrivia({ track }: { track: ProgrammingTrack }) {
         </div>
         <div className="p-6 sm:p-10">
           <p className="metric" style={{ color: track.accent }}>
-            {topicLabel(question.topic)}
+            {track.topicLabels[question.topic]}
           </p>
           <h2 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight">{question.prompt}</h2>
           {question.code ? (

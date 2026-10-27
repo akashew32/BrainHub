@@ -25,13 +25,12 @@ export default function ProgrammingPage() {
             <span className="text-[#778398]">Read the code precisely.</span>
           </h1>
           <p className="mt-5 max-w-2xl leading-7 text-[#98a4b5]">
-            Focused multiple-choice rounds covering core semantics and everyday function calls in Java,
-            Python, and C++. Python stays centered on the language and standard built-ins—no machine-learning
-            libraries.
+            Focused multiple-choice rounds covering Java, core Python, C++, important non-ML Python libraries,
+            computer architecture, and SQL. Each track balances concepts with applied behavior.
           </p>
         </div>
         <div className="panel grid grid-cols-2 gap-px overflow-hidden bg-[#202937]">
-          <ProgrammingMetric icon={Code2} value="3" label="Languages" />
+          <ProgrammingMetric icon={Code2} value={String(programmingTracks.length)} label="Tracks" />
           <ProgrammingMetric icon={Binary} value={String(totalQuestions)} label="Questions" />
           <ProgrammingMetric icon={Braces} value="2" label="Skill areas" />
           <ProgrammingMetric icon={Code2} value="10" label="Mixed round" />
@@ -77,6 +76,17 @@ export default function ProgrammingPage() {
               </div>
             </article>
           ))}
+        </div>
+        <div className="panel mt-6 flex flex-wrap items-center justify-between gap-4 p-5">
+          <div>
+            <p className="metric text-[#c084fc]">Ready to write code?</p>
+            <p className="mt-1 text-sm text-[#aeb8c6]">
+              Move from trivia to 50 executable interview-style problems in Python, Java, or C++.
+            </p>
+          </div>
+          <Link href="/challenges" className="btn">
+            Open coding challenges <ArrowUpRight className="ml-2 inline" size={17} />
+          </Link>
         </div>
       </section>
     </div>

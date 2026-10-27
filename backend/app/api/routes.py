@@ -7,6 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.challenges import runner as challenge_runner
+from app.challenges.catalog import CHALLENGES
 from app.core.config import get_settings
 from app.db.base import Attempt, FermiQuestion, GameSession, User, UserGameStats, utc_now
 from app.db.session import get_db
@@ -15,7 +17,7 @@ from app.games.liars_dice import LiarsDiceEngine
 from app.games.market_making import MarketMakingEngine
 from app.games.pattern import PatternEngine
 from app.games.registry import GAME_MAP, GAMES
-from app.schemas.api import AttemptOut, CompleteAttempt, SessionAction, SessionCreate
+from app.schemas.api import AttemptOut, ChallengeRun, CompleteAttempt, SessionAction, SessionCreate
 from app.services.stats import aggregate_stats, record_attempt
 
 router = APIRouter(prefix="/api")
@@ -40,6 +42,19 @@ def get_local_user(db: Session) -> User:
 @router.get("/health")
 def health() -> dict[str, str]:
     return {"status": "ok"}
+
+
+@router.post("/challenges/{slug}/run")
+def run_coding_challenge(slug: str, payload: ChallengeRun) -> dict[str, Any]:
+    challenge = CHALLENGES.get(slug)
+    if challenge is None:
+        raise HTTPException(404, "Unknown coding challenge")
+    try:
+        return challenge_runner.run_challenge(
+            challenge, payload.language, payload.source, payload.mode
+        )
+    except RuntimeError as exc:
+        raise HTTPException(503, str(exc)) from exc
 
 
 @router.get("/games")

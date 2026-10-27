@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BarChart3, BrainCircuit, Code2 } from "lucide-react";
+import { BarChart3, BrainCircuit, Code2, TerminalSquare } from "lucide-react";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -20,15 +20,19 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               </span>
               BrainHub
             </Link>
-            <nav className="flex items-center gap-4 text-sm text-[#aeb8c6] sm:gap-5">
+            <nav className="flex items-center gap-2 text-sm text-[#aeb8c6] sm:gap-5">
               <Link href="/">Quant</Link>
-              <Link href="/programming" className="flex items-center gap-1.5">
+              <Link href="/programming" aria-label="Programming" className="flex items-center gap-1.5">
                 <Code2 size={16} />
-                Programming
+                <span className="hidden md:inline">Programming</span>
               </Link>
-              <Link href="/stats" className="flex items-center gap-1.5">
+              <Link href="/challenges" aria-label="Challenges" className="flex items-center gap-1.5">
+                <TerminalSquare size={16} />
+                <span className="hidden md:inline">Challenges</span>
+              </Link>
+              <Link href="/stats" aria-label="Statistics" className="flex items-center gap-1.5">
                 <BarChart3 size={16} />
-                Statistics
+                <span className="hidden md:inline">Statistics</span>
               </Link>
             </nav>
           </div>

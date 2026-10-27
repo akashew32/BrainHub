@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { Activity, Code2, Flame, Gauge, Trophy } from "lucide-react";
+import { Activity, Code2, Flame, Gauge, TerminalSquare, Trophy } from "lucide-react";
 import { api } from "@/lib/api";
 import { games } from "@/lib/games";
 import type { Attempt } from "@/types/games";
@@ -80,6 +80,9 @@ export function Dashboard() {
         <div className="flex items-center gap-3">
           <Link href="/programming" className="btn flex items-center gap-2 text-sm">
             <Code2 size={16} /> Programming trivia
+          </Link>
+          <Link href="/challenges" className="btn flex items-center gap-2 text-sm">
+            <TerminalSquare size={16} /> Coding challenges
           </Link>
           <span className="text-sm text-[#778398]">{games.length} playable drills</span>
         </div>

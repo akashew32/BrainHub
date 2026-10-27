@@ -1415,7 +1415,9 @@ const cppFunctionCalls = [
   ],
 ] satisfies readonly FactDefinition[];
 
-export const generatedProgrammingQuestions: Record<ProgrammingLanguage, ProgrammingQuestion[]> = {
+type CoreProgrammingLanguage = Extract<ProgrammingLanguage, "java" | "python" | "cpp">;
+
+export const generatedProgrammingQuestions: Record<CoreProgrammingLanguage, ProgrammingQuestion[]> = {
   java: [
     ...buildFactQuestions("java", "fundamentals", javaFundamentals),
     ...buildFactQuestions("java", "function-calls", javaFunctionCalls),

@@ -18,7 +18,11 @@ BrainHub is a dark-mode-first training platform for quantitative trading intervi
 - **Options Payoff** — call and put intrinsic value, premiums, long/short direction, and full contract multipliers.
 - **Portfolio Risk** — two-asset volatility calculations that make the contribution of weights, covariance, and correlation explicit.
 
-The separate **Programming Trivia** desk at `/programming` includes 600 questions—200 each for Java, Python, and C++—with balanced fundamentals and function-call rounds. Rounds deliberately sample distinct concepts to keep repeat sessions varied. Python questions cover the language, containers, iteration, strings, and built-ins without machine-learning libraries.
+The separate **Programming Trivia** desk at `/programming` includes 1,200 questions—200 each for Java, Python, C++, important Python libraries, computer architecture, and SQL. Rounds deliberately sample distinct concepts to keep repeat sessions varied. Python questions cover the language, standard and general-purpose libraries, containers, iteration, strings, and built-ins without machine-learning libraries.
+
+The **Coding Challenges** lab at `/challenges` contains 50 free LeetCode-indexed problems: 10 easy, 20 medium, and 20 hard. None are in the current NeetCode 150. Every challenge has original BrainHub guidance, starter code for Python, Java, and C++, three visible examples, and 20 deterministic test cases covering normal, boundary, and adversarial inputs. Run checks three cases quickly; Submit checks all 20.
+
+Challenge code is executed by the public [Judge0 CE](https://ce.judge0.com/) sandbox, so source code entered in the lab is sent to that third-party service. Do not paste secrets or proprietary code into the editor.
 
 ## Architecture
 
@@ -27,10 +31,12 @@ frontend/                 Next.js App Router, React, strict TypeScript, Tailwind
   app/                    Pages, layouts, global styling
   components/games/       Isolated playable game modules and shared shell
     quant-drill.tsx       Shared lifecycle, scoring, explanations, and persistence for calculation drills
+  components/challenges/  Searchable catalog and three-language coding workbench
   lib/games.ts            Central frontend game registry
   tests/                  Vitest game-utility tests
 backend/                  FastAPI, Pydantic, SQLAlchemy, Alembic
   app/api/                REST session, action, completion, stats APIs
+  app/challenges/         Challenge catalog and Judge0 execution harnesses
   app/games/              Shared engine protocol and isolated game engines
     market_order_flow.py  Counterparty policy kept separate from simulation
     market_scoring.py     Risk-adjusted market score and analysis metrics
@@ -91,6 +97,7 @@ Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS`
 - `GET /api/attempts/recent`
 - `GET /api/stats`
 - `GET /api/stats/{slug}`
+- `POST /api/challenges/{slug}/run`
 
 ## Quality commands
 
@@ -110,6 +117,10 @@ pnpm build
 
 # From repository root
 docker compose config --quiet
+python tools/generate_challenges.py
+python tools/generate_extended_trivia.py
+python tools/verify_challenge_sources.py
+python tools/verify_challenge_runner.py
 ```
 
 GitHub Actions runs these gates on pushes and pull requests.

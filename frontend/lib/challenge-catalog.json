@@ -1,0 +1,2243 @@
+{
+  "source": "LeetCode metadata with original BrainHub wording and tests",
+  "neetCode150Excluded": true,
+  "counts": {
+    "Easy": 10,
+    "Medium": 20,
+    "Hard": 20
+  },
+  "problems": [
+    {
+      "number": 1768,
+      "slug": "merge-strings-alternately",
+      "title": "Merge Strings Alternately",
+      "difficulty": "Easy",
+      "topics": ["Two Pointers", "String"],
+      "summary": "Interleave two strings one character at a time, appending the unused suffix of the longer input.",
+      "constraints": ["Inputs may be empty.", "Preserve the order within each source string."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "word1",
+            "type": "String"
+          },
+          {
+            "name": "word2",
+            "type": "String"
+          }
+        ],
+        "returnType": "String"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, word1: str, word2: str) -> str:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public String solve(String word1, String word2) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    string solve(string word1, string word2) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": ["", ""],
+          "expected": ""
+        },
+        {
+          "args": ["a", ""],
+          "expected": "a"
+        },
+        {
+          "args": ["", "z"],
+          "expected": "z"
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/merge-strings-alternately/"
+    },
+    {
+      "number": 724,
+      "slug": "find-pivot-index",
+      "title": "Find Pivot Index",
+      "difficulty": "Easy",
+      "topics": ["Array", "Prefix Sum"],
+      "summary": "Return the first index whose left-side sum equals its right-side sum, excluding the value at the index.",
+      "constraints": ["Return -1 when no balance point exists.", "Negative values are allowed."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[1, 7, 3, 6, 5, 6]],
+          "expected": 3
+        },
+        {
+          "args": [[1, 2, 3]],
+          "expected": -1
+        },
+        {
+          "args": [[2, 1, -1]],
+          "expected": 0
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/find-pivot-index/"
+    },
+    {
+      "number": 392,
+      "slug": "is-subsequence",
+      "title": "Is Subsequence",
+      "difficulty": "Easy",
+      "topics": ["Two Pointers", "String"],
+      "summary": "Determine whether every character of the first string appears in order inside the second string.",
+      "constraints": [
+        "Characters need not be adjacent.",
+        "The empty string is a subsequence of every string."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "candidate",
+            "type": "String"
+          },
+          {
+            "name": "text",
+            "type": "String"
+          }
+        ],
+        "returnType": "boolean"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, candidate: str, text: str) -> bool:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public boolean solve(String candidate, String text) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    bool solve(string candidate, string text) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": ["", "abc"],
+          "expected": true
+        },
+        {
+          "args": ["abc", "ahbgdc"],
+          "expected": true
+        },
+        {
+          "args": ["axc", "ahbgdc"],
+          "expected": false
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/is-subsequence/"
+    },
+    {
+      "number": 367,
+      "slug": "valid-perfect-square",
+      "title": "Valid Perfect Square",
+      "difficulty": "Easy",
+      "topics": ["Math", "Binary Search"],
+      "summary": "Decide whether an integer is the square of another integer without using floating-point square roots.",
+      "constraints": ["Negative values are not perfect squares.", "Zero is a perfect square."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "value",
+            "type": "int"
+          }
+        ],
+        "returnType": "boolean"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, value: int) -> bool:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public boolean solve(int value) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    bool solve(int value) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [-1],
+          "expected": false
+        },
+        {
+          "args": [0],
+          "expected": true
+        },
+        {
+          "args": [1],
+          "expected": true
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/valid-perfect-square/"
+    },
+    {
+      "number": 2114,
+      "slug": "maximum-number-of-words-found-in-sentences",
+      "title": "Maximum Words in a Sentence",
+      "difficulty": "Easy",
+      "topics": ["Array", "String"],
+      "summary": "Given several space-delimited sentences, return the largest word count among them.",
+      "constraints": ["An empty collection has maximum zero.", "Words are separated by ordinary whitespace."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "sentences",
+            "type": "String[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, sentences: list[str]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(String[] sentences) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<string> sentences) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": 0
+        },
+        {
+          "args": [["hello"]],
+          "expected": 1
+        },
+        {
+          "args": [["one two", "three four five"]],
+          "expected": 3
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/maximum-number-of-words-found-in-sentences/"
+    },
+    {
+      "number": 1346,
+      "slug": "check-if-n-and-its-double-exist",
+      "title": "Check If a Double Exists",
+      "difficulty": "Easy",
+      "topics": ["Array", "Hash Table"],
+      "summary": "Report whether two different positions contain values where one is exactly twice the other.",
+      "constraints": [
+        "The two positions must be distinct.",
+        "Zero needs two occurrences to pair with itself."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "boolean"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> bool:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public boolean solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    bool solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": false
+        },
+        {
+          "args": [[0]],
+          "expected": false
+        },
+        {
+          "args": [[1]],
+          "expected": false
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/check-if-n-and-its-double-exist/"
+    },
+    {
+      "number": 389,
+      "slug": "find-the-difference",
+      "title": "Find the Added Character",
+      "difficulty": "Easy",
+      "topics": ["String", "Bit Manipulation"],
+      "summary": "One string is a shuffled copy of another with one extra character; return that extra character.",
+      "constraints": ["Characters may repeat.", "The second input is exactly one character longer."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "original",
+            "type": "String"
+          },
+          {
+            "name": "changed",
+            "type": "String"
+          }
+        ],
+        "returnType": "String"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, original: str, changed: str) -> str:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public String solve(String original, String changed) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    string solve(string original, string changed) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": ["", "x"],
+          "expected": "x"
+        },
+        {
+          "args": ["abcd", "abcde"],
+          "expected": "e"
+        },
+        {
+          "args": ["a", "aa"],
+          "expected": "a"
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/find-the-difference/"
+    },
+    {
+      "number": 283,
+      "slug": "move-zeroes",
+      "title": "Move Zeroes",
+      "difficulty": "Easy",
+      "topics": ["Array", "Two Pointers"],
+      "summary": "Return the array with nonzero values kept in order and every zero moved to the end.",
+      "constraints": [
+        "Preserve the relative order of nonzero values.",
+        "Return a transformed array for this practice version."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int[]"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> list[int]:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int[] solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": []
+        },
+        {
+          "args": [[0]],
+          "expected": [0]
+        },
+        {
+          "args": [[1]],
+          "expected": [1]
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/move-zeroes/"
+    },
+    {
+      "number": 896,
+      "slug": "monotonic-array",
+      "title": "Monotonic Array",
+      "difficulty": "Easy",
+      "topics": ["Array"],
+      "summary": "Determine whether the sequence is entirely nondecreasing or entirely nonincreasing.",
+      "constraints": ["Equal adjacent values are allowed.", "Arrays shorter than two values are monotonic."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "boolean"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> bool:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public boolean solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    bool solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": true
+        },
+        {
+          "args": [[0]],
+          "expected": true
+        },
+        {
+          "args": [[1]],
+          "expected": true
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/monotonic-array/"
+    },
+    {
+      "number": 697,
+      "slug": "degree-of-an-array",
+      "title": "Shortest Degree-Preserving Subarray",
+      "difficulty": "Easy",
+      "topics": ["Array", "Hash Table"],
+      "summary": "Return the shortest contiguous length that has the same maximum frequency as the full array.",
+      "constraints": [
+        "Return zero for an empty array in this practice version.",
+        "Ties use the shortest span."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": 0
+        },
+        {
+          "args": [[0]],
+          "expected": 1
+        },
+        {
+          "args": [[1]],
+          "expected": 1
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/degree-of-an-array/"
+    },
+    {
+      "number": 75,
+      "slug": "sort-colors",
+      "title": "Sort Three Colors",
+      "difficulty": "Medium",
+      "topics": ["Array", "Two Pointers"],
+      "summary": "Arrange an array containing only 0, 1, and 2 in ascending color order.",
+      "constraints": ["Return the arranged array.", "Inputs contain only the three color codes."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "colors",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int[]"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, colors: list[int]) -> list[int]:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int[] solve(int[] colors) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> solve(vector<int> colors) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": []
+        },
+        {
+          "args": [[0]],
+          "expected": [0]
+        },
+        {
+          "args": [[2, 0, 2, 1, 1, 0]],
+          "expected": [0, 0, 1, 1, 2, 2]
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/sort-colors/"
+    },
+    {
+      "number": 845,
+      "slug": "longest-mountain-in-array",
+      "title": "Longest Mountain",
+      "difficulty": "Medium",
+      "topics": ["Array", "Two Pointers"],
+      "summary": "Find the longest contiguous run that strictly rises to one peak and then strictly falls.",
+      "constraints": ["A mountain needs at least three values.", "Plateaus do not belong to a mountain."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": 0
+        },
+        {
+          "args": [[0]],
+          "expected": 0
+        },
+        {
+          "args": [[1]],
+          "expected": 0
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/longest-mountain-in-array/"
+    },
+    {
+      "number": 438,
+      "slug": "find-all-anagrams-in-a-string",
+      "title": "Find All Anagram Starts",
+      "difficulty": "Medium",
+      "topics": ["String", "Sliding Window"],
+      "summary": "Return every start index where a substring is a permutation of the pattern.",
+      "constraints": ["Return indexes in ascending order.", "An empty or longer pattern has no matches."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "text",
+            "type": "String"
+          },
+          {
+            "name": "pattern",
+            "type": "String"
+          }
+        ],
+        "returnType": "int[]"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, text: str, pattern: str) -> list[int]:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int[] solve(String text, String pattern) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> solve(string text, string pattern) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": ["cbaebabacd", "abc"],
+          "expected": [0, 6]
+        },
+        {
+          "args": ["abab", "ab"],
+          "expected": [0, 1, 2]
+        },
+        {
+          "args": ["a", "ab"],
+          "expected": []
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/find-all-anagrams-in-a-string/"
+    },
+    {
+      "number": 560,
+      "slug": "subarray-sum-equals-k",
+      "title": "Count Subarrays With Target Sum",
+      "difficulty": "Medium",
+      "topics": ["Array", "Prefix Sum"],
+      "summary": "Count contiguous subarrays whose values add exactly to the target.",
+      "constraints": ["Values and the target may be negative.", "Count overlapping subarrays separately."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "target",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums, int target) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[1, 1, 1], 2],
+          "expected": 2
+        },
+        {
+          "args": [[1, 2, 3], 3],
+          "expected": 2
+        },
+        {
+          "args": [[], 0],
+          "expected": 0
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/subarray-sum-equals-k/"
+    },
+    {
+      "number": 523,
+      "slug": "continuous-subarray-sum",
+      "title": "Continuous Multiple Sum",
+      "difficulty": "Medium",
+      "topics": ["Array", "Prefix Sum"],
+      "summary": "Determine whether a contiguous subarray of length at least two has a sum divisible by the divisor.",
+      "constraints": [
+        "A zero divisor asks for an exact zero sum.",
+        "The chosen span must contain at least two values."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "divisor",
+            "type": "int"
+          }
+        ],
+        "returnType": "boolean"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int], divisor: int) -> bool:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public boolean solve(int[] nums, int divisor) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    bool solve(vector<int> nums, int divisor) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[23, 2, 4, 6, 7], 6],
+          "expected": true
+        },
+        {
+          "args": [[23, 2, 6, 4, 7], 13],
+          "expected": false
+        },
+        {
+          "args": [[0, 0], 0],
+          "expected": true
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/continuous-subarray-sum/"
+    },
+    {
+      "number": 735,
+      "slug": "asteroid-collision",
+      "title": "Asteroid Collision",
+      "difficulty": "Medium",
+      "topics": ["Array", "Stack", "Simulation"],
+      "summary": "Simulate one-dimensional asteroids; opposite-moving neighbors collide and the smaller magnitude disappears.",
+      "constraints": ["Equal opposing magnitudes destroy both.", "Return survivors in their final order."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "asteroids",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int[]"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, asteroids: list[int]) -> list[int]:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int[] solve(int[] asteroids) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> solve(vector<int> asteroids) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[5, 10, -5]],
+          "expected": [5, 10]
+        },
+        {
+          "args": [[8, -8]],
+          "expected": []
+        },
+        {
+          "args": [[10, 2, -5]],
+          "expected": [10]
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/asteroid-collision/"
+    },
+    {
+      "number": 394,
+      "slug": "decode-string",
+      "title": "Decode Repeated String",
+      "difficulty": "Medium",
+      "topics": ["String", "Stack"],
+      "summary": "Expand nested count[segment] expressions into their decoded string.",
+      "constraints": ["Repeat counts may contain multiple digits.", "Encoded segments may be nested."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "encoded",
+            "type": "String"
+          }
+        ],
+        "returnType": "String"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, encoded: str) -> str:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public String solve(String encoded) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    string solve(string encoded) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": ["a"],
+          "expected": "a"
+        },
+        {
+          "args": ["3[a]2[bc]"],
+          "expected": "aaabcbc"
+        },
+        {
+          "args": ["3[a2[c]]"],
+          "expected": "accaccacc"
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/decode-string/"
+    },
+    {
+      "number": 658,
+      "slug": "find-k-closest-elements",
+      "title": "K Closest Sorted Values",
+      "difficulty": "Medium",
+      "topics": ["Array", "Binary Search"],
+      "summary": "Choose the requested number of values nearest to a target and return those values sorted.",
+      "constraints": ["Break equal-distance ties toward the smaller value.", "The input array is sorted."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "values",
+            "type": "int[]"
+          },
+          {
+            "name": "count",
+            "type": "int"
+          },
+          {
+            "name": "target",
+            "type": "int"
+          }
+        ],
+        "returnType": "int[]"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, values: list[int], count: int, target: int) -> list[int]:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int[] solve(int[] values, int count, int target) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> solve(vector<int> values, int count, int target) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[1, 2, 3, 4, 5], 4, 3],
+          "expected": [1, 2, 3, 4]
+        },
+        {
+          "args": [[1, 2, 3, 4, 5], 4, -1],
+          "expected": [1, 2, 3, 4]
+        },
+        {
+          "args": [[1, 2, 3, 4, 5], 3, -3],
+          "expected": [1, 2, 3]
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/find-k-closest-elements/"
+    },
+    {
+      "number": 209,
+      "slug": "minimum-size-subarray-sum",
+      "title": "Minimum Positive Window",
+      "difficulty": "Medium",
+      "topics": ["Array", "Sliding Window"],
+      "summary": "Return the shortest contiguous length whose positive values total at least the target.",
+      "constraints": ["Return zero when no qualifying window exists.", "Input values are positive."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "target",
+            "type": "int"
+          },
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, target: int, nums: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int target, int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(int target, vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [7, [2, 3, 1, 2, 4, 3]],
+          "expected": 2
+        },
+        {
+          "args": [4, [1, 4, 4]],
+          "expected": 1
+        },
+        {
+          "args": [11, [1, 1, 1, 1]],
+          "expected": 0
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/minimum-size-subarray-sum/"
+    },
+    {
+      "number": 1109,
+      "slug": "corporate-flight-bookings",
+      "title": "Range Flight Bookings",
+      "difficulty": "Medium",
+      "topics": ["Array", "Prefix Sum"],
+      "summary": "Apply inclusive range seat additions and return the final reserved seats for every numbered flight.",
+      "constraints": ["Booking indexes are one-based.", "Ranges include both endpoints."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "bookings",
+            "type": "int[][]"
+          },
+          {
+            "name": "flights",
+            "type": "int"
+          }
+        ],
+        "returnType": "int[]"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, bookings: list[list[int]], flights: int) -> list[int]:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int[] solve(int[][] bookings, int flights) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> solve(vector<vector<int>> bookings, int flights) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [
+            [
+              [1, 2, 10],
+              [2, 3, 20],
+              [2, 5, 25]
+            ],
+            5
+          ],
+          "expected": [10, 55, 45, 25, 25]
+        },
+        {
+          "args": [[], 1],
+          "expected": [0]
+        },
+        {
+          "args": [
+            [
+              [3, 3, 15],
+              [1, 3, 18],
+              [2, 2, 21]
+            ],
+            3
+          ],
+          "expected": [18, 39, 33]
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/corporate-flight-bookings/"
+    },
+    {
+      "number": 1094,
+      "slug": "car-pooling",
+      "title": "Car Pool Capacity",
+      "difficulty": "Medium",
+      "topics": ["Prefix Sum", "Simulation"],
+      "summary": "Given pickup and drop-off events along a route, decide whether passenger load ever exceeds capacity.",
+      "constraints": [
+        "Passengers leave before new passengers board at the same location.",
+        "Trips use [passengers, start, end]."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "trips",
+            "type": "int[][]"
+          },
+          {
+            "name": "capacity",
+            "type": "int"
+          }
+        ],
+        "returnType": "boolean"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, trips: list[list[int]], capacity: int) -> bool:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public boolean solve(int[][] trips, int capacity) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    bool solve(vector<vector<int>> trips, int capacity) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [
+            [
+              [2, 1, 5],
+              [3, 3, 7]
+            ],
+            4
+          ],
+          "expected": false
+        },
+        {
+          "args": [
+            [
+              [2, 1, 5],
+              [3, 3, 7]
+            ],
+            5
+          ],
+          "expected": true
+        },
+        {
+          "args": [[], 1],
+          "expected": true
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/car-pooling/"
+    },
+    {
+      "number": 71,
+      "slug": "simplify-path",
+      "title": "Simplify Absolute Path",
+      "difficulty": "Medium",
+      "topics": ["String", "Stack"],
+      "summary": "Normalize an absolute Unix-style path by resolving separators, current-directory markers, and parent-directory markers.",
+      "constraints": ["The result starts with one slash.", "Parent navigation cannot move above root."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "path",
+            "type": "String"
+          }
+        ],
+        "returnType": "String"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, path: str) -> str:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public String solve(String path) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    string solve(string path) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": ["/"],
+          "expected": "/"
+        },
+        {
+          "args": ["/home/"],
+          "expected": "/home"
+        },
+        {
+          "args": ["/../"],
+          "expected": "/"
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/simplify-path/"
+    },
+    {
+      "number": 165,
+      "slug": "compare-version-numbers",
+      "title": "Compare Version Numbers",
+      "difficulty": "Medium",
+      "topics": ["Two Pointers", "String"],
+      "summary": "Compare dot-separated numeric revisions after ignoring leading zeroes and missing trailing zero components.",
+      "constraints": ["Return -1, 0, or 1.", "Each revision component is nonnegative."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "first",
+            "type": "String"
+          },
+          {
+            "name": "second",
+            "type": "String"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, first: str, second: str) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(String first, String second) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(string first, string second) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": ["1.01", "1.001"],
+          "expected": 0
+        },
+        {
+          "args": ["1.0", "1.0.0"],
+          "expected": 0
+        },
+        {
+          "args": ["0.1", "1.1"],
+          "expected": -1
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/compare-version-numbers/"
+    },
+    {
+      "number": 795,
+      "slug": "number-of-subarrays-with-bounded-maximum",
+      "title": "Count Windows With Bounded Maximum",
+      "difficulty": "Medium",
+      "topics": ["Array", "Two Pointers"],
+      "summary": "Count contiguous subarrays whose maximum lies inside the inclusive lower and upper bounds.",
+      "constraints": ["Count each distinct index range.", "The lower bound does not exceed the upper bound."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "low",
+            "type": "int"
+          },
+          {
+            "name": "high",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int], low: int, high: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums, int low, int high) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums, int low, int high) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[2, 1, 4, 3], 2, 3],
+          "expected": 3
+        },
+        {
+          "args": [[2, 9, 2, 5, 6], 2, 8],
+          "expected": 7
+        },
+        {
+          "args": [[1], 2, 6],
+          "expected": 0
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/number-of-subarrays-with-bounded-maximum/"
+    },
+    {
+      "number": 1658,
+      "slug": "minimum-operations-to-reduce-x-to-zero",
+      "title": "Reduce Target From Array Ends",
+      "difficulty": "Medium",
+      "topics": ["Array", "Sliding Window"],
+      "summary": "Remove values from either end until their sum equals the target, minimizing removals.",
+      "constraints": ["Return -1 when impossible.", "Input values are positive."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "target",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums, int target) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[1, 1, 4, 2, 3], 5],
+          "expected": 2
+        },
+        {
+          "args": [[5, 6, 7, 8, 9], 4],
+          "expected": -1
+        },
+        {
+          "args": [[3, 2, 20, 1, 1, 3], 10],
+          "expected": 5
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/minimum-operations-to-reduce-x-to-zero/"
+    },
+    {
+      "number": 948,
+      "slug": "bag-of-tokens",
+      "title": "Bag of Tokens Score",
+      "difficulty": "Medium",
+      "topics": ["Two Pointers", "Greedy"],
+      "summary": "Spend power on tokens for score or trade score for power to maximize the highest score reached.",
+      "constraints": ["Each token may be used once.", "You may stop at any time."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "tokens",
+            "type": "int[]"
+          },
+          {
+            "name": "power",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, tokens: list[int], power: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] tokens, int power) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> tokens, int power) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[], 50],
+          "expected": 0
+        },
+        {
+          "args": [[100], 50],
+          "expected": 0
+        },
+        {
+          "args": [[100, 200], 150],
+          "expected": 1
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/bag-of-tokens/"
+    },
+    {
+      "number": 1686,
+      "slug": "stone-game-vi",
+      "title": "Stone Game VI",
+      "difficulty": "Medium",
+      "topics": ["Greedy", "Sorting", "Game Theory"],
+      "summary": "Two optimal players alternate selecting shared stones with player-specific values; report whether the first player wins, loses, or ties.",
+      "constraints": [
+        "Return 1 for a first-player win, -1 for a loss, and 0 for a tie.",
+        "Both value arrays have equal length."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "aliceValues",
+            "type": "int[]"
+          },
+          {
+            "name": "bobValues",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, aliceValues: list[int], bobValues: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] aliceValues, int[] bobValues) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> aliceValues, vector<int> bobValues) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [
+            [1, 3],
+            [2, 1]
+          ],
+          "expected": 1
+        },
+        {
+          "args": [
+            [1, 2],
+            [3, 1]
+          ],
+          "expected": 0
+        },
+        {
+          "args": [
+            [2, 4, 3],
+            [1, 6, 7]
+          ],
+          "expected": -1
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/stone-game-vi/"
+    },
+    {
+      "number": 1248,
+      "slug": "count-number-of-nice-subarrays",
+      "title": "Count Windows With K Odd Values",
+      "difficulty": "Medium",
+      "topics": ["Array", "Prefix Sum"],
+      "summary": "Count contiguous subarrays containing exactly the requested number of odd values.",
+      "constraints": ["Even values may appear anywhere.", "The target is positive."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "target",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int], target: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums, int target) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums, int target) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[1, 1, 2, 1, 1], 3],
+          "expected": 2
+        },
+        {
+          "args": [[2, 4, 6], 1],
+          "expected": 0
+        },
+        {
+          "args": [[2, 2, 2, 1, 2, 2], 1],
+          "expected": 12
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/count-number-of-nice-subarrays/"
+    },
+    {
+      "number": 918,
+      "slug": "maximum-sum-circular-subarray",
+      "title": "Maximum Circular Subarray",
+      "difficulty": "Medium",
+      "topics": ["Array", "Dynamic Programming"],
+      "summary": "Return the largest sum of a nonempty contiguous span when the array's end connects to its beginning.",
+      "constraints": ["Use each position at most once.", "All-negative inputs choose their largest element."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[1]],
+          "expected": 1
+        },
+        {
+          "args": [[0]],
+          "expected": 0
+        },
+        {
+          "args": [[-1]],
+          "expected": -1
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/maximum-sum-circular-subarray/"
+    },
+    {
+      "number": 1218,
+      "slug": "longest-arithmetic-subsequence-of-given-difference",
+      "title": "Longest Fixed-Difference Subsequence",
+      "difficulty": "Medium",
+      "topics": ["Array", "Hash Table", "Dynamic Programming"],
+      "summary": "Return the longest subsequence where every adjacent pair differs by the supplied amount.",
+      "constraints": ["Keep original index order.", "The difference may be negative or zero."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "difference",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int], difference: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums, int difference) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums, int difference) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[1, 2, 3, 4], 1],
+          "expected": 4
+        },
+        {
+          "args": [[1, 3, 5, 7], 1],
+          "expected": 1
+        },
+        {
+          "args": [[1, 5, 7, 8, 5, 3, 4, 2, 1], -2],
+          "expected": 4
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/longest-arithmetic-subsequence-of-given-difference/"
+    },
+    {
+      "number": 41,
+      "slug": "first-missing-positive",
+      "title": "First Missing Positive",
+      "difficulty": "Hard",
+      "topics": ["Array", "Hash Table"],
+      "summary": "Return the smallest positive integer absent from the array.",
+      "constraints": ["Negative values and duplicates may appear.", "The answer is at most length + 1."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": 1
+        },
+        {
+          "args": [[0]],
+          "expected": 1
+        },
+        {
+          "args": [[1]],
+          "expected": 2
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/first-missing-positive/"
+    },
+    {
+      "number": 135,
+      "slug": "candy",
+      "title": "Candy Distribution",
+      "difficulty": "Hard",
+      "topics": ["Array", "Greedy"],
+      "summary": "Assign at least one unit to each rating so higher-rated neighbors receive more, minimizing the total.",
+      "constraints": ["Only adjacent ratings impose comparisons.", "Equal neighbors need no ordering."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "ratings",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, ratings: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] ratings) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> ratings) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[1]],
+          "expected": 1
+        },
+        {
+          "args": [[0]],
+          "expected": 1
+        },
+        {
+          "args": [[-1]],
+          "expected": 1
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/candy/"
+    },
+    {
+      "number": 68,
+      "slug": "text-justification",
+      "title": "Text Justification",
+      "difficulty": "Hard",
+      "topics": ["Array", "String", "Simulation"],
+      "summary": "Pack words into fixed-width lines and distribute interior spaces as evenly as possible, leaving the last line left-aligned.",
+      "constraints": [
+        "Earlier gaps receive extra spaces when division is uneven.",
+        "Every output line has exactly the requested width."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "words",
+            "type": "String[]"
+          },
+          {
+            "name": "width",
+            "type": "int"
+          }
+        ],
+        "returnType": "String[]"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, words: list[str], width: int) -> list[str]:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public String[] solve(String[] words, int width) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    vector<string> solve(vector<string> words, int width) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [["This", "is", "an", "example", "of", "text", "justification."], 16],
+          "expected": ["This    is    an", "example  of text", "justification.  "]
+        },
+        {
+          "args": [["a"], 1],
+          "expected": ["a"]
+        },
+        {
+          "args": [["gamma", "market", "x"], 10],
+          "expected": ["gamma     ", "market x  "]
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/text-justification/"
+    },
+    {
+      "number": 32,
+      "slug": "longest-valid-parentheses",
+      "title": "Longest Valid Parentheses",
+      "difficulty": "Hard",
+      "topics": ["String", "Stack", "Dynamic Programming"],
+      "summary": "Return the longest contiguous length that forms balanced parentheses.",
+      "constraints": ["Only '(' and ')' occur.", "The empty string has result zero."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "text",
+            "type": "String"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, text: str) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(String text) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(string text) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [""],
+          "expected": 0
+        },
+        {
+          "args": ["("],
+          "expected": 0
+        },
+        {
+          "args": [")"],
+          "expected": 0
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/longest-valid-parentheses/"
+    },
+    {
+      "number": 85,
+      "slug": "maximal-rectangle",
+      "title": "Maximal Binary Rectangle",
+      "difficulty": "Hard",
+      "topics": ["Matrix", "Monotonic Stack"],
+      "summary": "Find the largest axis-aligned rectangle containing only ones in a binary matrix.",
+      "constraints": ["Return area, not coordinates.", "An empty matrix has area zero."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "matrix",
+            "type": "int[][]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, matrix: list[list[int]]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[][] matrix) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<vector<int>> matrix) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[[1]]],
+          "expected": 1
+        },
+        {
+          "args": [[[0]]],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              [1, 0],
+              [1, 1]
+            ]
+          ],
+          "expected": 2
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/maximal-rectangle/"
+    },
+    {
+      "number": 87,
+      "slug": "scramble-string",
+      "title": "Scramble String",
+      "difficulty": "Hard",
+      "topics": ["String", "Dynamic Programming"],
+      "summary": "Determine whether recursive binary splits and optional child swaps can transform the first string into the second.",
+      "constraints": ["Inputs must have equal length.", "Characters may repeat."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "first",
+            "type": "String"
+          },
+          {
+            "name": "second",
+            "type": "String"
+          }
+        ],
+        "returnType": "boolean"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, first: str, second: str) -> bool:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public boolean solve(String first, String second) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    bool solve(string first, string second) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": ["great", "rgeat"],
+          "expected": true
+        },
+        {
+          "args": ["abcde", "caebd"],
+          "expected": false
+        },
+        {
+          "args": ["a", "a"],
+          "expected": true
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/scramble-string/"
+    },
+    {
+      "number": 123,
+      "slug": "best-time-to-buy-and-sell-stock-iii",
+      "title": "Stock Profit With Two Transactions",
+      "difficulty": "Hard",
+      "topics": ["Array", "Dynamic Programming"],
+      "summary": "Return the best profit using at most two nonoverlapping buy-then-sell transactions.",
+      "constraints": ["Hold at most one share at a time.", "Transactions are optional."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "prices",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, prices: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] prices) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> prices) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[]],
+          "expected": 0
+        },
+        {
+          "args": [[1]],
+          "expected": 0
+        },
+        {
+          "args": [[3, 3, 5, 0, 0, 3, 1, 4]],
+          "expected": 6
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iii/"
+    },
+    {
+      "number": 188,
+      "slug": "best-time-to-buy-and-sell-stock-iv",
+      "title": "Stock Profit With K Transactions",
+      "difficulty": "Hard",
+      "topics": ["Array", "Dynamic Programming"],
+      "summary": "Return the best profit using at most the supplied number of buy-then-sell transactions.",
+      "constraints": ["A sale must follow its purchase.", "Hold at most one share at a time."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "transactions",
+            "type": "int"
+          },
+          {
+            "name": "prices",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, transactions: int, prices: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int transactions, int[] prices) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(int transactions, vector<int> prices) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [2, [2, 4, 1]],
+          "expected": 2
+        },
+        {
+          "args": [2, [3, 2, 6, 5, 0, 3]],
+          "expected": 7
+        },
+        {
+          "args": [0, [1, 2]],
+          "expected": 0
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/best-time-to-buy-and-sell-stock-iv/"
+    },
+    {
+      "number": 174,
+      "slug": "dungeon-game",
+      "title": "Minimum Dungeon Health",
+      "difficulty": "Hard",
+      "topics": ["Matrix", "Dynamic Programming"],
+      "summary": "Find the minimum starting health needed to move right or down through a gain/loss grid while health always stays positive.",
+      "constraints": [
+        "Start at the upper-left and finish at the lower-right.",
+        "Health may increase or decrease in each cell."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "dungeon",
+            "type": "int[][]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, dungeon: list[list[int]]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[][] dungeon) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<vector<int>> dungeon) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [
+            [
+              [-2, -3, 3],
+              [-5, -10, 1],
+              [10, 30, -5]
+            ]
+          ],
+          "expected": 7
+        },
+        {
+          "args": [[[0]]],
+          "expected": 1
+        },
+        {
+          "args": [[[100]]],
+          "expected": 1
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/dungeon-game/"
+    },
+    {
+      "number": 214,
+      "slug": "shortest-palindrome",
+      "title": "Shortest Palindrome by Front Additions",
+      "difficulty": "Hard",
+      "topics": ["String", "KMP"],
+      "summary": "Add the fewest characters to the front so the full string becomes a palindrome.",
+      "constraints": ["Return the resulting palindrome.", "The empty string is already a palindrome."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "text",
+            "type": "String"
+          }
+        ],
+        "returnType": "String"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, text: str) -> str:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public String solve(String text) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    string solve(string text) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [""],
+          "expected": ""
+        },
+        {
+          "args": ["a"],
+          "expected": "a"
+        },
+        {
+          "args": ["aa"],
+          "expected": "aa"
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/shortest-palindrome/"
+    },
+    {
+      "number": 315,
+      "slug": "count-of-smaller-numbers-after-self",
+      "title": "Count Smaller Values to the Right",
+      "difficulty": "Hard",
+      "topics": ["Fenwick Tree", "Merge Sort"],
+      "summary": "For every position, count later values that are strictly smaller.",
+      "constraints": ["Equal values do not count.", "Return one count per input position."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int[]"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int]) -> list[int]:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int[] solve(int[] nums) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    vector<int> solve(vector<int> nums) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[5, 2, 6, 1]],
+          "expected": [2, 1, 1, 0]
+        },
+        {
+          "args": [[-1]],
+          "expected": [0]
+        },
+        {
+          "args": [[-1, -1]],
+          "expected": [0, 0]
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/count-of-smaller-numbers-after-self/"
+    },
+    {
+      "number": 354,
+      "slug": "russian-doll-envelopes",
+      "title": "Russian Doll Envelopes",
+      "difficulty": "Hard",
+      "topics": ["Sorting", "Longest Increasing Subsequence"],
+      "summary": "Return the longest chain where both width and height strictly increase.",
+      "constraints": ["An envelope cannot rotate.", "Equal widths cannot nest."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "envelopes",
+            "type": "int[][]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, envelopes: list[list[int]]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[][] envelopes) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<vector<int>> envelopes) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [
+            [
+              [5, 4],
+              [6, 4],
+              [6, 7],
+              [2, 3]
+            ]
+          ],
+          "expected": 3
+        },
+        {
+          "args": [
+            [
+              [1, 1],
+              [1, 1]
+            ]
+          ],
+          "expected": 1
+        },
+        {
+          "args": [
+            [
+              [7, 3],
+              [9, 8],
+              [11, 1]
+            ]
+          ],
+          "expected": 2
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/russian-doll-envelopes/"
+    },
+    {
+      "number": 410,
+      "slug": "split-array-largest-sum",
+      "title": "Split Array Largest Sum",
+      "difficulty": "Hard",
+      "topics": ["Binary Search", "Greedy"],
+      "summary": "Split nonnegative values into exactly the requested number of nonempty contiguous parts while minimizing the largest part sum.",
+      "constraints": ["Preserve element order.", "Every position belongs to exactly one part."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "nums",
+            "type": "int[]"
+          },
+          {
+            "name": "parts",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, nums: list[int], parts: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] nums, int parts) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> nums, int parts) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[7, 2, 5, 10, 8], 2],
+          "expected": 18
+        },
+        {
+          "args": [[1, 2, 3, 4, 5], 2],
+          "expected": 9
+        },
+        {
+          "args": [[1, 4, 4], 3],
+          "expected": 4
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/split-array-largest-sum/"
+    },
+    {
+      "number": 407,
+      "slug": "trapping-rain-water-ii",
+      "title": "Trapping Rain Water on a Grid",
+      "difficulty": "Hard",
+      "topics": ["Heap", "Matrix", "Breadth-First Search"],
+      "summary": "Compute water retained by a two-dimensional elevation map after rain.",
+      "constraints": ["Water may escape through every boundary cell.", "Return total unit volume."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "heights",
+            "type": "int[][]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, heights: list[list[int]]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[][] heights) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<vector<int>> heights) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [
+            [
+              [1, 4, 3, 1, 3, 2],
+              [3, 2, 1, 3, 2, 4],
+              [2, 3, 3, 2, 3, 1]
+            ]
+          ],
+          "expected": 4
+        },
+        {
+          "args": [[[1]]],
+          "expected": 0
+        },
+        {
+          "args": [
+            [
+              [3, 6, 9, 3, 6],
+              [1, 4, 7, 1, 4],
+              [8, 2, 5, 8, 2]
+            ]
+          ],
+          "expected": 2
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/trapping-rain-water-ii/"
+    },
+    {
+      "number": 664,
+      "slug": "strange-printer",
+      "title": "Strange Printer",
+      "difficulty": "Hard",
+      "topics": ["String", "Dynamic Programming"],
+      "summary": "A printer can overwrite any contiguous interval with one repeated character; return the fewest turns needed for the target string.",
+      "constraints": ["Existing characters may be overwritten.", "One turn prints only one character."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "text",
+            "type": "String"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, text: str) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(String text) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(string text) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [""],
+          "expected": 0
+        },
+        {
+          "args": ["a"],
+          "expected": 1
+        },
+        {
+          "args": ["aa"],
+          "expected": 1
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/strange-printer/"
+    },
+    {
+      "number": 629,
+      "slug": "k-inverse-pairs-array",
+      "title": "K Inverse Pairs",
+      "difficulty": "Hard",
+      "topics": ["Dynamic Programming"],
+      "summary": "Count permutations of 1 through n having exactly k inverse pairs, modulo 1,000,000,007.",
+      "constraints": [
+        "An inverse pair has i < j and permutation[i] > permutation[j].",
+        "Return zero when k is unattainable."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "length",
+            "type": "int"
+          },
+          {
+            "name": "target",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, length: int, target: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int length, int target) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(int length, int target) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [1, 0],
+          "expected": 1
+        },
+        {
+          "args": [3, 0],
+          "expected": 1
+        },
+        {
+          "args": [3, 1],
+          "expected": 2
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/k-inverse-pairs-array/"
+    },
+    {
+      "number": 1269,
+      "slug": "number-of-ways-to-stay-in-the-same-place-after-some-steps",
+      "title": "Ways to Return After Steps",
+      "difficulty": "Hard",
+      "topics": ["Dynamic Programming"],
+      "summary": "Count step sequences that finish at index zero on a bounded line when each move goes left, stays, or goes right.",
+      "constraints": ["Never leave the array bounds.", "Return the count modulo 1,000,000,007."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "steps",
+            "type": "int"
+          },
+          {
+            "name": "length",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, steps: int, length: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int steps, int length) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(int steps, int length) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [3, 2],
+          "expected": 4
+        },
+        {
+          "args": [2, 4],
+          "expected": 2
+        },
+        {
+          "args": [4, 2],
+          "expected": 8
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/number-of-ways-to-stay-in-the-same-place-after-some-steps/"
+    },
+    {
+      "number": 1335,
+      "slug": "minimum-difficulty-of-a-job-schedule",
+      "title": "Minimum Job Schedule Difficulty",
+      "difficulty": "Hard",
+      "topics": ["Array", "Dynamic Programming"],
+      "summary": "Partition ordered jobs across consecutive nonempty days, minimizing the sum of each day's hardest job.",
+      "constraints": ["Job order cannot change.", "Return -1 when there are fewer jobs than days."],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "jobs",
+            "type": "int[]"
+          },
+          {
+            "name": "days",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, jobs: list[int], days: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int[] jobs, int days) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(vector<int> jobs, int days) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [[6, 5, 4, 3, 2, 1], 2],
+          "expected": 7
+        },
+        {
+          "args": [[9, 9, 9], 4],
+          "expected": -1
+        },
+        {
+          "args": [[1, 1, 1], 3],
+          "expected": 3
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/minimum-difficulty-of-a-job-schedule/"
+    },
+    {
+      "number": 1383,
+      "slug": "maximum-performance-of-a-team",
+      "title": "Maximum Team Performance",
+      "difficulty": "Hard",
+      "topics": ["Greedy", "Heap", "Sorting"],
+      "summary": "Choose at most k workers to maximize total speed multiplied by the team's minimum efficiency.",
+      "constraints": [
+        "Speed and efficiency arrays align by worker.",
+        "Return the result modulo 1,000,000,007."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "count",
+            "type": "int"
+          },
+          {
+            "name": "speed",
+            "type": "int[]"
+          },
+          {
+            "name": "efficiency",
+            "type": "int[]"
+          },
+          {
+            "name": "teamSize",
+            "type": "int"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, count: int, speed: list[int], efficiency: list[int], teamSize: int) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int count, int[] speed, int[] efficiency, int teamSize) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(int count, vector<int> speed, vector<int> efficiency, int teamSize) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [6, [2, 10, 3, 1, 5, 8], [5, 4, 3, 9, 7, 2], 2],
+          "expected": 60
+        },
+        {
+          "args": [3, [2, 8, 2], [2, 7, 1], 2],
+          "expected": 56
+        },
+        {
+          "args": [3, [7, 12, 2], [3, 5, 7], 3],
+          "expected": 70
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/maximum-performance-of-a-team/"
+    },
+    {
+      "number": 1326,
+      "slug": "minimum-number-of-taps-to-open-to-water-a-garden",
+      "title": "Minimum Taps for a Garden",
+      "difficulty": "Hard",
+      "topics": ["Array", "Greedy"],
+      "summary": "Each tap waters an interval around its position; return the fewest taps covering the full garden from zero through n.",
+      "constraints": [
+        "Return -1 when complete coverage is impossible.",
+        "The ranges array has n + 1 entries."
+      ],
+      "signature": {
+        "method": "solve",
+        "params": [
+          {
+            "name": "length",
+            "type": "int"
+          },
+          {
+            "name": "ranges",
+            "type": "int[]"
+          }
+        ],
+        "returnType": "int"
+      },
+      "starterCode": {
+        "python": "class Solution:\n    def solve(self, length: int, ranges: list[int]) -> int:\n        # Write your solution here.\n        raise NotImplementedError\n",
+        "java": "class Solution {\n    public int solve(int length, int[] ranges) {\n        // Write your solution here.\n        throw new UnsupportedOperationException(\"TODO\");\n    }\n}\n",
+        "cpp": "class Solution {\npublic:\n    int solve(int length, vector<int> ranges) {\n        // Write your solution here.\n        throw runtime_error(\"TODO\");\n    }\n};\n"
+      },
+      "caseCount": 20,
+      "samples": [
+        {
+          "args": [5, [3, 4, 1, 1, 0, 0]],
+          "expected": 1
+        },
+        {
+          "args": [3, [0, 0, 0, 0]],
+          "expected": -1
+        },
+        {
+          "args": [0, [0]],
+          "expected": 0
+        }
+      ],
+      "officialUrl": "https://leetcode.com/problems/minimum-number-of-taps-to-open-to-water-a-garden/"
+    }
+  ]
+}

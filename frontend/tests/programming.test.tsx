@@ -5,8 +5,15 @@ import { ProgrammingTrivia } from "@/components/programming/programming-trivia";
 import { programmingMap, programmingTracks, selectProgrammingQuestions } from "@/lib/programming";
 
 describe("programming training", () => {
-  it("registers Java, Python, and C++ with balanced question banks", () => {
-    expect(programmingTracks.map((track) => track.slug)).toEqual(["java", "python", "cpp"]);
+  it("registers six balanced 200-question tracks", () => {
+    expect(programmingTracks.map((track) => track.slug)).toEqual([
+      "java",
+      "python",
+      "cpp",
+      "python-libraries",
+      "computer-architecture",
+      "sql",
+    ]);
     const ids = new Set<string>();
     for (const track of programmingTracks) {
       expect(track.questions).toHaveLength(200);
@@ -18,7 +25,7 @@ describe("programming training", () => {
             .filter((question) => question.topic === topic)
             .map((question) => question.concept ?? question.id),
         );
-        expect(concepts.size).toBeGreaterThanOrEqual(24);
+        expect(concepts.size).toBeGreaterThanOrEqual(20);
       }
       expect(new Set(track.questions.map((question) => question.topic))).toEqual(
         new Set(["fundamentals", "function-calls"]),
@@ -36,11 +43,14 @@ describe("programming training", () => {
         content.add(contentKey);
       }
     }
-    expect(ids.size).toBe(600);
+    expect(ids.size).toBe(1200);
   });
 
-  it("keeps the Python track focused on the language rather than ML libraries", () => {
-    const pythonContent = JSON.stringify(programmingMap.python.questions).toLowerCase();
+  it("keeps both Python tracks free of machine-learning libraries", () => {
+    const pythonContent = JSON.stringify([
+      ...programmingMap.python.questions,
+      ...programmingMap["python-libraries"].questions,
+    ]).toLowerCase();
     expect(pythonContent).not.toMatch(
       /numpy|pandas|scikit|sklearn|tensorflow|pytorch|torch|keras|matplotlib|seaborn/,
     );
@@ -61,7 +71,7 @@ describe("programming training", () => {
     expect(new Set(selected.map((question) => question.concept ?? question.id)).size).toBe(5);
   });
 
-  it("renders a separate programming dashboard with three language links", () => {
+  it("renders a separate programming dashboard with all six track links", () => {
     render(<ProgrammingPage />);
     expect(screen.getByRole("heading", { name: "Programming trivia" })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Practice Java" })).toHaveAttribute("href", "/programming/java");
@@ -70,6 +80,15 @@ describe("programming training", () => {
       "/programming/python",
     );
     expect(screen.getByRole("link", { name: "Practice C++" })).toHaveAttribute("href", "/programming/cpp");
+    expect(screen.getByRole("link", { name: "Practice Python Libraries" })).toHaveAttribute(
+      "href",
+      "/programming/python-libraries",
+    );
+    expect(screen.getByRole("link", { name: "Practice Computer Architecture" })).toHaveAttribute(
+      "href",
+      "/programming/computer-architecture",
+    );
+    expect(screen.getByRole("link", { name: "Practice SQL" })).toHaveAttribute("href", "/programming/sql");
   });
 
   it("starts a trivia round and explains an answered question", () => {

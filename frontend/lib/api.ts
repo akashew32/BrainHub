@@ -1,4 +1,5 @@
 import type { Attempt, Difficulty } from "@/types/games";
+import type { ChallengeLanguage, ChallengeResult } from "@/lib/challenges";
 const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${base}${path}`, {
@@ -9,6 +10,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 export const api = {
+  runChallenge: (
+    slug: string,
+    body: { language: ChallengeLanguage; source: string; mode: "run" | "submit" },
+  ) =>
+    request<ChallengeResult>(`/challenges/${slug}/run`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
   stats: () =>
     request<{
       games_played: number;
