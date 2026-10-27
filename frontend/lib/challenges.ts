@@ -1,7 +1,8 @@
 import catalog from "@/lib/challenge-catalog.json";
 
 export type ChallengeLanguage = "python" | "java" | "cpp";
-export type ChallengeDifficulty = "Easy" | "Medium" | "Hard";
+export type ChallengeDifficulty = "Easy" | "Medium" | "Hard" | "Design";
+export type ChallengeCategory = "Algorithm" | "Low-Level Design";
 
 export type ChallengeValue = string | number | boolean | ChallengeValue[];
 
@@ -11,10 +12,11 @@ export type ChallengeCase = {
 };
 
 export type CodingChallenge = {
-  number: number;
+  number: number | string;
   slug: string;
   title: string;
   difficulty: ChallengeDifficulty;
+  category: ChallengeCategory;
   topics: string[];
   summary: string;
   constraints: string[];
@@ -26,7 +28,7 @@ export type CodingChallenge = {
   starterCode: Record<ChallengeLanguage, string>;
   caseCount: number;
   samples: ChallengeCase[];
-  officialUrl: string;
+  officialUrl: string | null;
 };
 
 export type ChallengeResult = {
@@ -53,6 +55,8 @@ export const challengeMap = Object.fromEntries(
 
 export const challengeCounts = {
   total: codingChallenges.length,
+  algorithms: codingChallenges.filter((challenge) => challenge.category === "Algorithm").length,
+  designs: codingChallenges.filter((challenge) => challenge.category === "Low-Level Design").length,
   easy: codingChallenges.filter((challenge) => challenge.difficulty === "Easy").length,
   medium: codingChallenges.filter((challenge) => challenge.difficulty === "Medium").length,
   hard: codingChallenges.filter((challenge) => challenge.difficulty === "Hard").length,

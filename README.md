@@ -20,7 +20,9 @@ BrainHub is a dark-mode-first training platform for quantitative trading intervi
 
 The separate **Programming Trivia** desk at `/programming` includes 1,200 questions—200 each for Java, Python, C++, important Python libraries, computer architecture, and SQL. Rounds deliberately sample distinct concepts to keep repeat sessions varied. Python questions cover the language, standard and general-purpose libraries, containers, iteration, strings, and built-ins without machine-learning libraries.
 
-The **Coding Challenges** lab at `/challenges` contains 50 free LeetCode-indexed problems: 10 easy, 20 medium, and 20 hard. None are in the current NeetCode 150. Every challenge has original BrainHub guidance, starter code for Python, Java, and C++, three visible examples, and 20 deterministic test cases covering normal, boundary, and adversarial inputs. Run checks three cases quickly; Submit checks all 20.
+The **Coding Challenges** lab at `/challenges` contains 120 free LeetCode-indexed algorithm problems—20 easy, 50 medium, and 50 hard—plus 30 original low-level design exercises. None of the algorithm selections are in the current NeetCode 150. Every challenge has original BrainHub guidance, starter code for Python, Java, and C++, three visible examples, and 20 deterministic test cases, for 3,000 verified cases in total. Run checks three cases quickly; Submit checks all 20. The editor inserts four spaces when Tab is pressed.
+
+The **Learning Roadmaps** page at `/roadmaps` exposes coming-soon entry cards for Probability, Linear Algebra, Calculus, Real Analysis, and Discrete Math. The five curricula are intentionally not implemented yet.
 
 Challenge code is executed by the public [Judge0 CE](https://ce.judge0.com/) sandbox, so source code entered in the lab is sent to that third-party service. Do not paste secrets or proprietary code into the editor.
 

@@ -5,15 +5,34 @@ from app.challenges.catalog import CHALLENGES
 
 
 def test_challenge_catalog_has_requested_mix_and_twenty_cases_each():
-    assert len(CHALLENGES) == 50
+    assert len(CHALLENGES) == 150
     assert Counter(item["difficulty"] for item in CHALLENGES.values()) == {
-        "Easy": 10,
-        "Medium": 20,
-        "Hard": 20,
+        "Easy": 20,
+        "Medium": 50,
+        "Hard": 50,
+        "Design": 30,
+    }
+    assert Counter(item["category"] for item in CHALLENGES.values()) == {
+        "Algorithm": 120,
+        "Low-Level Design": 30,
     }
     assert all(len(item["cases"]) == 20 for item in CHALLENGES.values())
     assert all(len(item["samples"]) == 3 for item in CHALLENGES.values())
-    assert len({item["number"] for item in CHALLENGES.values()}) == 50
+    assert len({item["number"] for item in CHALLENGES.values()}) == 150
+
+
+def test_design_challenges_use_aligned_operation_protocols():
+    designs = [item for item in CHALLENGES.values() if item["category"] == "Low-Level Design"]
+    assert len(designs) == 30
+    for challenge in designs:
+        assert challenge["officialUrl"] is None
+        assert [param["name"] for param in challenge["signature"]["params"]] == [
+            "operations",
+            "arguments",
+        ]
+        for case in challenge["cases"]:
+            operations, arguments = case["args"]
+            assert len(operations) == len(arguments) == len(case["expected"])
 
 
 def test_each_language_harness_contains_solution_and_case_markers():

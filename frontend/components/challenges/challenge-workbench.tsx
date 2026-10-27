@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { CheckCircle2, CircleX, ExternalLink, Play, Send, TerminalSquare } from "lucide-react";
 import { api } from "@/lib/api";
 import type { ChallengeLanguage, ChallengeResult, ChallengeValue, CodingChallenge } from "@/lib/challenges";
@@ -44,6 +44,19 @@ export function ChallengeWorkbench({ challenge }: { challenge: CodingChallenge }
     setError(null);
   }
 
+  function handleEditorKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key !== "Tab" || event.shiftKey) return;
+
+    event.preventDefault();
+    const editor = event.currentTarget;
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const source = drafts[language];
+    const nextSource = `${source.slice(0, start)}    ${source.slice(end)}`;
+    updateDraft(nextSource);
+    requestAnimationFrame(() => editor.setSelectionRange(start + 4, start + 4));
+  }
+
   async function execute(mode: "run" | "submit") {
     setRunning(true);
     setResult(null);
@@ -69,14 +82,18 @@ export function ChallengeWorkbench({ challenge }: { challenge: CodingChallenge }
         <Link href="/challenges" className="text-sm text-[#8995a7] hover:text-white">
           ← Challenge library
         </Link>
-        <a
-          href={challenge.officialUrl}
-          target="_blank"
-          rel="noreferrer"
-          className="flex items-center gap-2 text-sm text-[#8995a7] hover:text-white"
-        >
-          LeetCode source <ExternalLink size={14} />
-        </a>
+        {challenge.officialUrl ? (
+          <a
+            href={challenge.officialUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 text-sm text-[#8995a7] hover:text-white"
+          >
+            LeetCode source <ExternalLink size={14} />
+          </a>
+        ) : (
+          <span className="text-sm text-[#8995a7]">Original BrainHub design problem</span>
+        )}
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)]">
@@ -92,10 +109,15 @@ export function ChallengeWorkbench({ challenge }: { challenge: CodingChallenge }
                       ? "#34d399"
                       : challenge.difficulty === "Medium"
                         ? "#facc15"
-                        : "#fb7185",
+                        : challenge.difficulty === "Hard"
+                          ? "#fb7185"
+                          : "#c084fc",
                 }}
               >
                 {challenge.difficulty}
+              </span>
+              <span className="metric">
+                {challenge.category === "Low-Level Design" ? "LLD" : challenge.category}
               </span>
               <span className="metric">20 test cases</span>
             </div>
@@ -145,8 +167,9 @@ export function ChallengeWorkbench({ challenge }: { challenge: CodingChallenge }
               </ul>
             </div>
             <p className="border-t border-[#202937] pt-5 text-xs leading-5 text-[#66758a]">
-              BrainHub uses the official title, difficulty, number, and topic metadata. The wording and test
-              suite are original practice material, not a copy of LeetCode&apos;s statement.
+              {challenge.category === "Algorithm"
+                ? "BrainHub uses the official title, difficulty, number, and topic metadata. The wording and test suite are original practice material, not a copy of LeetCode's statement."
+                : "This low-level design exercise, its operation protocol, wording, and test suite are original BrainHub practice material."}
             </p>
           </div>
         </section>
@@ -175,12 +198,15 @@ export function ChallengeWorkbench({ challenge }: { challenge: CodingChallenge }
                 className="min-h-[510px] w-full resize-y bg-[#080c12] p-5 font-mono text-sm leading-6 text-[#d6deeb] outline-none"
                 value={drafts[language]}
                 onChange={(event) => updateDraft(event.target.value)}
+                onKeyDown={handleEditorKeyDown}
                 spellCheck={false}
                 aria-label={`${language} solution editor`}
               />
             </label>
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#202937] px-4 py-3">
-              <p className="text-xs text-[#66758a]">Run checks 3 examples · Submit checks all 20 cases</p>
+              <p className="text-xs text-[#66758a]">
+                Tab inserts 4 spaces · Run checks 3 examples · Submit checks all 20 cases
+              </p>
               <div className="flex gap-2">
                 <button
                   className="btn flex items-center gap-2"

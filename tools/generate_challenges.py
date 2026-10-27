@@ -12,6 +12,8 @@ from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
+from challenge_expansion import build_expansion
+
 ROOT = Path(__file__).resolve().parents[1]
 FRONTEND_CATALOG = ROOT / "frontend" / "lib" / "challenge-catalog.json"
 BACKEND_CATALOG = ROOT / "backend" / "app" / "challenges" / "catalog.json"
@@ -35,6 +37,7 @@ class Problem:
     return_type: str
     reference: Reference
     cases: tuple[tuple[Json, ...], ...]
+    category: str = "Algorithm"
 
 
 def unique_twenty(
@@ -2015,6 +2018,8 @@ PROBLEMS = (
     ),
 )
 
+PROBLEMS = (*PROBLEMS, *build_expansion(Problem, unique_twenty))
+
 
 PYTHON_TYPES = {
     "int": "int",
@@ -2084,6 +2089,7 @@ def serialize_problem(problem: Problem, include_cases: bool) -> dict[str, Any]:
         "slug": problem.slug,
         "title": problem.title,
         "difficulty": problem.difficulty,
+        "category": problem.category,
         "topics": problem.topics,
         "summary": problem.summary,
         "constraints": problem.constraints,
@@ -2095,7 +2101,11 @@ def serialize_problem(problem: Problem, include_cases: bool) -> dict[str, Any]:
         "starterCode": starter_code(problem),
         "caseCount": len(cases),
         "samples": cases[:3],
-        "officialUrl": f"https://leetcode.com/problems/{problem.slug}/",
+        "officialUrl": (
+            f"https://leetcode.com/problems/{problem.slug}/"
+            if problem.category == "Algorithm"
+            else None
+        ),
     }
     if include_cases:
         public["cases"] = cases
@@ -2103,11 +2113,14 @@ def serialize_problem(problem: Problem, include_cases: bool) -> dict[str, Any]:
 
 
 def main():
-    if len(PROBLEMS) != 50:
-        raise AssertionError(f"Expected 50 problems, got {len(PROBLEMS)}")
+    if len(PROBLEMS) != 150:
+        raise AssertionError(f"Expected 150 problems, got {len(PROBLEMS)}")
     difficulty_counts = Counter(problem.difficulty for problem in PROBLEMS)
-    if difficulty_counts != {"Easy": 10, "Medium": 20, "Hard": 20}:
+    if difficulty_counts != {"Easy": 20, "Medium": 50, "Hard": 50, "Design": 30}:
         raise AssertionError(f"Unexpected difficulty mix: {difficulty_counts}")
+    category_counts = Counter(problem.category for problem in PROBLEMS)
+    if category_counts != {"Algorithm": 120, "Low-Level Design": 30}:
+        raise AssertionError(f"Unexpected category mix: {category_counts}")
     slugs = [problem.slug for problem in PROBLEMS]
     if len(set(slugs)) != len(slugs):
         raise AssertionError("Challenge slugs must be unique")
@@ -2115,9 +2128,10 @@ def main():
         raise AssertionError("Every challenge must have exactly 20 cases")
 
     source = {
-        "source": "LeetCode metadata with original BrainHub wording and tests",
+        "source": "LeetCode algorithm metadata plus original BrainHub low-level design material",
         "neetCode150Excluded": True,
         "counts": dict(difficulty_counts),
+        "categoryCounts": dict(category_counts),
     }
     frontend_payload = {
         **source,

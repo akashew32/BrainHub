@@ -41,7 +41,11 @@ def neetcode_150_slugs() -> set[str]:
 def main() -> None:
     catalog = json.loads(CATALOG.read_text(encoding="utf-8"))
     problems = catalog["problems"]
-    selected = {problem["slug"]: problem for problem in problems}
+    algorithms = [problem for problem in problems if problem["category"] == "Algorithm"]
+    designs = [
+        problem for problem in problems if problem["category"] == "Low-Level Design"
+    ]
+    selected = {problem["slug"]: problem for problem in algorithms}
 
     leetcode = json.loads(fetch_text(LEETCODE_API))
     official = {
@@ -70,12 +74,16 @@ def main() -> None:
         )
 
     counts = {difficulty: 0 for difficulty in ("Easy", "Medium", "Hard")}
-    for problem in problems:
+    for problem in algorithms:
         counts[problem["difficulty"]] += 1
-    if counts != {"Easy": 10, "Medium": 20, "Hard": 20}:
+    if counts != {"Easy": 20, "Medium": 50, "Hard": 50}:
         raise AssertionError(f"Unexpected difficulty counts: {counts}")
+    if len(designs) != 30 or any(
+        problem["difficulty"] != "Design" for problem in designs
+    ):
+        raise AssertionError("Expected 30 original low-level design challenges")
     print(
-        f"Verified {len(problems)} LeetCode sources, difficulty labels, and zero NeetCode 150 overlap."
+        f"Verified {len(algorithms)} LeetCode sources, difficulty labels, zero NeetCode 150 overlap, and {len(designs)} original design challenges."
     )
 
 

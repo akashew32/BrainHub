@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BarChart3, BrainCircuit, Code2, TerminalSquare } from "lucide-react";
+import { BarChart3, BrainCircuit, Code2, Map, TerminalSquare } from "lucide-react";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -29,6 +29,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <Link href="/challenges" aria-label="Challenges" className="flex items-center gap-1.5">
                 <TerminalSquare size={16} />
                 <span className="hidden md:inline">Challenges</span>
+              </Link>
+              <Link href="/roadmaps" aria-label="Roadmaps" className="flex items-center gap-1.5">
+                <Map size={16} />
+                <span className="hidden lg:inline">Roadmaps</span>
               </Link>
               <Link href="/stats" aria-label="Statistics" className="flex items-center gap-1.5">
                 <BarChart3 size={16} />

@@ -81,7 +81,7 @@ export default function ProgrammingPage() {
           <div>
             <p className="metric text-[#c084fc]">Ready to write code?</p>
             <p className="mt-1 text-sm text-[#aeb8c6]">
-              Move from trivia to 50 executable interview-style problems in Python, Java, or C++.
+              Move from trivia to 150 executable algorithm and design problems in Python, Java, or C++.
             </p>
           </div>
           <Link href="/challenges" className="btn">

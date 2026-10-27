@@ -3,17 +3,25 @@
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { ArrowUpRight, Search } from "lucide-react";
-import type { ChallengeDifficulty, CodingChallenge } from "@/lib/challenges";
+import type { ChallengeCategory, ChallengeDifficulty, CodingChallenge } from "@/lib/challenges";
 
-const difficulties = ["All", "Easy", "Medium", "Hard"] as const;
+type ChallengeSummary = Pick<
+  CodingChallenge,
+  "number" | "slug" | "title" | "difficulty" | "category" | "topics" | "summary"
+>;
+
+const difficulties = ["All", "Easy", "Medium", "Hard", "Design"] as const;
+const categories = ["All", "Algorithm", "Low-Level Design"] as const;
 const difficultyColors: Record<ChallengeDifficulty, string> = {
   Easy: "#34d399",
   Medium: "#facc15",
   Hard: "#fb7185",
+  Design: "#c084fc",
 };
 
-export function ChallengeCatalog({ challenges }: { challenges: CodingChallenge[] }) {
+export function ChallengeCatalog({ challenges }: { challenges: ChallengeSummary[] }) {
   const [difficulty, setDifficulty] = useState<(typeof difficulties)[number]>("All");
+  const [category, setCategory] = useState<"All" | ChallengeCategory>("All");
   const [topic, setTopic] = useState("All topics");
   const [query, setQuery] = useState("");
   const topics = useMemo(
@@ -25,16 +33,17 @@ export function ChallengeCatalog({ challenges }: { challenges: CodingChallenge[]
     return challenges.filter(
       (challenge) =>
         (difficulty === "All" || challenge.difficulty === difficulty) &&
+        (category === "All" || challenge.category === category) &&
         (topic === "All topics" || challenge.topics.includes(topic)) &&
         (!search ||
           challenge.title.toLowerCase().includes(search) ||
           challenge.topics.some((item) => item.toLowerCase().includes(search))),
     );
-  }, [challenges, difficulty, query, topic]);
+  }, [category, challenges, difficulty, query, topic]);
 
   return (
     <div>
-      <div className="panel mb-5 grid gap-4 p-4 lg:grid-cols-[1fr_auto_auto]">
+      <div className="panel mb-5 grid gap-4 p-4 xl:grid-cols-[1fr_auto_auto]">
         <label className="relative block">
           <span className="sr-only">Search coding challenges</span>
           <Search
@@ -70,11 +79,24 @@ export function ChallengeCatalog({ challenges }: { challenges: CodingChallenge[]
             ))}
           </select>
         </label>
+        <div className="flex flex-wrap gap-2 xl:col-span-3" aria-label="Filter by challenge category">
+          {categories.map((item) => (
+            <button
+              key={item}
+              className="btn text-sm"
+              aria-pressed={category === item}
+              onClick={() => setCategory(item)}
+              style={category === item ? { borderColor: "#c084fc", color: "#c084fc" } : undefined}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="mb-4 flex items-center justify-between gap-3">
         <p className="metric">{filtered.length} challenges</p>
-        <p className="text-xs text-[#778398]">All selections exclude NeetCode 150</p>
+        <p className="text-xs text-[#778398]">All algorithm selections exclude NeetCode 150</p>
       </div>
       <div className="grid gap-3">
         {filtered.map((challenge) => (
@@ -86,6 +108,9 @@ export function ChallengeCatalog({ challenges }: { challenges: CodingChallenge[]
                 style={{ color: difficultyColors[challenge.difficulty] }}
               >
                 {challenge.difficulty}
+              </p>
+              <p className="mt-2 text-[10px] uppercase tracking-[.12em] text-[#66758a]">
+                {challenge.category === "Algorithm" ? "Algorithm" : "LLD"}
               </p>
             </div>
             <div>
