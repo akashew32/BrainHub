@@ -1,9 +1,12 @@
+import { generatedProgrammingQuestions } from "@/lib/programming-question-bank";
+
 export type ProgrammingLanguage = "java" | "python" | "cpp";
 export type ProgrammingTopic = "fundamentals" | "function-calls";
 export type TriviaMode = "mixed" | ProgrammingTopic;
 
 export type ProgrammingQuestion = {
   id: string;
+  concept?: string;
   topic: ProgrammingTopic;
   prompt: string;
   code?: string;
@@ -379,7 +382,7 @@ export const programmingTracks: ProgrammingTrack[] = [
     accent: "#f97316",
     description: "Types, object semantics, collections, streams, and standard method calls.",
     focus: "Strong typing · collections · object behavior",
-    questions: javaQuestions,
+    questions: [...javaQuestions, ...generatedProgrammingQuestions.java],
   },
   {
     slug: "python",
@@ -388,7 +391,7 @@ export const programmingTracks: ProgrammingTrack[] = [
     accent: "#facc15",
     description: "Core language behavior, built-ins, containers, iteration, and string operations.",
     focus: "Language fundamentals · built-in functions",
-    questions: pythonQuestions,
+    questions: [...pythonQuestions, ...generatedProgrammingQuestions.python],
   },
   {
     slug: "cpp",
@@ -397,7 +400,7 @@ export const programmingTracks: ProgrammingTrack[] = [
     accent: "#60a5fa",
     description: "Value semantics, memory safety, STL containers, iterators, and algorithms.",
     focus: "Modern C++ · standard library",
-    questions: cppQuestions,
+    questions: [...cppQuestions, ...generatedProgrammingQuestions.cpp],
   },
 ];
 
@@ -414,24 +417,43 @@ function shuffled<T>(items: T[], random: () => number) {
   return result;
 }
 
+function selectDistinctConcepts(questions: ProgrammingQuestion[], count: number, random: () => number) {
+  const groups = new Map<string, ProgrammingQuestion[]>();
+  for (const question of questions) {
+    const concept = question.concept ?? question.id;
+    const group = groups.get(concept) ?? [];
+    group.push(question);
+    groups.set(concept, group);
+  }
+
+  const selected = shuffled([...groups.values()], random)
+    .slice(0, count)
+    .map((group) => shuffled(group, random)[0]!);
+
+  return shuffled(selected, random);
+}
+
 export function selectProgrammingQuestions(
   track: ProgrammingTrack,
   mode: TriviaMode,
   random: () => number = Math.random,
 ) {
   if (mode !== "mixed") {
-    return shuffled(
+    return selectDistinctConcepts(
       track.questions.filter((question) => question.topic === mode),
+      5,
       random,
     );
   }
-  const fundamentals = shuffled(
+  const fundamentals = selectDistinctConcepts(
     track.questions.filter((question) => question.topic === "fundamentals"),
+    5,
     random,
-  ).slice(0, 5);
-  const functionCalls = shuffled(
+  );
+  const functionCalls = selectDistinctConcepts(
     track.questions.filter((question) => question.topic === "function-calls"),
+    5,
     random,
-  ).slice(0, 5);
+  );
   return shuffled([...fundamentals, ...functionCalls], random);
 }

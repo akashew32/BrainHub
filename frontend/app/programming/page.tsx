@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 };
 
 export default function ProgrammingPage() {
+  const totalQuestions = programmingTracks.reduce((total, track) => total + track.questions.length, 0);
+
   return (
     <div>
       <Link href="/" className="mb-8 inline-flex items-center gap-2 text-sm text-[#8995a7] hover:text-white">
@@ -30,7 +32,7 @@ export default function ProgrammingPage() {
         </div>
         <div className="panel grid grid-cols-2 gap-px overflow-hidden bg-[#202937]">
           <ProgrammingMetric icon={Code2} value="3" label="Languages" />
-          <ProgrammingMetric icon={Binary} value="30" label="Questions" />
+          <ProgrammingMetric icon={Binary} value={String(totalQuestions)} label="Questions" />
           <ProgrammingMetric icon={Braces} value="2" label="Skill areas" />
           <ProgrammingMetric icon={Code2} value="10" label="Mixed round" />
         </div>

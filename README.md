@@ -18,7 +18,7 @@ BrainHub is a dark-mode-first training platform for quantitative trading intervi
 - **Options Payoff** — call and put intrinsic value, premiums, long/short direction, and full contract multipliers.
 - **Portfolio Risk** — two-asset volatility calculations that make the contribution of weights, covariance, and correlation explicit.
 
-The separate **Programming Trivia** desk at `/programming` includes balanced fundamentals and function-call rounds for Java, Python, and C++. Python questions cover the language, containers, iteration, strings, and built-ins without machine-learning libraries.
+The separate **Programming Trivia** desk at `/programming` includes 600 questions—200 each for Java, Python, and C++—with balanced fundamentals and function-call rounds. Rounds deliberately sample distinct concepts to keep repeat sessions varied. Python questions cover the language, containers, iteration, strings, and built-ins without machine-learning libraries.
 
 ## Architecture
 
