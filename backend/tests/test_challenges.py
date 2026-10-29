@@ -5,20 +5,20 @@ from app.challenges.catalog import CHALLENGES
 
 
 def test_challenge_catalog_has_requested_mix_and_twenty_cases_each():
-    assert len(CHALLENGES) == 150
+    assert len(CHALLENGES) == 200
     assert Counter(item["difficulty"] for item in CHALLENGES.values()) == {
-        "Easy": 20,
-        "Medium": 50,
-        "Hard": 50,
+        "Easy": 35,
+        "Medium": 70,
+        "Hard": 65,
         "Design": 30,
     }
     assert Counter(item["category"] for item in CHALLENGES.values()) == {
-        "Algorithm": 120,
+        "Algorithm": 170,
         "Low-Level Design": 30,
     }
     assert all(len(item["cases"]) == 20 for item in CHALLENGES.values())
     assert all(len(item["samples"]) == 3 for item in CHALLENGES.values())
-    assert len({item["number"] for item in CHALLENGES.values()}) == 150
+    assert len({item["number"] for item in CHALLENGES.values()}) == 200
 
 
 def test_design_challenges_use_aligned_operation_protocols():

@@ -5,6 +5,7 @@ import { useState, type KeyboardEvent } from "react";
 import { CheckCircle2, CircleX, ExternalLink, Play, Send, TerminalSquare } from "lucide-react";
 import { api } from "@/lib/api";
 import type { ChallengeLanguage, ChallengeResult, ChallengeValue, CodingChallenge } from "@/lib/challenges";
+import { SyntaxEditor } from "./syntax-editor";
 
 const languages: Array<{ id: ChallengeLanguage; label: string }> = [
   { id: "python", label: "Python" },
@@ -194,13 +195,12 @@ export function ChallengeWorkbench({ challenge }: { challenge: CodingChallenge }
             </div>
             <label className="block">
               <span className="sr-only">{language} solution editor</span>
-              <textarea
-                className="min-h-[510px] w-full resize-y bg-[#080c12] p-5 font-mono text-sm leading-6 text-[#d6deeb] outline-none"
+              <SyntaxEditor
                 value={drafts[language]}
-                onChange={(event) => updateDraft(event.target.value)}
+                language={language}
+                onChange={updateDraft}
                 onKeyDown={handleEditorKeyDown}
-                spellCheck={false}
-                aria-label={`${language} solution editor`}
+                ariaLabel={`${language} solution editor`}
               />
             </label>
             <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#202937] px-4 py-3">

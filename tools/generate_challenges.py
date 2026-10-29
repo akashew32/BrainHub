@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from challenge_expansion import build_expansion
+from challenge_expansion_more import build_more
 
 ROOT = Path(__file__).resolve().parents[1]
 FRONTEND_CATALOG = ROOT / "frontend" / "lib" / "challenge-catalog.json"
@@ -2018,7 +2019,11 @@ PROBLEMS = (
     ),
 )
 
-PROBLEMS = (*PROBLEMS, *build_expansion(Problem, unique_twenty))
+PROBLEMS = (
+    *PROBLEMS,
+    *build_expansion(Problem, unique_twenty),
+    *build_more(Problem, unique_twenty),
+)
 
 
 PYTHON_TYPES = {
@@ -2113,13 +2118,13 @@ def serialize_problem(problem: Problem, include_cases: bool) -> dict[str, Any]:
 
 
 def main():
-    if len(PROBLEMS) != 150:
-        raise AssertionError(f"Expected 150 problems, got {len(PROBLEMS)}")
+    if len(PROBLEMS) != 200:
+        raise AssertionError(f"Expected 200 problems, got {len(PROBLEMS)}")
     difficulty_counts = Counter(problem.difficulty for problem in PROBLEMS)
-    if difficulty_counts != {"Easy": 20, "Medium": 50, "Hard": 50, "Design": 30}:
+    if difficulty_counts != {"Easy": 35, "Medium": 70, "Hard": 65, "Design": 30}:
         raise AssertionError(f"Unexpected difficulty mix: {difficulty_counts}")
     category_counts = Counter(problem.category for problem in PROBLEMS)
-    if category_counts != {"Algorithm": 120, "Low-Level Design": 30}:
+    if category_counts != {"Algorithm": 170, "Low-Level Design": 30}:
         raise AssertionError(f"Unexpected category mix: {category_counts}")
     slugs = [problem.slug for problem in PROBLEMS]
     if len(set(slugs)) != len(slugs):

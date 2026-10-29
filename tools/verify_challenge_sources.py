@@ -3,11 +3,15 @@ from __future__ import annotations
 import json
 import re
 from pathlib import Path
+from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 CATALOG = ROOT / "frontend" / "lib" / "challenge-catalog.json"
-LEETCODE_API = "https://leetcode.com/api/problems/all/"
+LEETCODE_APIS = (
+    "https://leetcode.com/api/problems/all/",
+    "https://leetcode.cn/api/problems/all/",
+)
 NEETCODE_150 = "https://neetcode.io/practice/practice/neetcode150"
 
 
@@ -15,6 +19,18 @@ def fetch_text(url: str) -> str:
     request = Request(url, headers={"User-Agent": "BrainHub source verifier/1.0"})
     with urlopen(request, timeout=30) as response:
         return response.read().decode("utf-8")
+
+
+def leetcode_catalog() -> dict:
+    errors: list[str] = []
+    for url in LEETCODE_APIS:
+        try:
+            return json.loads(fetch_text(url))
+        except (HTTPError, URLError, TimeoutError, json.JSONDecodeError) as error:
+            errors.append(f"{url}: {error}")
+    raise RuntimeError(
+        "Could not load official LeetCode metadata: " + "; ".join(errors)
+    )
 
 
 def neetcode_150_slugs() -> set[str]:
@@ -47,7 +63,7 @@ def main() -> None:
     ]
     selected = {problem["slug"]: problem for problem in algorithms}
 
-    leetcode = json.loads(fetch_text(LEETCODE_API))
+    leetcode = leetcode_catalog()
     official = {
         item["stat"]["question__title_slug"]: item
         for item in leetcode["stat_status_pairs"]
@@ -76,7 +92,7 @@ def main() -> None:
     counts = {difficulty: 0 for difficulty in ("Easy", "Medium", "Hard")}
     for problem in algorithms:
         counts[problem["difficulty"]] += 1
-    if counts != {"Easy": 20, "Medium": 50, "Hard": 50}:
+    if counts != {"Easy": 35, "Medium": 70, "Hard": 65}:
         raise AssertionError(f"Unexpected difficulty counts: {counts}")
     if len(designs) != 30 or any(
         problem["difficulty"] != "Design" for problem in designs

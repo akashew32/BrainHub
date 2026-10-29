@@ -6,7 +6,7 @@ import { challengeCounts, codingChallenges } from "@/lib/challenges";
 
 export const metadata: Metadata = {
   title: "Coding Challenges — BrainHub",
-  description: "Solve 120 algorithm and 30 low-level design challenges in Python, Java, and C++.",
+  description: "Solve 170 algorithm and 30 low-level design challenges in Python, Java, and C++.",
 };
 
 export default function ChallengesPage() {
@@ -36,7 +36,7 @@ export default function ChallengesPage() {
             <span className="text-[#778398]">Prove the solution.</span>
           </h1>
           <p className="mt-5 max-w-2xl leading-7 text-[#98a4b5]">
-            One hundred twenty researched algorithm challenges plus thirty low-level design exercises, with
+            One hundred seventy researched algorithm challenges plus thirty low-level design exercises, with
             original wording, twenty tests each, language-specific starter code, real execution, and visible
             stdout. Every algorithm selection sits outside the NeetCode 150.
           </p>

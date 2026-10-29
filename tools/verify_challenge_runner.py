@@ -110,11 +110,32 @@ public:
 """,
 }
 
+POWER_OF_TWO_SOLUTIONS = {
+    "python": """class Solution:
+    def solve(self, value: int) -> bool:
+        return value > 0 and value & (value - 1) == 0
+""",
+    "java": """class Solution {
+    public boolean solve(int value) {
+        return value > 0 && (value & (value - 1)) == 0;
+    }
+}
+""",
+    "cpp": """class Solution {
+public:
+    bool solve(int value) {
+        return value > 0 && (value & (value - 1)) == 0;
+    }
+};
+""",
+}
+
 
 def main() -> None:
     scenarios = [
         ("merge-strings-alternately", MERGE_SOLUTIONS, True),
         ("lld-key-value-store", DESIGN_SOLUTIONS, False),
+        ("power-of-two", POWER_OF_TWO_SOLUTIONS, False),
     ]
     for slug, solutions, expects_stdout in scenarios:
         challenge = CHALLENGES[slug]
