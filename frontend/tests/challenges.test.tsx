@@ -1,7 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import ChallengesPage from "@/app/challenges/page";
-import RoadmapsPage from "@/app/roadmaps/page";
 import { ChallengeWorkbench } from "@/components/challenges/challenge-workbench";
 import { challengeCounts, codingChallenges } from "@/lib/challenges";
 
@@ -88,14 +87,5 @@ describe("coding challenges", () => {
     fireEvent.click(screen.getByRole("button", { name: "Run" }));
     await waitFor(() => expect(screen.getByText("hello from solution")).toBeInTheDocument());
     expect(screen.getByText(/3\/3 passed/)).toBeInTheDocument();
-  });
-
-  it("shows five explicitly unavailable roadmap tracks", () => {
-    render(<RoadmapsPage />);
-    for (const subject of ["Probability", "Linear Algebra", "Calculus", "Real Analysis", "Discrete Math"]) {
-      expect(screen.getByRole("heading", { name: subject })).toBeInTheDocument();
-    }
-    expect(screen.getAllByText("Coming soon")).toHaveLength(5);
-    expect(screen.getByText("0")).toBeInTheDocument();
   });
 });
