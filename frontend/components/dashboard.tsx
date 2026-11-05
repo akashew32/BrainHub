@@ -17,6 +17,14 @@ const empty: Stats = {
   games: [],
   categories: [],
   recent_trend: [],
+  roadmaps: {
+    total: 300,
+    started: 0,
+    completed: 0,
+    average_quiz_score: 0,
+    time_spent_seconds: 0,
+    roadmaps: [],
+  },
 };
 
 export function Dashboard() {

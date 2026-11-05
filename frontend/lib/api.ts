@@ -1,15 +1,29 @@
 import type { Attempt, Difficulty } from "@/types/games";
 import type { ChallengeLanguage, ChallengeResult } from "@/lib/challenges";
+import type {
+  RoadmapProgressItem,
+  RoadmapProgressResponse,
+  RoadmapProgressUpdate,
+} from "@/lib/roadmap-progress";
 const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${base}${path}`, {
     ...init,
     headers: { "Content-Type": "application/json", ...init?.headers },
   });
-  if (!response.ok) throw new Error((await response.json()).detail ?? "Request failed");
+  if (!response.ok) {
+    const payload = (await response.json().catch(() => null)) as { detail?: string } | null;
+    throw new Error(payload?.detail ?? `Request failed with status ${response.status}`);
+  }
   return response.json() as Promise<T>;
 }
 export const api = {
+  roadmapProgress: () => request<RoadmapProgressResponse>("/roadmaps/progress"),
+  updateRoadmapProgress: (roadmapSlug: string, topicSlug: string, body: RoadmapProgressUpdate) =>
+    request<RoadmapProgressItem>(`/roadmaps/${roadmapSlug}/topics/${topicSlug}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
   runChallenge: (
     slug: string,
     body: { language: ChallengeLanguage; source: string; mode: "run" | "submit" },
@@ -34,6 +48,7 @@ export const api = {
       }>;
       categories: Array<{ name: string; rating: number }>;
       recent_trend: Array<{ date: string; score: number; game: string }>;
+      roadmaps: import("@/lib/roadmap-progress").RoadmapProgressSummary;
     }>("/stats"),
   recent: () => request<Attempt[]>("/attempts/recent"),
   create: (slug: string, difficulty: Difficulty) =>

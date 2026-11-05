@@ -69,6 +69,21 @@ class UserGameStats(Base):
     total_duration_ms: Mapped[int] = mapped_column(Integer, default=0)
 
 
+class RoadmapTopicProgress(Base):
+    __tablename__ = "roadmap_topic_progress"
+    __table_args__ = (UniqueConstraint("user_id", "roadmap_slug", "topic_slug"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    roadmap_slug: Mapped[str] = mapped_column(String(80), index=True)
+    topic_slug: Mapped[str] = mapped_column(String(160))
+    status: Mapped[str] = mapped_column(String(20), default="in_progress")
+    quiz_score: Mapped[int] = mapped_column(Integer, default=0)
+    quiz_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    time_spent_seconds: Mapped[int] = mapped_column(Integer, default=0)
+    last_viewed_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
 class FermiQuestion(Base):
     __tablename__ = "fermi_questions"
     id: Mapped[int] = mapped_column(primary_key=True)

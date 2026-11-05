@@ -1,3 +1,4 @@
+import re
 import secrets
 from datetime import datetime
 from typing import Annotated, Any
@@ -10,14 +11,35 @@ from sqlalchemy.orm import Session
 from app.challenges import runner as challenge_runner
 from app.challenges.catalog import CHALLENGES
 from app.core.config import get_settings
-from app.db.base import Attempt, FermiQuestion, GameSession, User, UserGameStats, utc_now
+from app.db.base import (
+    Attempt,
+    FermiQuestion,
+    GameSession,
+    RoadmapTopicProgress,
+    User,
+    UserGameStats,
+    utc_now,
+)
 from app.db.session import get_db
 from app.games.base import Difficulty, GameEngine
 from app.games.liars_dice import LiarsDiceEngine
 from app.games.market_making import MarketMakingEngine
 from app.games.pattern import PatternEngine
 from app.games.registry import GAME_MAP, GAMES
-from app.schemas.api import AttemptOut, ChallengeRun, CompleteAttempt, SessionAction, SessionCreate
+from app.schemas.api import (
+    AttemptOut,
+    ChallengeRun,
+    CompleteAttempt,
+    RoadmapProgressUpdate,
+    SessionAction,
+    SessionCreate,
+)
+from app.services.roadmaps import (
+    ROADMAP_TOPICS,
+    ROADMAP_TOTALS,
+    serialize_progress,
+    summarize_progress,
+)
 from app.services.stats import aggregate_stats, record_attempt
 
 router = APIRouter(prefix="/api")
@@ -27,6 +49,7 @@ ENGINES: dict[str, type[GameEngine]] = {
     "liars-dice": LiarsDiceEngine,
 }
 Database = Annotated[Session, Depends(get_db)]
+TOPIC_SLUG_PATTERN = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 
 def get_local_user(db: Session) -> User:
@@ -198,7 +221,77 @@ def recent_attempts(db: Database, limit: int = 10) -> list[Attempt]:
 
 @router.get("/stats")
 def stats(db: Database) -> dict[str, Any]:
-    return aggregate_stats(db, get_local_user(db).id)
+    user = get_local_user(db)
+    payload = aggregate_stats(db, user.id)
+    progress = list(
+        db.scalars(select(RoadmapTopicProgress).where(RoadmapTopicProgress.user_id == user.id))
+    )
+    payload["roadmaps"] = summarize_progress(progress)
+    return payload
+
+
+@router.get("/roadmaps/progress")
+def roadmap_progress(db: Database) -> dict[str, Any]:
+    user = get_local_user(db)
+    items = list(
+        db.scalars(
+            select(RoadmapTopicProgress)
+            .where(RoadmapTopicProgress.user_id == user.id)
+            .order_by(RoadmapTopicProgress.last_viewed_at.desc())
+        )
+    )
+    return {
+        "items": [serialize_progress(item) for item in items],
+        "summary": summarize_progress(items),
+    }
+
+
+@router.patch("/roadmaps/{roadmap_slug}/topics/{topic_slug}")
+def update_roadmap_progress(
+    roadmap_slug: str,
+    topic_slug: str,
+    payload: RoadmapProgressUpdate,
+    db: Database,
+) -> dict[str, Any]:
+    if roadmap_slug not in ROADMAP_TOTALS:
+        raise HTTPException(404, "Unknown roadmap")
+    if len(topic_slug) > 160 or TOPIC_SLUG_PATTERN.fullmatch(topic_slug) is None:
+        raise HTTPException(422, "Invalid topic slug")
+    if topic_slug not in ROADMAP_TOPICS[roadmap_slug]:
+        raise HTTPException(404, "Unknown roadmap topic")
+
+    user = get_local_user(db)
+    item = db.scalar(
+        select(RoadmapTopicProgress).where(
+            RoadmapTopicProgress.user_id == user.id,
+            RoadmapTopicProgress.roadmap_slug == roadmap_slug,
+            RoadmapTopicProgress.topic_slug == topic_slug,
+        )
+    )
+    if item is None:
+        item = RoadmapTopicProgress(
+            user_id=user.id,
+            roadmap_slug=roadmap_slug,
+            topic_slug=topic_slug,
+        )
+
+    next_score = max(item.quiz_score or 0, payload.quiz_score or 0)
+    if payload.status in {"completed", "review"} and next_score < 67:
+        raise HTTPException(422, "Pass the lesson quiz before completing this topic")
+
+    if payload.quiz_score is not None:
+        item.quiz_score = next_score
+        item.quiz_attempts = (item.quiz_attempts or 0) + 1
+    if item.status not in {"completed", "review"} or payload.status in {"completed", "review"}:
+        item.status = payload.status
+    item.time_spent_seconds = (item.time_spent_seconds or 0) + payload.time_spent_seconds
+    item.last_viewed_at = utc_now()
+    if item.status in {"completed", "review"} and item.completed_at is None:
+        item.completed_at = utc_now()
+    db.add(item)
+    db.commit()
+    db.refresh(item)
+    return serialize_progress(item)
 
 
 @router.get("/stats/{game_slug}")

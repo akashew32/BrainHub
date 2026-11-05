@@ -78,3 +78,57 @@ def test_session_action_completion_and_recent_attempt(client):
         f"/api/games/market-making/sessions/{session_id}/complete", json={"score": 1}
     )
     assert duplicate.status_code == 409
+
+
+def test_roadmap_progress_requires_quiz_mastery_and_flows_into_stats(client):
+    started = client.patch(
+        "/api/roadmaps/linear-algebra/topics/vector-arithmetic-and-linear-combinations",
+        json={"status": "in_progress", "time_spent_seconds": 45},
+    )
+    assert started.status_code == 200
+    assert started.json()["time_spent_seconds"] == 45
+
+    blocked = client.patch(
+        "/api/roadmaps/linear-algebra/topics/vector-arithmetic-and-linear-combinations",
+        json={"status": "completed", "quiz_score": 33},
+    )
+    assert blocked.status_code == 422
+
+    completed = client.patch(
+        "/api/roadmaps/linear-algebra/topics/vector-arithmetic-and-linear-combinations",
+        json={"status": "completed", "quiz_score": 100, "time_spent_seconds": 15},
+    )
+    assert completed.status_code == 200
+    assert completed.json()["status"] == "completed"
+    assert completed.json()["quiz_score"] == 100
+    assert completed.json()["quiz_attempts"] == 1
+    assert completed.json()["time_spent_seconds"] == 60
+
+    progress = client.get("/api/roadmaps/progress").json()
+    assert progress["summary"]["completed"] == 1
+    assert progress["summary"]["roadmaps"][1]["percent"] == 2
+    assert progress["items"][0]["topic_slug"] == "vector-arithmetic-and-linear-combinations"
+
+    stats = client.get("/api/stats").json()
+    assert stats["roadmaps"]["completed"] == 1
+    assert stats["roadmaps"]["time_spent_seconds"] == 60
+
+
+def test_roadmap_progress_validates_route_identity(client):
+    unknown = client.patch(
+        "/api/roadmaps/not-a-roadmap/topics/vector-spaces",
+        json={"status": "in_progress"},
+    )
+    assert unknown.status_code == 404
+
+    invalid = client.patch(
+        "/api/roadmaps/probability/topics/Not%20A%20Slug",
+        json={"status": "in_progress"},
+    )
+    assert invalid.status_code == 422
+
+    unknown_topic = client.patch(
+        "/api/roadmaps/probability/topics/made-up-topic",
+        json={"status": "in_progress"},
+    )
+    assert unknown_topic.status_code == 404

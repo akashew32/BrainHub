@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, BookOpenCheck, Layers3, Map, Network } from "lucide-react";
+import { BookOpenCheck, Layers3, Map, Network } from "lucide-react";
+import { RoadmapCatalog } from "@/components/roadmaps/roadmap-catalog";
 import { learningRoadmaps, roadmapCounts } from "@/lib/roadmaps";
 
 export const metadata: Metadata = {
@@ -27,9 +28,9 @@ export default function RoadmapsPage() {
             <span className="text-[#778398]">Then master it in order.</span>
           </h1>
           <p className="mt-5 max-w-2xl leading-7 text-[#98a4b5]">
-            Exhaustive outlines for five mathematical foundations, sequenced from prerequisites through
-            advanced undergraduate and graduate-level frontiers. Each stage states what to study and what you
-            should be able to prove or build before moving on.
+            Five complete, dependency-aware learning tracks with 300 interactive lessons, worked examples,
+            exercises, mastery quizzes, durable progress, and review recommendations from foundations through
+            graduate-level frontiers.
           </p>
         </div>
 
@@ -48,64 +49,11 @@ export default function RoadmapsPage() {
             <h2 className="mt-1 text-2xl font-semibold">Choose a mathematical track</h2>
           </div>
           <p className="max-w-xl text-sm leading-6 text-[#778398]">
-            These are curriculum outlines, not completed lessons. Use each page as a dependency-aware study
-            map and readiness checklist.
+            Each lesson combines explanation with deliberate practice. Pass a stage&apos;s quizzes to unlock
+            the next stage, then use the review queue to revisit weak or aging material.
           </p>
         </div>
-
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {learningRoadmaps.map((roadmap, index) => {
-            const topicCount = roadmap.stages.reduce((total, stage) => total + stage.topics.length, 0);
-            return (
-              <Link
-                className="panel group relative overflow-hidden p-6 transition hover:-translate-y-1 hover:border-[#40516a]"
-                href={`/roadmaps/${roadmap.slug}`}
-                key={roadmap.slug}
-              >
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-x-0 top-0 h-px opacity-80"
-                  style={{ backgroundColor: roadmap.accent }}
-                />
-                <div className="flex items-start justify-between gap-4">
-                  <div
-                    className="inline-flex rounded-xl border bg-[#111a27] p-3"
-                    style={{ borderColor: `${roadmap.accent}55`, color: roadmap.accent }}
-                  >
-                    <BookOpenCheck size={20} />
-                  </div>
-                  <span className="font-mono text-xs text-[#465267]">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                </div>
-                <p className="metric mt-8" style={{ color: roadmap.accent }}>
-                  {roadmap.eyebrow}
-                </p>
-                <h3 className="mt-2 text-2xl font-semibold">{roadmap.title}</h3>
-                <p className="mt-3 min-h-24 text-sm leading-6 text-[#8995a7]">{roadmap.description}</p>
-                <div className="mt-6 grid grid-cols-2 gap-3 border-y border-[#202937] py-4">
-                  <div>
-                    <p className="text-lg font-semibold">{roadmap.stages.length}</p>
-                    <p className="metric">Stages</p>
-                  </div>
-                  <div>
-                    <p className="text-lg font-semibold">{topicCount}</p>
-                    <p className="metric">Topics</p>
-                  </div>
-                </div>
-                <div className="mt-5 flex items-center justify-between text-sm">
-                  <span className="text-[#94a3b8]">Foundation → Graduate</span>
-                  <span
-                    className="flex items-center gap-1 font-semibold group-hover:text-white"
-                    style={{ color: roadmap.accent }}
-                  >
-                    View outline <ArrowUpRight size={15} />
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        <RoadmapCatalog roadmaps={learningRoadmaps} />
       </section>
     </div>
   );

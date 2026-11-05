@@ -32,3 +32,9 @@ class ChallengeRun(BaseModel):
     language: Literal["python", "java", "cpp"]
     source: str = Field(min_length=1, max_length=30_000)
     mode: Literal["run", "submit"] = "run"
+
+
+class RoadmapProgressUpdate(BaseModel):
+    status: Literal["in_progress", "completed", "review"] = "in_progress"
+    quiz_score: int | None = Field(default=None, ge=0, le=100)
+    time_spent_seconds: int = Field(default=0, ge=0, le=86_400)

@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { api } from "@/lib/api";
 import { gameMap } from "@/lib/games";
+import { roadmapMap } from "@/lib/roadmaps";
 
 type Stats = Awaited<ReturnType<typeof api.stats>>;
 const empty: Stats = {
@@ -24,6 +25,14 @@ const empty: Stats = {
   games: [],
   categories: [],
   recent_trend: [],
+  roadmaps: {
+    total: 300,
+    started: 0,
+    completed: 0,
+    average_quiz_score: 0,
+    time_spent_seconds: 0,
+    roadmaps: [],
+  },
 };
 const tooltipStyle = { background: "#0d1118", border: "1px solid #202937", borderRadius: 8 };
 
@@ -86,6 +95,43 @@ export default function StatsPage() {
             </BarChart>
           </ResponsiveContainer>
         </Chart>
+      </section>
+      <section className="panel mt-5 overflow-hidden">
+        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-[#202937] p-6">
+          <div>
+            <p className="metric text-[#60a5fa]">Learning progress</p>
+            <h2 className="mt-1 text-lg font-semibold">Mathematics roadmaps</h2>
+          </div>
+          <p className="text-sm text-[#8190a4]">
+            {stats.roadmaps.completed}/{stats.roadmaps.total} lessons · {stats.roadmaps.average_quiz_score}%
+            average quiz
+          </p>
+        </div>
+        <div className="grid gap-px bg-[#202937] sm:grid-cols-2 xl:grid-cols-5">
+          {stats.roadmaps.roadmaps.map((roadmap) => {
+            const definition = roadmapMap[roadmap.slug];
+            return (
+              <div className="bg-[#0d1118] p-5" key={roadmap.slug}>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-semibold">{definition?.title ?? roadmap.slug}</p>
+                  <span className="text-xs text-[#718096]">{roadmap.percent}%</span>
+                </div>
+                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#202937]">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: definition?.accent ?? "#60a5fa", width: `${roadmap.percent}%` }}
+                  />
+                </div>
+                <p className="metric mt-3">
+                  {roadmap.completed}/{roadmap.total} complete
+                </p>
+              </div>
+            );
+          })}
+        </div>
+        {!stats.roadmaps.roadmaps.length ? (
+          <div className="p-6 text-sm text-[#758195]">Open a roadmap lesson to begin tracking mastery.</div>
+        ) : null}
       </section>
       <section className="panel mt-5 overflow-hidden">
         <div className="border-b border-[#202937] p-6">

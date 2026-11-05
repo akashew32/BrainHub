@@ -22,7 +22,7 @@ The separate **Programming Trivia** desk at `/programming` includes 1,200 questi
 
 The **Coding Challenges** lab at `/challenges` contains 170 free LeetCode-indexed algorithm problems—35 easy, 70 medium, and 65 hard—plus 30 original low-level design exercises. None of the algorithm selections are in the current NeetCode 150. Every challenge has original BrainHub guidance, starter code for Python, Java, and C++, three visible examples, and 20 deterministic test cases, for 4,000 verified cases in total. Run checks three cases quickly; Submit checks all 20. The editor inserts four spaces when Tab is pressed and highlights language-specific keywords, strings, numbers, and comments.
 
-The **Learning Roadmaps** area at `/roadmaps` contains exhaustive outlines for Probability, Linear Algebra, Calculus, Real Analysis, and Discrete Math. Each track has a dedicated statically generated page with prerequisites, outcomes, 10 dependency-ordered stages, 60 named topics, and readiness checkpoints progressing from foundations to graduate-level material. The roadmaps define curriculum scope and sequence; interactive lessons and progress tracking are not implemented yet.
+The **Learning Roadmaps** area at `/roadmaps` contains complete interactive tracks for Probability, Linear Algebra, Calculus, Real Analysis, and Discrete Math. Every one of the 300 topics has a statically generated lesson page with objectives, concept explanations, a worked example, an independent computational or proof exercise, progressive hints, personal notes, prerequisite links, and a three-question mastery check. Six-lesson stages unlock in dependency order. Profile-backed progress, offline retry, saved study time, adaptive review recommendations, and per-roadmap Stats integration turn the outlines into durable learning paths from foundation through graduate material.
 
 Challenge code is executed by the public [Judge0 CE](https://ce.judge0.com/) sandbox, so source code entered in the lab is sent to that third-party service. Do not paste secrets or proprietary code into the editor.
 
@@ -34,11 +34,13 @@ frontend/                 Next.js App Router, React, strict TypeScript, Tailwind
   components/games/       Isolated playable game modules and shared shell
     quant-drill.tsx       Shared lifecycle, scoring, explanations, and persistence for calculation drills
   components/challenges/  Searchable catalog and three-language coding workbench
+  components/roadmaps/    Lesson workspace, mastery gates, review, and resilient progress sync
   lib/games.ts            Central frontend game registry
   tests/                  Vitest game-utility tests
 backend/                  FastAPI, Pydantic, SQLAlchemy, Alembic
   app/api/                REST session, action, completion, stats APIs
   app/challenges/         Challenge catalog and Judge0 execution harnesses
+  app/roadmaps/           Canonical topic allowlist used by progress APIs
   app/games/              Shared engine protocol and isolated game engines
     market_order_flow.py  Counterparty policy kept separate from simulation
     market_scoring.py     Risk-adjusted market score and analysis metrics
@@ -49,7 +51,7 @@ backend/                  FastAPI, Pydantic, SQLAlchemy, Alembic
 
 The browser handles latency-sensitive drills whose answers contain no privileged state. Market Making and Liar's Dice are authoritative on the backend: fair values and opponent dice are filtered from public session state. Engines accept explicit seeds for reproducible tests and bug reports.
 
-Attempts persist score, difficulty, duration, win/loss, timestamp, and flexible game-specific metrics. `UserGameStats` maintains personal bests, rolling averages, attempt counts, and training time. The initial identity is a durable local guest designed to be replaceable by Clerk or Auth.js without changing game records.
+Attempts persist score, difficulty, duration, win/loss, timestamp, and flexible game-specific metrics. `UserGameStats` maintains personal bests, rolling averages, attempt counts, and training time. `RoadmapTopicProgress` persists lesson state, best quiz score, attempts, study time, and completion timestamps; a versioned browser cache queues updates while the API is unavailable and reconciles them when connectivity returns. The initial identity is a durable local guest designed to be replaceable by Clerk or Auth.js without changing game or lesson records.
 
 ## Quick start with Docker
 
@@ -100,6 +102,8 @@ Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS`
 - `GET /api/stats`
 - `GET /api/stats/{slug}`
 - `POST /api/challenges/{slug}/run`
+- `GET /api/roadmaps/progress`
+- `PATCH /api/roadmaps/{roadmap_slug}/topics/{topic_slug}`
 
 ## Quality commands
 
@@ -121,6 +125,7 @@ pnpm build
 docker compose config --quiet
 python tools/generate_challenges.py
 python tools/generate_extended_trivia.py
+python tools/generate_roadmap_topic_catalog.py
 python tools/verify_challenge_sources.py
 python tools/verify_challenge_runner.py
 ```
