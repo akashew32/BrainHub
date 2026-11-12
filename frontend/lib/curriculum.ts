@@ -24,6 +24,12 @@ export type AuthoredLesson = {
   pass_score: number;
 };
 
+export type AssessmentDraft = {
+  answers: Array<{ question_id: string; answer: unknown }>;
+  time_spent_seconds: number;
+  revision: number;
+};
+
 export type AssessmentSession = {
   id: string;
   mode: "practice" | "exam" | "review";
@@ -32,6 +38,8 @@ export type AssessmentSession = {
   expires_at: string;
   pass_score: number;
   questions: MathQuestion[];
+  draft?: AssessmentDraft;
+  result?: AssessmentResult | null;
 };
 
 export type AssessmentResult = {

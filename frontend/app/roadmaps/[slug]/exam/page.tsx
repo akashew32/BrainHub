@@ -31,7 +31,7 @@ export default async function StageExamPage({ params }: { params: Promise<{ slug
           Solutions are revealed only after submission.
         </p>
       </header>
-      <AssessmentPanel roadmapSlug={slug} mode="exam" />
+      <AssessmentPanel key={slug + ":exam:0"} roadmapSlug={slug} mode="exam" />
     </div>
   );
 }

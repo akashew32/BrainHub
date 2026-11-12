@@ -6,6 +6,17 @@ import type {
   RoadmapProgressUpdate,
 } from "@/lib/roadmap-progress";
 const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api";
+
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+  ) {
+    super(message);
+    this.name = "ApiError";
+  }
+}
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${base}${path}`, {
     ...init,
@@ -18,11 +29,21 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const detail = Array.isArray(payload?.detail)
       ? payload.detail.map((item) => item.msg ?? "Invalid answer").join("; ")
       : payload?.detail;
-    throw new Error(detail ?? `Request failed with status ${response.status}`);
+    throw new ApiError(detail ?? `Request failed with status ${response.status}`, response.status);
   }
   return response.json() as Promise<T>;
 }
 export const api = {
+  resumeAssessment: (sessionId: string) =>
+    request<import("@/lib/curriculum").AssessmentSession>(`/roadmaps/assessments/${sessionId}`, {
+      signal: AbortSignal.timeout(12_000),
+    }),
+  saveAssessmentDraft: (sessionId: string, body: import("@/lib/curriculum").AssessmentDraft) =>
+    request<import("@/lib/curriculum").AssessmentSession>(`/roadmaps/assessments/${sessionId}/draft`, {
+      method: "PUT",
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(12_000),
+    }),
   authoredLesson: (roadmapSlug: string, topicSlug: string) =>
     request<import("@/lib/curriculum").AuthoredLesson>(`/roadmaps/${roadmapSlug}/lessons/${topicSlug}`),
   startAssessment: (

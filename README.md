@@ -108,10 +108,14 @@ Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS`
 - `GET /api/roadmaps/{roadmap_slug}/lessons/{topic_slug}`
 - `POST /api/roadmaps/{roadmap_slug}/assessments`
 - `POST /api/roadmaps/assessments/{session_id}/submit`
+- `GET /api/roadmaps/assessments/{session_id}`
+- `PUT /api/roadmaps/assessments/{session_id}/draft`
 - `GET /api/roadmaps/mistakes`
 - `GET /api/roadmaps/learning-stats`
 
 Authored lesson answer keys live only in `backend/app/roadmaps/curriculum/`. Public lesson/session responses exclude correct answers and worked assessment solutions until submission. Proof tasks use exact step ordering and counterexample selection; unrestricted prose proofs are not claimed to be automatically graded. Both lesson and exam questions are original BrainHub material. The implementation and twenty-cycle improvement ledger is in `docs/ROADMAP_DELIVERY.md`.
+
+In-progress assessments support partial answer drafts. Browser recovery is scoped to the subject, lesson, and assessment mode; server drafts use increasing revisions so late network responses cannot overwrite newer work. Draft saves do not create graded attempts or lesson completion. Submitted sessions can be recovered after a lost response, while expired sessions retain a local copy of the answers for reference.
 
 ## Quality commands
 

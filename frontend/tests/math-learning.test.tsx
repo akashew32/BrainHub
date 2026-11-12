@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssessmentPanel } from "@/components/roadmaps/assessment-panel";
 import { MathText } from "@/components/roadmaps/math-text";
 import { RoadmapProgressProvider } from "@/components/roadmaps/roadmap-progress-provider";
-import type { AssessmentResult, AssessmentSession } from "@/lib/curriculum";
+import type { AssessmentDraft, AssessmentResult, AssessmentSession } from "@/lib/curriculum";
 
 const session: AssessmentSession = {
   id: "math-session",
@@ -114,16 +114,24 @@ function mockAssessmentApi({
   assessment = session,
   submit = async () => response(resultFor()),
   start = async () => response(assessment),
+  resume = async () => response(assessment),
+  save = async (draft: AssessmentDraft) => response({ ...assessment, draft }),
 }: {
   assessment?: AssessmentSession;
   submit?: () => Promise<ReturnType<typeof response>>;
   start?: () => Promise<ReturnType<typeof response>>;
+  resume?: () => Promise<ReturnType<typeof response>>;
+  save?: (draft: AssessmentDraft) => Promise<ReturnType<typeof response>>;
 } = {}) {
   const mock = vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
     const url = String(input);
     if (url.endsWith("/roadmaps/progress")) return response(emptyProgress);
     if (url.endsWith("/assessments") && init?.method === "POST") return start();
     if (url.endsWith("/" + assessment.id + "/submit") && init?.method === "POST") return submit();
+    if (url.endsWith("/" + assessment.id + "/draft") && init?.method === "PUT")
+      return save(JSON.parse(String(init.body)) as AssessmentDraft);
+    if (url.endsWith("/assessments/" + assessment.id) && (!init?.method || init.method === "GET"))
+      return resume();
     throw new Error("Unexpected assessment request: " + (init?.method ?? "GET") + " " + url);
   });
   vi.stubGlobal("fetch", mock);
@@ -143,7 +151,7 @@ function renderAssessment(mode: "practice" | "exam" | "review" = "practice") {
 }
 
 async function startAndAnswer() {
-  fireEvent.click(screen.getByRole("button", { name: "Start practice" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Start practice" }));
   await screen.findByRole("textbox", { name: "Answer to question 1" });
   for (let index = 0; index < 4; index += 1) {
     fireEvent.change(screen.getByRole("textbox", { name: "Answer to question " + (index + 1) }), {
@@ -157,8 +165,33 @@ beforeEach(() => localStorage.clear());
 
 afterEach(() => {
   cleanup();
+  vi.restoreAllMocks();
   vi.unstubAllGlobals();
 });
+
+const draftKey = "brainhub:assessment:v2:linear-algebra:practice:vector-arithmetic-and-linear-combinations";
+
+function storeDraft(
+  answers: Record<string, string>,
+  revision = 1,
+  activeSession: AssessmentSession = session,
+) {
+  localStorage.setItem(
+    draftKey,
+    JSON.stringify({
+      version: 2,
+      sessionId: activeSession.id,
+      roadmapSlug: activeSession.roadmap_slug,
+      topicSlug: activeSession.topic_slug,
+      stageIndex: 0,
+      mode: activeSession.mode,
+      answers,
+      startedAt: Date.now() - 30_000,
+      revision,
+      session: activeSession,
+    }),
+  );
+}
 
 describe("authored mathematics learning", () => {
   it("renders inline fractions and display matrices as accessible MathML", () => {
@@ -231,6 +264,7 @@ describe("authored mathematics learning", () => {
     fireEvent.click(submitButton);
     fireEvent.click(submitButton);
     expect(screen.getByRole("button", { name: "Grading…" })).toBeDisabled();
+    expect(screen.getByRole("textbox", { name: "Answer to question 1" })).toBeDisabled();
     expect(mock.mock.calls.filter(([input]) => String(input).endsWith("/submit"))).toHaveLength(1);
     await act(async () => resolveSubmission(response(resultFor())));
     expect(screen.getByRole("button", { name: "Start another session" })).toBeEnabled();
@@ -309,5 +343,238 @@ describe("authored mathematics learning", () => {
       const startRequest = mock.mock.calls.find(([input]) => String(input).endsWith("/assessments"));
       expect(JSON.parse(String(startRequest?.[1]?.body))).toEqual({ mode: "exam", stage_index: 0 });
     });
+  });
+
+  it("restores partial fraction, vector, and proof answers after remounting", async () => {
+    const mock = mockAssessmentApi();
+    const initial = renderAssessment();
+    fireEvent.click(await screen.findByRole("button", { name: "Start practice" }));
+    const firstAnswer = await screen.findByRole("textbox", { name: "Answer to question 1" });
+    fireEvent.change(firstAnswer, { target: { value: "1/2" } });
+    fireEvent.change(screen.getByRole("textbox", { name: "Answer to question 2" }), {
+      target: { value: '["1/2", 3]' },
+    });
+    fireEvent.change(screen.getByRole("textbox", { name: "Answer to question 4" }), {
+      target: { value: "[2, 1]" },
+    });
+    expect(JSON.parse(localStorage.getItem(draftKey)!).answers).toEqual({
+      "fraction-answer": "1/2",
+      "vector-answer": '["1/2", 3]',
+      "proof-answer": "[2, 1]",
+    });
+    initial.unmount();
+    renderAssessment();
+    expect(await screen.findByRole("textbox", { name: "Answer to question 1" })).toHaveValue("1/2");
+    expect(screen.getByRole("textbox", { name: "Answer to question 2" })).toHaveValue('["1/2", 3]');
+    expect(screen.getByRole("textbox", { name: "Answer to question 4" })).toHaveValue("[2, 1]");
+    expect(mock.mock.calls.filter(([input]) => String(input).endsWith("/assessments"))).toHaveLength(1);
+  });
+
+  it("uses a newer local snapshot without resurrecting a removed server answer", async () => {
+    storeDraft({}, 4);
+    mockAssessmentApi({
+      resume: async () =>
+        response({
+          ...session,
+          draft: {
+            answers: [{ question_id: "fraction-answer", answer: "1/2" }],
+            time_spent_seconds: 10,
+            revision: 3,
+          },
+        }),
+    });
+    renderAssessment();
+    expect(await screen.findByRole("textbox", { name: "Answer to question 1" })).toHaveValue("");
+    expect(screen.getByText(/Restored your latest device answers/)).toBeInTheDocument();
+  });
+
+  it("uses a newer server revision and advances the next local save from it", async () => {
+    storeDraft({ "fraction-answer": "1/2" }, 2);
+    const mock = mockAssessmentApi({
+      resume: async () =>
+        response({
+          ...session,
+          draft: {
+            answers: [{ question_id: "fraction-answer", answer: "3/4" }],
+            time_spent_seconds: 35,
+            revision: 5,
+          },
+        }),
+    });
+    renderAssessment();
+    const answer = await screen.findByRole("textbox", { name: "Answer to question 1" });
+    expect(answer).toHaveValue("3/4");
+    fireEvent.change(answer, { target: { value: "2/3" } });
+    await waitFor(
+      () => {
+        const saved = mock.mock.calls.find(([input]) => String(input).endsWith("/draft"));
+        expect(saved).toBeDefined();
+        const body = JSON.parse(String(saved?.[1]?.body));
+        expect(body.revision).toBe(6);
+        expect(body.answers).toEqual([{ question_id: "fraction-answer", answer: "2/3" }]);
+        expect(body.time_spent_seconds).toBeGreaterThanOrEqual(35);
+      },
+      { timeout: 2000 },
+    );
+  });
+
+  it("ignores corrupt storage and keeps practice usable when storage access throws", async () => {
+    localStorage.setItem(draftKey, "{broken json");
+    mockAssessmentApi();
+    const initial = renderAssessment();
+    expect(await screen.findByRole("button", { name: "Start practice" })).toBeEnabled();
+    initial.unmount();
+    vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => {
+      throw new Error("Storage disabled");
+    });
+    vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => {
+      throw new Error("Storage disabled");
+    });
+    renderAssessment();
+    fireEvent.click(await screen.findByRole("button", { name: "Start practice" }));
+    const answer = await screen.findByRole("textbox", { name: "Answer to question 1" });
+    fireEvent.change(answer, { target: { value: "1/2" } });
+    expect(answer).toHaveValue("1/2");
+    expect(screen.getByText(/Device storage is unavailable/)).toBeInTheDocument();
+    expect(
+      await screen.findByText("Draft saved to your profile.", {}, { timeout: 2000 }),
+    ).toBeInTheDocument();
+  });
+
+  it.each(["exam", "review"] as const)("does not restore a practice draft into %s mode", async (mode) => {
+    storeDraft({ "fraction-answer": "1/2" });
+    const mock = mockAssessmentApi({ assessment: { ...session, mode, topic_slug: null } });
+    renderAssessment(mode);
+    expect(await screen.findByRole("button", { name: "Start " + mode })).toBeEnabled();
+    expect(screen.queryByRole("textbox", { name: "Answer to question 1" })).not.toBeInTheDocument();
+    expect(
+      mock.mock.calls.filter(([input]) => String(input).endsWith("/assessments/" + session.id)),
+    ).toHaveLength(0);
+  });
+
+  it("keeps lesson drafts separate when the mounted practice scope changes", async () => {
+    storeDraft({ "fraction-answer": "1/2" });
+    mockAssessmentApi();
+    const view = renderAssessment();
+    expect(await screen.findByRole("textbox", { name: "Answer to question 1" })).toHaveValue("1/2");
+    view.rerender(
+      <RoadmapProgressProvider>
+        <AssessmentPanel roadmapSlug="linear-algebra" topicSlug="matrix-arithmetic" />
+      </RoadmapProgressProvider>,
+    );
+    expect(await screen.findByRole("button", { name: "Start practice" })).toBeEnabled();
+    expect(screen.queryByRole("textbox", { name: "Answer to question 1" })).not.toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem(draftKey)!).answers["fraction-answer"]).toBe("1/2");
+  });
+
+  it("preserves expired answers in a read-only recovery view", async () => {
+    storeDraft({ "fraction-answer": "1/2", "vector-answer": '["1/2", 3]' }, 2, {
+      ...session,
+      expires_at: "2020-01-01T00:00:00Z",
+    });
+    mockAssessmentApi({ resume: async () => response({ detail: "This assessment has expired." }, 410) });
+    renderAssessment();
+    expect(await screen.findByRole("heading", { name: "Your saved answers" })).toBeInTheDocument();
+    expect(screen.getByText("1/2")).toBeInTheDocument();
+    expect(screen.getByText('["1/2", 3]')).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Submit practice" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("textbox", { name: "Answer to question 1" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Start a fresh session" })).toBeEnabled();
+    expect(localStorage.getItem(draftKey)).not.toBeNull();
+  });
+
+  it("recovers a completed server result and clears its matching local draft", async () => {
+    storeDraft({ "fraction-answer": "1/2" });
+    mockAssessmentApi({ resume: async () => response({ ...session, result: resultFor() }) });
+    renderAssessment();
+    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    expect(localStorage.getItem(draftKey)).toBeNull();
+    expect(screen.queryByRole("button", { name: "Submit practice" })).not.toBeInTheDocument();
+  });
+
+  it("preserves closed answers when the server reports that the curriculum changed", async () => {
+    storeDraft({ "fraction-answer": "1/2" }, 2);
+    mockAssessmentApi({
+      resume: async () => response({ detail: "This assessment's curriculum changed." }, 409),
+    });
+    renderAssessment();
+    expect(await screen.findByRole("heading", { name: "Your saved answers" })).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent("The curriculum changed");
+    expect(screen.getByText("1/2")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Start a fresh session" })).toBeEnabled();
+    expect(screen.queryByRole("button", { name: "Submit practice" })).not.toBeInTheDocument();
+    expect(localStorage.getItem(draftKey)).not.toBeNull();
+  });
+
+  it.each([
+    { description: "duplicate question IDs", questions: [session.questions[0]!, session.questions[0]!] },
+    { description: "missing proof choices", questions: [{ ...session.questions[3]!, choices: undefined }] },
+    { description: "empty choice options", questions: [{ ...session.questions[4]!, choices: [] }] },
+    {
+      description: "duplicate choice options",
+      questions: [{ ...session.questions[4]!, choices: ["same", "same"] }],
+    },
+  ])("ignores an unanswerable cached session with $description", async ({ questions }) => {
+    storeDraft({ "fraction-answer": "1/2" }, 2, { ...session, questions });
+    const mock = mockAssessmentApi();
+    renderAssessment();
+    expect(await screen.findByRole("button", { name: "Start practice" })).toBeEnabled();
+    expect(screen.queryByRole("textbox", { name: "Answer to question 1" })).not.toBeInTheDocument();
+    expect(
+      mock.mock.calls.filter(([input]) => String(input).endsWith("/assessments/" + session.id)),
+    ).toHaveLength(0);
+  });
+
+  it("recovers a committed result when a submit response is lost", async () => {
+    const mock = mockAssessmentApi({
+      submit: async () => {
+        throw new TypeError("Network response lost");
+      },
+      resume: async () => response({ ...session, result: resultFor() }),
+    });
+    renderAssessment();
+    await startAndAnswer();
+    fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
+    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(localStorage.getItem(draftKey)).toBeNull();
+    expect(mock.mock.calls.filter(([input]) => String(input).endsWith("/submit"))).toHaveLength(1);
+  });
+
+  it("does not let a late autosave response overwrite a newer answer or saved status", async () => {
+    let resolveOldSave!: (value: ReturnType<typeof response>) => void;
+    const oldSave = new Promise<ReturnType<typeof response>>((resolve) => {
+      resolveOldSave = resolve;
+    });
+    const mock = mockAssessmentApi({
+      save: async (draft) => (draft.revision === 1 ? oldSave : response({ ...session, draft })),
+    });
+    renderAssessment();
+    fireEvent.click(await screen.findByRole("button", { name: "Start practice" }));
+    const answer = await screen.findByRole("textbox", { name: "Answer to question 1" });
+    fireEvent.change(answer, { target: { value: "1/2" } });
+    await waitFor(
+      () => expect(mock.mock.calls.filter(([input]) => String(input).endsWith("/draft"))).toHaveLength(1),
+      { timeout: 2000 },
+    );
+    fireEvent.change(answer, { target: { value: "3/4" } });
+    expect(
+      await screen.findByText("Draft saved to your profile.", {}, { timeout: 2000 }),
+    ).toBeInTheDocument();
+    await act(async () =>
+      resolveOldSave(
+        response({
+          ...session,
+          draft: {
+            answers: [{ question_id: "fraction-answer", answer: "1/2" }],
+            time_spent_seconds: 0,
+            revision: 1,
+          },
+        }),
+      ),
+    );
+    expect(answer).toHaveValue("3/4");
+    expect(JSON.parse(localStorage.getItem(draftKey)!).answers["fraction-answer"]).toBe("3/4");
+    expect(screen.getByText("Draft saved to your profile.")).toBeInTheDocument();
   });
 });

@@ -68,7 +68,12 @@ export default async function RoadmapLessonPage({
         </span>
       </nav>
       {lesson.stageIndex === 0 ? (
-        <AuthoredLesson roadmapSlug={slug} topicSlug={topic} accent={roadmap.accent} />
+        <AuthoredLesson
+          key={slug + ":" + topic}
+          roadmapSlug={slug}
+          topicSlug={topic}
+          accent={roadmap.accent}
+        />
       ) : (
         <section className="panel p-8 sm:p-12">
           <p className="metric" style={{ color: roadmap.accent }}>

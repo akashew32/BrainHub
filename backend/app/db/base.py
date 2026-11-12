@@ -94,6 +94,7 @@ class RoadmapAssessmentSession(Base):
     stage_index: Mapped[int] = mapped_column(Integer, default=0)
     mode: Mapped[str] = mapped_column(String(20))
     question_ids: Mapped[list[str]] = mapped_column(JSON)
+    draft: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, server_default="{}")
     result: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     started_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

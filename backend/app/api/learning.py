@@ -7,7 +7,8 @@ from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy import select
+from sqlalchemy import func, select, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.exc import IntegrityError
 
 from app.api.routes import Database, get_local_user
@@ -38,6 +39,8 @@ class StartAssessment(BaseModel):
 
 
 class Answer(BaseModel):
+    model_config = {"extra": "forbid"}
+
     question_id: str = Field(min_length=1, max_length=220)
     answer: Any
 
@@ -69,6 +72,121 @@ class Answer(BaseModel):
 class SubmitAssessment(BaseModel):
     answers: list[Answer] = Field(min_length=1, max_length=60)
     time_spent_seconds: int = Field(default=0, ge=0, le=7200)
+
+
+class AssessmentDraft(BaseModel):
+    model_config = {"extra": "forbid"}
+
+    answers: list[Answer] = Field(default_factory=list, max_length=60)
+    time_spent_seconds: int = Field(default=0, ge=0, le=7200)
+    revision: int = Field(default=0, ge=0, le=2_147_483_647)
+
+
+def assessment_payload(session: RoadmapAssessmentSession) -> dict[str, Any]:
+    """Serialize the public session without exposing unsubmitted answer keys."""
+    bank = questions_for(session.roadmap_slug)
+    if any(question_id not in bank for question_id in session.question_ids):
+        raise HTTPException(409, "This assessment's curriculum changed. Start a fresh session.")
+    draft = session.draft or {}
+    payload = {
+        "id": session.id,
+        "mode": session.mode,
+        "roadmap_slug": session.roadmap_slug,
+        "topic_slug": session.topic_slug,
+        "expires_at": session.expires_at.isoformat() + "Z",
+        "pass_score": PASS_SCORE,
+        "questions": [
+            public_question(bank[question_id], include_hints=session.mode != "exam")
+            for question_id in session.question_ids
+        ],
+        "draft": {
+            "answers": draft.get("answers", []),
+            "time_spent_seconds": draft.get("time_spent_seconds", 0),
+            "revision": draft.get("revision", 0),
+        },
+    }
+    if session.result is not None:
+        payload["result"] = session.result
+    return payload
+
+
+@router.get("/assessments/{session_id}")
+def recover_assessment(session_id: str, db: Database) -> dict[str, Any]:
+    user = get_local_user(db)
+    session = db.scalar(
+        select(RoadmapAssessmentSession).where(
+            RoadmapAssessmentSession.id == session_id, RoadmapAssessmentSession.user_id == user.id
+        )
+    )
+    if session is None:
+        raise HTTPException(404, "Unknown assessment session")
+    if session.result is None and session.expires_at <= utc_now():
+        raise HTTPException(410, "This assessment has expired. Start a fresh session.")
+    return assessment_payload(session)
+
+
+@router.put("/assessments/{session_id}/draft")
+def save_assessment_draft(
+    session_id: str, payload: AssessmentDraft, db: Database
+) -> dict[str, Any]:
+    user = get_local_user(db)
+    session = db.scalar(
+        select(RoadmapAssessmentSession)
+        .where(
+            RoadmapAssessmentSession.id == session_id, RoadmapAssessmentSession.user_id == user.id
+        )
+        .with_for_update()
+    )
+    if session is None:
+        raise HTTPException(404, "Unknown assessment session")
+    if session.result is not None:
+        raise HTTPException(
+            409, "This assessment is complete. Its saved answers cannot be changed."
+        )
+    if session.expires_at <= utc_now():
+        raise HTTPException(410, "This assessment has expired. Start a fresh session.")
+    question_ids = [answer.question_id for answer in payload.answers]
+    if len(set(question_ids)) != len(question_ids) or not set(question_ids).issubset(
+        session.question_ids
+    ):
+        raise HTTPException(422, "Save at most one answer for each question in this session.")
+    previous = session.draft or {}
+    candidate = {
+        "answers": sorted(
+            [answer.model_dump() for answer in payload.answers],
+            key=lambda item: item["question_id"],
+        ),
+        "time_spent_seconds": max(
+            payload.time_spent_seconds, previous.get("time_spent_seconds", 0)
+        ),
+        "revision": payload.revision,
+    }
+    stored_revision = previous.get("revision", -1)
+    if payload.revision < stored_revision:
+        raise HTTPException(409, "A newer draft is already saved. Reload it before saving again.")
+    if payload.revision == stored_revision:
+        if candidate == previous:
+            return assessment_payload(session)
+        raise HTTPException(409, "This draft revision already contains different answers.")
+    # The row lock serializes PostgreSQL writes; the revision predicate also
+    # prevents a late SQLite request from overwriting a newer snapshot.
+    changed = db.execute(
+        update(RoadmapAssessmentSession)
+        .where(
+            RoadmapAssessmentSession.id == session.id,
+            RoadmapAssessmentSession.completed_at.is_(None),
+            func.coalesce(RoadmapAssessmentSession.draft["revision"].as_integer(), -1)
+            == stored_revision,
+        )
+        .values(draft=candidate)
+        .execution_options(synchronize_session=False)
+    )
+    if not isinstance(changed, CursorResult) or changed.rowcount != 1:
+        db.rollback()
+        raise HTTPException(409, "The saved assessment changed. Reload it before saving again.")
+    db.commit()
+    db.refresh(session)
+    return assessment_payload(session)
 
 
 @router.get("/curriculum")
@@ -267,18 +385,7 @@ def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) 
     )
     db.add(session)
     db.commit()
-    return {
-        "id": session.id,
-        "mode": session.mode,
-        "roadmap_slug": roadmap_slug,
-        "topic_slug": session.topic_slug,
-        "expires_at": session.expires_at.isoformat() + "Z",
-        "pass_score": PASS_SCORE,
-        "questions": [
-            public_question(bank[question_id], include_hints=payload.mode != "exam")
-            for question_id in selected
-        ],
-    }
+    return assessment_payload(session)
 
 
 @router.post("/assessments/{session_id}/submit")
