@@ -1,0 +1,1328 @@
+{
+  "version": 1,
+  "roadmap_slug": "calculus",
+  "stage_index": 0,
+  "sources": [
+    {
+      "title": "MIT OpenCourseWare 18.01SC Single Variable Calculus: course and problem-solving materials",
+      "url": "https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/"
+    }
+  ],
+  "lessons": [
+    {
+      "topic_slug": "function-composition-and-inverses",
+      "title": "Function composition and inverses",
+      "summary": "Treat functions as maps with domains, compose them in the correct order, and construct inverses only when uniqueness is justified.",
+      "objectives": [
+        "Determine the domain of a composite map.",
+        "Distinguish inverse functions from reciprocals.",
+        "Find inverses with justified domain restrictions."
+      ],
+      "sections": [
+        {
+          "heading": "Composition carries domain constraints",
+          "body": "For functions $f:A\\to B$ and $g:C\\to A$, the composite satisfies $(f\\circ g)(x)=f(g(x))$. The rightmost map acts first. More generally, its domain consists of the $x$ in the domain of $g$ for which $g(x)$ lies in the domain of $f$. Both restrictions matter: simplifying a formula never restores inputs excluded by an original denominator."
+        },
+        {
+          "heading": "Inverse maps undo bijections",
+          "body": "An inverse $f^{-1}:B\\to A$ exists exactly when $f:A\\to B$ is bijective. Injectivity supplies a unique preimage and surjectivity supplies its existence. Solve $y=f(x)$ for $x$, exchange input and output roles, and carry the range of $f$ into the domain of $f^{-1}$. The identities $f^{-1}(f(x))=x$ and $f(f^{-1}(y))=y$ hold on their respective domains."
+        },
+        {
+          "heading": "Restrictions create legitimate inverses",
+          "body": "The map $x\\mapsto x^2$ is not injective on the real line because $x$ and $-x$ share an output. On $[0,\\infty)$ it is bijective onto $[0,\\infty)$ and its inverse is the nonnegative square root. On $(-\\infty,0]$ the inverse uses the negative square root. The notation $f^{-1}$ means an inverse map, while $1/f$ means the reciprocal of an output."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Find $(f\\circ g)(x)$ and its domain for $f(u)=1/(u-2)$ and $g(x)=x^2$.",
+          "steps": [
+            "Substitute $g(x)$ into the input slot of $f$: $(f\\circ g)(x)=1/(x^2-2)$.",
+            "Require the original denominator $x^2-2$ to be nonzero.",
+            "Solve $x^2=2$ to identify the two excluded inputs."
+          ],
+          "result": "$ (f\\circ g)(x)=1/(x^2-2)$ for $x\\in\\mathbb R\\setminus\\{-\\sqrt2,\\sqrt2\\}$."
+        },
+        {
+          "prompt": "Invert $f(x)=3x-5$ on the real line and check both compositions.",
+          "steps": [
+            "Write $y=3x-5$ and solve $x=(y+5)/3$.",
+            "Thus $f^{-1}(y)=(y+5)/3$.",
+            "Compute $f^{-1}(f(x))=(3x-5+5)/3=x$ and $f(f^{-1}(y))=3(y+5)/3-5=y$."
+          ],
+          "result": "$f^{-1}(x)=(x+5)/3$, with domain and range both $\\mathbb R$."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "number",
+          "prompt": "Let $f(x)=2x+1$ and $g(x)=x^2-3$. Compute $(f\\circ g)(2)$.",
+          "answer": 3,
+          "solution": "First evaluate $g(2)=4-3=1$. Then apply the outer function: $f(g(2))=f(1)=2+1=3$.",
+          "hints": [
+            "Evaluate the inner function first.",
+            "Substitute its output into $2x+1$."
+          ],
+          "concept": "composition order",
+          "tolerance": 0.000001,
+          "id": "function-composition-and-inverses-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "For the same $f(x)=2x+1$ and $g(x)=x^2-3$, compute $(g\\circ f)(2)$.",
+          "answer": 22,
+          "solution": "Apply the rightmost function first: $f(2)=2\\cdot2+1=5$. Then $g(f(2))=g(5)=25-3=22$.",
+          "hints": [
+            "Apply $f$ first.",
+            "Square the entire result before subtracting three."
+          ],
+          "concept": "noncommutativity",
+          "tolerance": 0.000001,
+          "id": "function-composition-and-inverses-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "If $h(x)=5x-4$, find $h^{-1}(11)$.",
+          "answer": 3,
+          "solution": "An inverse value is the input producing eleven. Solve $5x-4=11$: $5x=15$, hence $x=3$.",
+          "hints": [
+            "An inverse asks for the original input.",
+            "Solve a linear equation."
+          ],
+          "concept": "inverse evaluation",
+          "tolerance": 0.000001,
+          "id": "function-composition-and-inverses-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "What is the domain of $f(g(x))$ when $f(u)=\\sqrt u$ and $g(x)=x-4$?",
+          "choices": [
+            "$x\\ge4$",
+            "$x\\ge0$",
+            "$x>4$",
+            "All real $x$"
+          ],
+          "answer": "$x\\ge4$",
+          "solution": "The square-root input is $x-4$; requiring $x-4\\ge0$ gives $x\\ge4$.",
+          "hints": [
+            "The square root permits zero.",
+            "Constrain the inner output, not the original variable directly."
+          ],
+          "concept": "composite domain",
+          "id": "function-composition-and-inverses-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "List the excluded real inputs of $(f\\circ g)(x)$, in increasing order, for $f(u)=1/u$ and $g(x)=(x-1)(x+2)$.",
+          "answer": [
+            -2,
+            1
+          ],
+          "solution": "The denominator vanishes at $x=-2$ and $x=1$. Both original inputs must be excluded.",
+          "hints": [
+            "Set each factor of $g(x)$ equal to zero.",
+            "Return the roots in increasing order."
+          ],
+          "concept": "domain exclusions",
+          "tolerance": 0.000001,
+          "id": "function-composition-and-inverses-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which restriction makes $f(x)=x^2$ have inverse $f^{-1}(y)=-\\sqrt y$?",
+          "choices": [
+            "Domain $(-\\infty,0]$, range $[0,\\infty)$",
+            "Domain $[0,\\infty)$, range $[0,\\infty)$",
+            "Domain $\\mathbb R$, range $[0,\\infty)$",
+            "Domain $(-\\infty,0]$, range $\\mathbb R$"
+          ],
+          "answer": "Domain $(-\\infty,0]$, range $[0,\\infty)$",
+          "solution": "The inverse must return the nonpositive input whose square is $y$; its domain is $y\\ge0$.",
+          "hints": [
+            "The negative square root returns nonpositive values.",
+            "The range of $f$ becomes the domain of its inverse."
+          ],
+          "concept": "branch selection",
+          "id": "function-composition-and-inverses-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Let $f(x)=(x-2)/(x+1)$, $x\\ne-1$. Find $f^{-1}(4)$.",
+          "answer": -2,
+          "solution": "Solve $(x-2)/(x+1)=4$: $x-2=4x+4$, so $x=-2$, which is allowed.",
+          "hints": [
+            "Multiply by $x+1$ while retaining the exclusion.",
+            "Collect the terms involving $x$."
+          ],
+          "concept": "rational inverse",
+          "tolerance": 0.000001,
+          "id": "function-composition-and-inverses-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "For $f(x)=x+2$, which statement correctly compares $f^{-1}(x)$ and $1/f(x)$?",
+          "choices": [
+            "They are $x-2$ and $1/(x+2)$, respectively.",
+            "Both are $1/(x+2)$.",
+            "Both are $x-2$.",
+            "They are $-x-2$ and $x-2$, respectively."
+          ],
+          "answer": "They are $x-2$ and $1/(x+2)$, respectively.",
+          "solution": "Undoing addition subtracts two. Taking a reciprocal instead divides one by the original output.",
+          "hints": [
+            "Undo the operation to find the inverse.",
+            "A reciprocal changes the output multiplicatively."
+          ],
+          "concept": "inverse versus reciprocal",
+          "id": "function-composition-and-inverses-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "proof",
+          "prompt": "Order these steps to derive the inverse of $f(x)=(2x+1)/(x-3)$, $x\\ne3$.",
+          "choices": [
+            "Solve $(y-2)x=3y+1$ to obtain $x=(3y+1)/(y-2)$, with $y\\ne2$.",
+            "Write $y=(2x+1)/(x-3)$.",
+            "Multiply to get $yx-3y=2x+1$, then gather the $x$ terms.",
+            "Exchange input names to state $f^{-1}(x)=(3x+1)/(x-2)$, $x\\ne2$."
+          ],
+          "answer": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "solution": "Start with the defining equation, clear the allowed denominator, isolate the old input, then rename variables. The excluded output $2$ becomes an inverse-domain restriction.",
+          "hints": [
+            "Start from $y=f(x)$.",
+            "Isolate the original $x$ before renaming variables."
+          ],
+          "concept": "inverse derivation",
+          "id": "function-composition-and-inverses-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "Let $f(x)=x^2$ on $\\mathbb R$ and $g(x)=\\sqrt x$ on $[0,\\infty)$. Which identity is valid?",
+          "choices": [
+            "$f(g(x))=x$ for $x\\ge0$, but $g(f(x))=|x|$ for real $x$.",
+            "Both compositions equal $x$ for every real $x$.",
+            "$g(f(x))=x$ only for negative $x$.",
+            "Neither composition is ever an identity."
+          ],
+          "answer": "$f(g(x))=x$ for $x\\ge0$, but $g(f(x))=|x|$ for real $x$.",
+          "solution": "Squaring the nonnegative square root returns its input. Taking the principal square root of $x^2$ returns $|x|$, so the other identity fails for negative $x$.",
+          "hints": [
+            "The principal square root is nonnegative.",
+            "Test $x=-2$ in $g(f(x))$."
+          ],
+          "concept": "two-sided inverse conditions",
+          "id": "function-composition-and-inverses-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "polynomial-and-rational-behavior",
+      "title": "Polynomial and rational behavior",
+      "summary": "Read roots, multiplicities, end behavior, holes, and asymptotes from algebraic structure without losing domain restrictions.",
+      "objectives": [
+        "Use degree and leading coefficient to determine end behavior.",
+        "Distinguish zeros, removable holes, and vertical asymptotes.",
+        "Compute polynomial division and rational end behavior."
+      ],
+      "sections": [
+        {
+          "heading": "Polynomial structure controls local and distant behavior",
+          "body": "A real polynomial $p(x)=a_nx^n+\\cdots+a_0$ has domain $\\mathbb R$ and, for large $|x|$, its leading term controls growth. If $(x-r)^m$ is a factor, $r$ is a root of multiplicity $m$. Odd multiplicity changes the sign across $r$; even multiplicity preserves it. The statement concerns sign crossing, not a guarantee that every root has the same flatness."
+        },
+        {
+          "heading": "Rational domains survive cancellation",
+          "body": "For $R(x)=p(x)/q(x)$ the original domain excludes every root of $q$. A common factor may cancel algebraically, but its root stays excluded. If the simplified denominator is nonzero at that point, the graph has a removable hole whose height is the simplified value. A remaining denominator zero normally gives a vertical asymptote, with its one-sided behavior determined by signs."
+        },
+        {
+          "heading": "Division reveals asymptotes",
+          "body": "If numerator and denominator degrees match, the ratio tends to the quotient of leading coefficients as $|x|\\to\\infty$. A lower numerator degree gives horizontal asymptote zero. When the numerator degree is larger, polynomial division writes $R(x)=s(x)+r(x)/q(x)$ with a lower-degree remainder; the remainder tends to zero, and $s(x)$ describes the polynomial asymptote."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Analyze $R(x)=(x^2-1)/(x-1)$.",
+          "steps": [
+            "Factor the numerator as $(x-1)(x+1)$.",
+            "For $x\\ne1$, cancel to obtain $R(x)=x+1$.",
+            "The original denominator excludes $x=1$, so the missing point is $(1,2)$."
+          ],
+          "result": "The graph is the line $y=x+1$ with a removable hole at $(1,2)$; there is no vertical asymptote at $x=1$."
+        },
+        {
+          "prompt": "Find the oblique asymptote of $(x^2+3x+1)/(x+1)$.",
+          "steps": [
+            "Divide $x^2+3x+1$ by $x+1$ to obtain quotient $x+2$.",
+            "Subtract $(x+1)(x+2)=x^2+3x+2$, leaving remainder $-1$.",
+            "Write $R(x)=x+2-1/(x+1)$; the last term tends to zero at both ends."
+          ],
+          "result": "The oblique asymptote is $y=x+2$, and the remaining denominator also gives a vertical asymptote $x=-1$."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "number",
+          "prompt": "Find the multiplicity of the root $x=2$ of $p(x)=(x-2)^3(x+1)^2$.",
+          "answer": 3,
+          "solution": "The factor $(x-2)$ appears to the third power, so the multiplicity is three.",
+          "hints": [
+            "Identify the factor that vanishes at two.",
+            "Read its exponent."
+          ],
+          "concept": "root multiplicity",
+          "tolerance": 0.000001,
+          "id": "polynomial-and-rational-behavior-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "How does $p(x)=-2x^4+3x-1$ behave as $x\\to\\pm\\infty$?",
+          "choices": [
+            "It tends to $-\\infty$ at both ends.",
+            "It tends to $+\\infty$ at both ends.",
+            "It tends to $-\\infty$ only on the left.",
+            "It tends to $+\\infty$ only on the right."
+          ],
+          "answer": "It tends to $-\\infty$ at both ends.",
+          "solution": "The negative leading coefficient and even degree make the dominant term $-2x^4$ negative and unbounded at both ends.",
+          "hints": [
+            "Use only the leading term for distant behavior.",
+            "An even power is positive on either side."
+          ],
+          "concept": "end behavior",
+          "id": "polynomial-and-rational-behavior-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "For $R(x)=(3x^2+1)/(2x^2-5)$, give the horizontal asymptote's height.",
+          "answer": 1.5,
+          "solution": "Equal degrees give the leading-coefficient ratio $3/2$.",
+          "hints": [
+            "Compare numerator and denominator degrees.",
+            "Divide their leading coefficients."
+          ],
+          "concept": "horizontal asymptote",
+          "tolerance": 0.000001,
+          "id": "polynomial-and-rational-behavior-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "For $R(x)=(x^2-9)/(x-3)$, give the hole coordinates $[x,y]$.",
+          "answer": [
+            3,
+            6
+          ],
+          "solution": "For $x\\ne3$, $R(x)=x+3$. The excluded input is three and the limiting height is six.",
+          "hints": [
+            "Factor a difference of squares.",
+            "Keep the cancelled root excluded."
+          ],
+          "concept": "removable discontinuity",
+          "tolerance": 0.000001,
+          "id": "polynomial-and-rational-behavior-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which point is a vertical asymptote of $R(x)=(x+2)/((x-1)(x+2))$?",
+          "choices": [
+            "$x=1$",
+            "$x=-2$",
+            "Both $x=1$ and $x=-2$",
+            "Neither"
+          ],
+          "answer": "$x=1$",
+          "solution": "Cancelling $x+2$ leaves $1/(x-1)$ on the original domain. There is a hole at $-2$ and a pole at one.",
+          "hints": [
+            "Cancel only common factors.",
+            "Check which denominator zero remains."
+          ],
+          "concept": "hole versus pole",
+          "id": "polynomial-and-rational-behavior-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Compute $\\lim_{x\\to\\infty}(5x+1)/(x^2+2)$.",
+          "answer": 0,
+          "solution": "Divide by $x^2$: $(5/x+1/x^2)/(1+2/x^2)\\to0$.",
+          "hints": [
+            "The denominator degree is larger.",
+            "Divide by the highest denominator power."
+          ],
+          "concept": "degree comparison",
+          "tolerance": 0.000001,
+          "id": "polynomial-and-rational-behavior-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "Write $(x^2-4x+7)/(x-2)=ax+b+r/(x-2)$. Return $[a,b,r]$.",
+          "answer": [
+            1,
+            -2,
+            3
+          ],
+          "solution": "$(x-2)(x-2)=x^2-4x+4$, leaving remainder three. Thus the quotient is $x-2$.",
+          "hints": [
+            "Divide the leading terms.",
+            "Multiply the quotient back to recover the remainder."
+          ],
+          "concept": "polynomial division",
+          "tolerance": 0.000001,
+          "id": "polynomial-and-rational-behavior-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which statement about $p(x)=(x+1)^2(x-3)$ is correct?",
+          "choices": [
+            "The sign is unchanged at $-1$ and changes at $3$.",
+            "The sign changes at both roots.",
+            "The sign is unchanged at both roots.",
+            "The sign changes at $-1$ and is unchanged at $3$."
+          ],
+          "answer": "The sign is unchanged at $-1$ and changes at $3$.",
+          "solution": "The first root has even multiplicity two; the second has odd multiplicity one. Only odd multiplicity forces sign crossing.",
+          "hints": [
+            "Read each root's multiplicity.",
+            "Compare signs immediately across each root."
+          ],
+          "concept": "sign changes",
+          "id": "polynomial-and-rational-behavior-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Find the hole height of $R(x)=(x^2-4)/((x-2)(x+3))$ at $x=2$.",
+          "answer": 0.8,
+          "solution": "Cancel $x-2$ to obtain $(x+2)/(x+3)$ for allowed $x$. At two this has value $4/5$.",
+          "hints": [
+            "Use the difference-of-squares factorization.",
+            "Evaluate the simplified expression at the excluded input."
+          ],
+          "concept": "finite hole limit",
+          "tolerance": 0.000001,
+          "id": "polynomial-and-rational-behavior-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "For $R(x)=1/(x-2)^2$, what are the one-sided limits at $x=2$?",
+          "choices": [
+            "Both are $+\\infty$.",
+            "Both are $-\\infty$.",
+            "The left is $-\\infty$ and the right is $+\\infty$.",
+            "Both are zero."
+          ],
+          "answer": "Both are $+\\infty$.",
+          "solution": "The denominator is positive on both sides and tends to zero; its reciprocal grows positively without bound.",
+          "hints": [
+            "The denominator is squared.",
+            "Check its sign on both sides."
+          ],
+          "concept": "one-sided asymptotes",
+          "id": "polynomial-and-rational-behavior-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "exponential-and-logarithmic-functions",
+      "title": "Exponential and logarithmic functions",
+      "summary": "Use exponential growth and logarithmic inverses with correct domains, bases, and transformation laws.",
+      "objectives": [
+        "Apply exponential and logarithm laws under valid domain assumptions.",
+        "Solve growth and logarithmic equations.",
+        "Interpret rates, inverse functions, and model parameters."
+      ],
+      "sections": [
+        {
+          "heading": "Exponentials encode multiplication over equal increments",
+          "body": "For $b>0$ and $b\\ne1$, the exponential $b^x$ is positive for every real $x$ and satisfies $b^{x+y}=b^xb^y$. It is increasing when $b>1$ and decreasing when $0<b<1$. A continuous growth model $A(t)=A_0e^{kt}$ has constant relative rate $k$ and multiplies by $e^{k\\Delta t}$ over any interval of length $\\Delta t$."
+        },
+        {
+          "heading": "A logarithm is an inverse with a positive input",
+          "body": "The equation $\\log_b x=y$ means exactly $b^y=x$, so real logarithms require $x>0$. For positive $u,v$, $\\log_b(uv)=\\log_bu+\\log_bv$ and $\\log_b(u/v)=\\log_bu-\\log_bv$. There is no corresponding rule splitting $\\log_b(u+v)$. Change of base follows from inverse identities: $\\log_bx=\\ln x/\\ln b$."
+        },
+        {
+          "heading": "Solve first, then check the original domain",
+          "body": "Taking logarithms can isolate a variable in an exponent. Exponentiating can remove a logarithm, but algebraic candidates still need to satisfy every original positive-argument condition. For example, solving $\\ln(x-1)+\\ln(x+1)=\\ln8$ gives $x^2=9$; only $x=3$ survives the original requirement $x>1$."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Solve $3e^{2t}=12$ exactly.",
+          "steps": [
+            "Divide by three to obtain $e^{2t}=4$.",
+            "Apply the natural logarithm: $2t=\\ln4$.",
+            "Divide by two and use $\\ln4=2\\ln2$."
+          ],
+          "result": "$t=\\ln2$."
+        },
+        {
+          "prompt": "A quantity grows from $80$ to $120$ in three time units under $A(t)=80e^{kt}$. Find its size after six units.",
+          "steps": [
+            "At $t=3$, $e^{3k}=120/80=3/2$.",
+            "Two equal three-unit intervals multiply the starting quantity by $(3/2)^2$.",
+            "Compute $80\\cdot9/4=180$."
+          ],
+          "result": "$A(6)=180$; the model compounds the same factor over equal intervals."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "number",
+          "prompt": "Evaluate $\\log_2 32$.",
+          "answer": 5,
+          "solution": "Since $2^5=32$, the inverse logarithm equals five.",
+          "hints": [
+            "Ask which power of two equals 32.",
+            "Use the logarithm's defining equation."
+          ],
+          "concept": "logarithm definition",
+          "tolerance": 0.000001,
+          "id": "exponential-and-logarithmic-functions-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Solve $e^{x}=e^3$ for $x$.",
+          "answer": 3,
+          "solution": "The exponential is injective, so equal outputs force equal inputs: $x=3$.",
+          "hints": [
+            "The function $e^x$ is one-to-one.",
+            "Alternatively apply $\\ln$."
+          ],
+          "concept": "exponential injectivity",
+          "tolerance": 0.000001,
+          "id": "exponential-and-logarithmic-functions-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Compute $\\ln(e^4)+\\ln(e^{-1})$.",
+          "answer": 3,
+          "solution": "The natural logarithm undoes each exponential: $\\ln(e^4)=4$ and $\\ln(e^{-1})=-1$, so their sum is three.",
+          "hints": [
+            "Natural log undoes the exponential.",
+            "Add the two exponents after evaluating."
+          ],
+          "concept": "inverse identities",
+          "tolerance": 0.000001,
+          "id": "exponential-and-logarithmic-functions-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which is the real domain of $h(x)=\\ln(5-2x)$?",
+          "choices": [
+            "$x<5/2$",
+            "$x\\le5/2$",
+            "$x>5/2$",
+            "All real $x$"
+          ],
+          "answer": "$x<5/2$",
+          "solution": "The logarithm requires $5-2x>0$, which rearranges to $x<5/2$.",
+          "hints": [
+            "A logarithm never accepts zero.",
+            "Reverse the inequality when dividing by a negative number."
+          ],
+          "concept": "logarithm domain",
+          "id": "exponential-and-logarithmic-functions-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "A population doubles every three years. What factor multiplies it after nine years?",
+          "answer": 8,
+          "solution": "Nine years contains three doubling intervals, giving $2^3=8$.",
+          "hints": [
+            "Count equal doubling intervals.",
+            "Multiply the doubling factors."
+          ],
+          "concept": "doubling time",
+          "tolerance": 0.000001,
+          "id": "exponential-and-logarithmic-functions-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Solve $\\log_3(x-1)=2$.",
+          "answer": 10,
+          "solution": "Rewrite as $x-1=3^2=9$, so $x=10$. Its logarithm argument is positive.",
+          "hints": [
+            "Convert the logarithm equation to an exponential.",
+            "Check $x-1>0$."
+          ],
+          "concept": "logarithm equations",
+          "tolerance": 0.000001,
+          "id": "exponential-and-logarithmic-functions-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which equation is valid for all positive $a,b$?",
+          "choices": [
+            "$\\ln(a/b)=\\ln a-\\ln b$",
+            "$\\ln(a+b)=\\ln a+\\ln b$",
+            "$\\ln(ab)=(\\ln a)(\\ln b)$",
+            "$\\ln(a^2)=(\\ln a)^2$"
+          ],
+          "answer": "$\\ln(a/b)=\\ln a-\\ln b$",
+          "solution": "The quotient law follows by applying the logarithm to a product with $b^{-1}$. The other identities generally fail.",
+          "hints": [
+            "Recall the product law.",
+            "Use $a/b=ab^{-1}$."
+          ],
+          "concept": "logarithm laws",
+          "id": "exponential-and-logarithmic-functions-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "A model has $A(0)=50$ and $A(2)=200$ with $A(t)=50e^{kt}$. Find $A(3)$.",
+          "answer": 400,
+          "solution": "$e^{2k}=4$, so $e^k=2$ because exponentials are positive. Therefore $A(3)=50\\cdot2^3=400$.",
+          "hints": [
+            "Find the one-unit growth factor.",
+            "Apply that factor for three units."
+          ],
+          "concept": "continuous growth",
+          "tolerance": 0.000001,
+          "id": "exponential-and-logarithmic-functions-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Solve $\\ln(x-1)+\\ln(x+1)=\\ln15$ in the real domain.",
+          "answer": 4,
+          "solution": "The original domain is $x>1$. Combining logs gives $(x-1)(x+1)=15$, or $x^2=16$. Only $x=4$ is valid.",
+          "hints": [
+            "Check both log arguments before combining them.",
+            "Reject the negative algebraic root."
+          ],
+          "concept": "extraneous logarithm roots",
+          "tolerance": 0.000001,
+          "id": "exponential-and-logarithmic-functions-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "For real $x\\ne0$, which formula correctly rewrites $\\ln(x^2)$?",
+          "choices": [
+            "$2\\ln|x|$",
+            "$2\\ln x$ for every real nonzero $x$",
+            "$(\\ln x)^2$",
+            "$\\ln x+2$"
+          ],
+          "answer": "$2\\ln|x|$",
+          "solution": "Because $x^2=|x|^2$ with $|x|>0$, the power law gives $2\\ln|x|$. Using $\\ln x$ alone would exclude negative inputs.",
+          "hints": [
+            "The left side is defined for negative nonzero inputs.",
+            "Use the positive magnitude before applying the power law."
+          ],
+          "concept": "absolute values in logarithms",
+          "id": "exponential-and-logarithmic-functions-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "trigonometric-functions-and-identities",
+      "title": "Trigonometric functions and identities",
+      "summary": "Connect the unit circle to exact trigonometric values, identities, periods, and equation solving.",
+      "objectives": [
+        "Convert between radians and geometric angles.",
+        "Use identities with their domain restrictions.",
+        "Solve trigonometric equations over a specified interval."
+      ],
+      "sections": [
+        {
+          "heading": "Radians and the unit circle",
+          "body": "An angle in radians is arc length divided by radius. One complete turn is $2\\pi$ radians, or $360$ degrees. The point at angle $\\theta$ on the unit circle is $(\\cos\\theta,\\sin\\theta)$, so $\\sin^2\\theta+\\cos^2\\theta=1$. Sine and cosine exist at every real input; $\\tan\\theta=\\sin\\theta/\\cos\\theta$ excludes the zeros of cosine."
+        },
+        {
+          "heading": "Identities are equalities on a common domain",
+          "body": "The addition formulas $\\sin(a+b)=\\sin a\\cos b+\\cos a\\sin b$ and $\\cos(a+b)=\\cos a\\cos b-\\sin a\\sin b$ generate double-angle and phase-shift identities. Dividing the Pythagorean identity by $\\cos^2\\theta$ gives $1+\\tan^2\\theta=\\sec^2\\theta$ only where cosine is nonzero. Cancellation can hide exclusions, just as in rational functions."
+        },
+        {
+          "heading": "Solve using symmetry and periodicity",
+          "body": "To solve $\\sin\\theta=c$, first find unit-circle angles with the required height, then include periodic shifts. A request on $[0,2\\pi)$ keeps only angles in that half-open interval. For $A\\sin(Bx+C)+D$, the amplitude is $|A|$, the period is $2\\pi/|B|$ when $B\\ne0$, and the midline is $D$."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Solve $2\\sin\\theta=1$ on $[0,2\\pi)$.",
+          "steps": [
+            "Divide by two: $\\sin\\theta=1/2$.",
+            "The reference angle is $\\pi/6$. Positive sine occurs in quadrants I and II.",
+            "The allowed angles are $\\pi/6$ and $\\pi-\\pi/6=5\\pi/6$."
+          ],
+          "result": "$\\theta\\in\\{\\pi/6,5\\pi/6\\}$."
+        },
+        {
+          "prompt": "Find $\\cos(\\pi/3+\\pi/6)$ using the addition formula.",
+          "steps": [
+            "Use $\\cos(a+b)=\\cos a\\cos b-\\sin a\\sin b$.",
+            "Substitute $\\cos(\\pi/3)=1/2$, $\\cos(\\pi/6)=\\sqrt3/2$, $\\sin(\\pi/3)=\\sqrt3/2$, and $\\sin(\\pi/6)=1/2$.",
+            "The two products are both $\\sqrt3/4$, so they cancel."
+          ],
+          "result": "$\\cos(\\pi/2)=0$, agreeing with the unit circle."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "number",
+          "prompt": "Convert $150$ degrees to radians; enter the coefficient $c$ in $c\\pi$.",
+          "answer": 0.8333333333333334,
+          "solution": "Multiply by $\\pi/180$: $150\\pi/180=5\\pi/6$.",
+          "hints": [
+            "A half turn is $180$ degrees or $\\pi$ radians.",
+            "Divide 150 by 180."
+          ],
+          "concept": "radian conversion",
+          "tolerance": 0.000001,
+          "id": "trigonometric-functions-and-identities-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Evaluate $\\sin(\\pi/6)$.",
+          "answer": 0.5,
+          "solution": "The unit-circle angle $\\pi/6$ has vertical coordinate $1/2$.",
+          "hints": [
+            "Use a 30-60-90 triangle.",
+            "Sine is opposite over hypotenuse."
+          ],
+          "concept": "exact trig values",
+          "tolerance": 0.000001,
+          "id": "trigonometric-functions-and-identities-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "If $\\sin\\theta=3/5$ and $\\theta$ lies in quadrant II, find $\\cos\\theta$.",
+          "answer": -0.8,
+          "solution": "$\\cos^2\\theta=1-9/25=16/25$. Cosine is negative in quadrant II, giving $-4/5$.",
+          "hints": [
+            "Apply the Pythagorean identity.",
+            "Select the sign using the quadrant."
+          ],
+          "concept": "quadrant signs",
+          "tolerance": 0.000001,
+          "id": "trigonometric-functions-and-identities-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "For $f(x)=3\\sin(2x)-1$, give its amplitude.",
+          "answer": 3,
+          "solution": "Amplitude is the magnitude of the sine coefficient: $|3|=3$.",
+          "hints": [
+            "Ignore the vertical shift.",
+            "Use the magnitude of the outside multiplier."
+          ],
+          "concept": "amplitude",
+          "tolerance": 0.000001,
+          "id": "trigonometric-functions-and-identities-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "For $f(x)=3\\sin(2x)-1$, give the coefficient $c$ in its period $c\\pi$.",
+          "answer": 1,
+          "solution": "A full cycle requires the inside angle to increase by $2\\pi$. Thus the period is $2\\pi/|2|=\\pi$, giving $c=1$.",
+          "hints": [
+            "The inside multiplier changes the period.",
+            "Divide $2\\pi$ by two."
+          ],
+          "concept": "period",
+          "tolerance": 0.000001,
+          "id": "trigonometric-functions-and-identities-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "List the solutions of $\\cos\\theta=0$ on $[0,2\\pi)$ as coefficients of $\\pi$, in increasing order.",
+          "answer": [
+            0.5,
+            1.5
+          ],
+          "solution": "Cosine is the horizontal coordinate and vanishes at $\\pi/2$ and $3\\pi/2$.",
+          "hints": [
+            "Find the top and bottom unit-circle points.",
+            "Return their angles divided by $\\pi$."
+          ],
+          "concept": "trigonometric equations",
+          "tolerance": 0.000001,
+          "id": "trigonometric-functions-and-identities-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which expression equals $(1-\\cos^2x)/\\sin x$ wherever the original expression is defined?",
+          "choices": [
+            "$\\sin x$, with $\\sin x\\ne0$",
+            "$\\sin x$ for every real $x$",
+            "$\\cos x$, with $\\sin x\\ne0$",
+            "$1-\\cos x$"
+          ],
+          "answer": "$\\sin x$, with $\\sin x\\ne0$",
+          "solution": "The numerator is $\\sin^2x$, and cancellation gives $\\sin x$ only when the original denominator is nonzero.",
+          "hints": [
+            "Apply the Pythagorean identity.",
+            "Retain the original denominator restriction."
+          ],
+          "concept": "identity domains",
+          "id": "trigonometric-functions-and-identities-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "If $\\sin\\theta=3/5$ and $\\cos\\theta=4/5$, find $\\sin(2\\theta)$.",
+          "answer": 0.96,
+          "solution": "The double-angle formula gives $2\\sin\\theta\\cos\\theta=2(3/5)(4/5)=24/25$.",
+          "hints": [
+            "Set both angles equal in the addition formula.",
+            "Multiply the given sine and cosine and double."
+          ],
+          "concept": "double-angle identity",
+          "tolerance": 0.000001,
+          "id": "trigonometric-functions-and-identities-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "Solve $2\\sin^2\\theta-1=0$ on $[0,2\\pi)$; return the coefficients of $\\pi$ in increasing order.",
+          "answer": [
+            0.25,
+            0.75,
+            1.25,
+            1.75
+          ],
+          "solution": "The equation gives $\\sin\\theta=\\pm1/\\sqrt2$. The four angles are $\\pi/4$, $3\\pi/4$, $5\\pi/4$, and $7\\pi/4$.",
+          "hints": [
+            "Squaring loses the sign of sine.",
+            "Include all four relevant quadrants."
+          ],
+          "concept": "squared trigonometric equations",
+          "tolerance": 0.000001,
+          "id": "trigonometric-functions-and-identities-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which identity correctly expresses $\\sin(x+\\pi/2)$?",
+          "choices": [
+            "$\\cos x$",
+            "$-\\cos x$",
+            "$\\sin x+1$",
+            "$-\\sin x$"
+          ],
+          "answer": "$\\cos x$",
+          "solution": "The addition formula gives $\\sin x\\cos(\\pi/2)+\\cos x\\sin(\\pi/2)=0+\\cos x$.",
+          "hints": [
+            "Expand using the sine addition formula.",
+            "Use $\\cos(\\pi/2)=0$ and $\\sin(\\pi/2)=1$."
+          ],
+          "concept": "phase shift",
+          "id": "trigonometric-functions-and-identities-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "parametric-and-polar-curves",
+      "title": "Parametric and polar curves",
+      "summary": "Describe points using a parameter or radius-angle pair while tracking orientation, repeated tracing, and coordinate ambiguity.",
+      "objectives": [
+        "Convert parametric and polar descriptions to Cartesian form.",
+        "Determine direction and coverage as a parameter varies.",
+        "Recognize multiple polar representations of the same point."
+      ],
+      "sections": [
+        {
+          "heading": "A parameter records a moving point",
+          "body": "A plane curve can be described by $x=x(t)$ and $y=y(t)$ for $t$ in a specified set. Eliminating $t$ gives a Cartesian relation, but it may discard direction, speed, or restrictions. The parameterization $(\\cos t,\\sin t)$ for $0\\le t\\le2\\pi$ traces the unit circle counterclockwise once, while replacing $t$ by $-t$ reverses direction."
+        },
+        {
+          "heading": "Polar coordinates permit signed radii",
+          "body": "Polar coordinates satisfy $x=r\\cos\\theta$ and $y=r\\sin\\theta$. A negative $r$ points opposite the indicated angle, so $(r,\\theta)$ and $(-r,\\theta+\\pi)$ describe the same point. Adding integer multiples of $2\\pi$ also preserves a point. At the origin every angle is possible; an angle inferred from a tangent ratio must still use the correct quadrant."
+        },
+        {
+          "heading": "Conversion preserves geometric restrictions",
+          "body": "Using $r^2=x^2+y^2$, the polar equation $r=2\\cos\\theta$ yields $x^2+y^2=2x$, the circle $(x-1)^2+y^2=1$. Multiplying by $r$ includes the origin, which already lies on this curve. In other problems, squaring or multiplying can add points, so the converted relation and original parameter interval must be checked together."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Eliminate $t$ from $x=2t+1$, $y=t^2$, with $t\\ge0$.",
+          "steps": [
+            "Solve the first relation as $t=(x-1)/2$.",
+            "Substitute into $y$ to get $y=(x-1)^2/4$.",
+            "The restriction $t\\ge0$ implies $x\\ge1$, retaining only the right branch."
+          ],
+          "result": "$y=(x-1)^2/4$ for $x\\ge1$; as $t$ increases the point moves right and up from $(1,0)$."
+        },
+        {
+          "prompt": "Convert $r=4\\sin\\theta$ to a Cartesian circle.",
+          "steps": [
+            "Multiply by $r$ to obtain $r^2=4r\\sin\\theta$.",
+            "Use $r^2=x^2+y^2$ and $r\\sin\\theta=y$.",
+            "Complete the square: $x^2+y^2=4y$, so $x^2+(y-2)^2=4$."
+          ],
+          "result": "A circle with center $(0,2)$ and radius $2$; its origin point is valid in the original equation."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "vector",
+          "prompt": "For $x=2t-1$, $y=t^2+1$, find $[x,y]$ at $t=3$.",
+          "answer": [
+            5,
+            10
+          ],
+          "solution": "Substitution gives $x=6-1=5$ and $y=9+1=10$.",
+          "hints": [
+            "Use the same parameter value in both coordinates.",
+            "Square three before adding one."
+          ],
+          "concept": "parametric evaluation",
+          "tolerance": 0.000001,
+          "id": "parametric-and-polar-curves-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "Convert polar coordinates $(r,\\theta)=(2,\\pi/2)$ to $[x,y]$.",
+          "answer": [
+            0,
+            2
+          ],
+          "solution": "Use $x=2\\cos(\\pi/2)=0$ and $y=2\\sin(\\pi/2)=2$.",
+          "hints": [
+            "Cosine gives the horizontal component.",
+            "Sine gives the vertical component."
+          ],
+          "concept": "polar conversion",
+          "tolerance": 0.000001,
+          "id": "parametric-and-polar-curves-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Find the radius $r\\ge0$ of the Cartesian point $(3,4)$.",
+          "answer": 5,
+          "solution": "The nonnegative radius is the Euclidean distance to the origin: $r=\\sqrt{x^2+y^2}=\\sqrt{9+16}=5$.",
+          "hints": [
+            "Use the distance from the origin.",
+            "Apply the Pythagorean theorem."
+          ],
+          "concept": "polar radius",
+          "tolerance": 0.000001,
+          "id": "parametric-and-polar-curves-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which polar point is equivalent to $(2,\\pi/3)$?",
+          "choices": [
+            "$(-2,4\\pi/3)$",
+            "$(-2,\\pi/3)$",
+            "$(2,2\\pi/3)$",
+            "$(2,\\pi/3+\\pi)$"
+          ],
+          "answer": "$(-2,4\\pi/3)$",
+          "solution": "Negating the radius and adding $\\pi$ to the angle reverses direction twice, yielding the same Cartesian point.",
+          "hints": [
+            "A negative radius points opposite its angle.",
+            "Compensate with a half-turn."
+          ],
+          "concept": "negative polar radii",
+          "id": "parametric-and-polar-curves-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "What is the orientation of $x=\\cos t$, $y=-\\sin t$ as $t$ increases from $0$?",
+          "choices": [
+            "Clockwise from $(1,0)$",
+            "Counterclockwise from $(1,0)$",
+            "Clockwise from $(0,1)$",
+            "The point remains stationary"
+          ],
+          "answer": "Clockwise from $(1,0)$",
+          "solution": "At zero the point is $(1,0)$; for small positive $t$, $y$ is negative and the point moves downward along the circle.",
+          "hints": [
+            "Locate the starting point.",
+            "Check the sign of $y$ just after zero."
+          ],
+          "concept": "orientation",
+          "id": "parametric-and-polar-curves-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "The curve $x=3\\cos t$, $y=2\\sin t$ is an ellipse. Give its horizontal and vertical semiaxes as $[a,b]$.",
+          "answer": [
+            3,
+            2
+          ],
+          "solution": "Dividing gives $(x/3)^2+(y/2)^2=1$; the semiaxis magnitudes are three and two.",
+          "hints": [
+            "Eliminate $t$ using $\\cos^2t+\\sin^2t=1$.",
+            "Read each coordinate's maximum magnitude."
+          ],
+          "concept": "ellipse parameterization",
+          "tolerance": 0.000001,
+          "id": "parametric-and-polar-curves-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "Convert $r=6\\cos\\theta$ to a circle and return $[center_x,center_y,radius]$.",
+          "answer": [
+            3,
+            0,
+            3
+          ],
+          "solution": "Multiply by $r$ and substitute Cartesian coordinates to get $x^2+y^2=6x$. Completing the square gives $(x-3)^2+y^2=9$, with center $(3,0)$ and radius three.",
+          "hints": [
+            "Multiply the polar equation by $r$.",
+            "Complete the square in $x$."
+          ],
+          "concept": "polar circle",
+          "tolerance": 0.000001,
+          "id": "parametric-and-polar-curves-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Eliminate $t$ from $x=t^2$, $y=t^3$ with $t\\ge0$. Which description preserves the parameter restriction?",
+          "choices": [
+            "$y^2=x^3$, $x\\ge0$, $y\\ge0$",
+            "$y^2=x^3$ with both signs of $y$",
+            "$y=x^{2/3}$, $x\\ge0$",
+            "$x+y=0$"
+          ],
+          "answer": "$y^2=x^3$, $x\\ge0$, $y\\ge0$",
+          "solution": "Both powers are nonnegative when $t\\ge0$, and $y^2=t^6=x^3$. Keeping both signs would add the branch traced by negative $t$.",
+          "hints": [
+            "Square $y$ and cube $x$.",
+            "Retain the sign information from $t\\ge0$."
+          ],
+          "concept": "elimination restrictions",
+          "id": "parametric-and-polar-curves-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "How many complete revolutions does $x=\\cos(3t)$, $y=\\sin(3t)$ trace for $0\\le t\\le2\\pi$?",
+          "answer": 3,
+          "solution": "The phase angle $3t$ increases from zero to $6\\pi$, giving $6\\pi/(2\\pi)=3$ revolutions.",
+          "hints": [
+            "Track the full range of the phase.",
+            "A revolution requires $2\\pi$ radians."
+          ],
+          "concept": "repeated tracing",
+          "tolerance": 0.000001,
+          "id": "parametric-and-polar-curves-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "vector",
+          "prompt": "A polar point has $r=-4$ and $\\theta=\\pi$. Give its Cartesian coordinates.",
+          "answer": [
+            4,
+            0
+          ],
+          "solution": "$x=(-4)(-1)=4$ and $y=(-4)(0)=0$. The signed radius reverses the angle's direction.",
+          "hints": [
+            "Use the conversion formulas with the signed radius.",
+            "At angle $\\pi$, cosine is minus one."
+          ],
+          "concept": "signed-radius computation",
+          "tolerance": 0.000001,
+          "id": "parametric-and-polar-curves-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "sequences-and-informal-limiting-behavior",
+      "title": "Sequences and informal limiting behavior",
+      "summary": "Separate a sequence's individual terms from its long-run behavior and recognize convergence, oscillation, and boundedness.",
+      "objectives": [
+        "Compute explicit and recursive sequence terms.",
+        "Find limits using algebra and geometric decay.",
+        "Distinguish boundedness, monotonicity, and convergence."
+      ],
+      "sections": [
+        {
+          "heading": "A sequence is a function on positive integers",
+          "body": "A real sequence assigns a number $a_n$ to each positive integer $n$. An explicit rule computes a term from its index, while a recurrence computes later terms from earlier ones plus initial data. The statement $a_n\\to L$ concerns all sufficiently large indices; changing finitely many early terms cannot change the limit. A term need not ever equal the limiting value."
+        },
+        {
+          "heading": "Algebra reveals dominant terms and decaying parts",
+          "body": "For $a_n=(3n+1)/(2n-5)$, divide numerator and denominator by $n$ to see the limit $3/2$. For $|q|<1$, the geometric factor $q^n$ tends to zero, so $L+cq^n$ tends to $L$. When $q<0$, the signs alternate even though the magnitude shrinks. Algebraic cancellation is valid only at indices where the original expression is defined."
+        },
+        {
+          "heading": "Boundedness and monotonicity play different roles",
+          "body": "A convergent real sequence is bounded, but the bounded sequence $(-1)^n$ does not converge. A monotone sequence may diverge, as $a_n=n$ does. Combining monotonicity with an appropriate bound guarantees convergence over the real numbers. A recurrence's fixed-point equation gives only a candidate limit; stability or a separate convergence argument is needed to justify taking the limit."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Find the limit of $a_n=(4n^2-3n+2)/(2n^2+7)$.",
+          "steps": [
+            "Divide every term by $n^2$ to write $a_n=(4-3/n+2/n^2)/(2+7/n^2)$.",
+            "The terms $1/n$ and $1/n^2$ tend to zero.",
+            "The denominator tends to the nonzero number two, so division is valid in the limit."
+          ],
+          "result": "$a_n\\to4/2=2$."
+        },
+        {
+          "prompt": "For $a_1=1$ and $a_{n+1}=(a_n+6)/2$, derive the long-run value.",
+          "steps": [
+            "A candidate fixed point satisfies $L=(L+6)/2$, giving $L=6$.",
+            "Subtract six from the recurrence: $a_{n+1}-6=(a_n-6)/2$.",
+            "Iterating yields $a_n-6=-5/2^{n-1}$, which tends to zero."
+          ],
+          "result": "$a_n=6-5/2^{n-1}\\to6$; the geometric error proves convergence rather than merely guessing a fixed point."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "number",
+          "prompt": "For $a_n=2n^2-1$, find $a_4$.",
+          "answer": 31,
+          "solution": "Evaluate the explicit rule at index four: $a_4=2(4^2)-1=2\\cdot16-1=31$; the index is not the term's value.",
+          "hints": [
+            "The index is four.",
+            "Square before multiplying by two."
+          ],
+          "concept": "explicit terms",
+          "tolerance": 0.000001,
+          "id": "sequences-and-informal-limiting-behavior-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "If $a_1=3$ and $a_{n+1}=2a_n-1$, find $a_3$.",
+          "answer": 9,
+          "solution": "$a_2=2\\cdot3-1=5$, then $a_3=2\\cdot5-1=9$.",
+          "hints": [
+            "Compute the second term first.",
+            "Apply the same recurrence again."
+          ],
+          "concept": "recursive terms",
+          "tolerance": 0.000001,
+          "id": "sequences-and-informal-limiting-behavior-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Find $\\lim_{n\\to\\infty}(5n+2)/(2n+1)$.",
+          "answer": 2.5,
+          "solution": "Dividing by $n$ gives $(5+2/n)/(2+1/n)\\to5/2$.",
+          "hints": [
+            "Normalize by the largest power of $n$.",
+            "The reciprocal-index terms vanish."
+          ],
+          "concept": "rational sequence limits",
+          "tolerance": 0.000001,
+          "id": "sequences-and-informal-limiting-behavior-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Find $\\lim_{n\\to\\infty}(7+3(1/4)^n)$.",
+          "answer": 7,
+          "solution": "Since $|1/4|<1$, the geometric term tends to zero; the constant seven remains.",
+          "hints": [
+            "Identify the geometric ratio.",
+            "A ratio of magnitude below one produces decay."
+          ],
+          "concept": "geometric decay",
+          "tolerance": 0.000001,
+          "id": "sequences-and-informal-limiting-behavior-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which sequence is bounded but fails to converge?",
+          "choices": [
+            "$(-1)^n$",
+            "$1/n$",
+            "$n$",
+            "$2+1/n$"
+          ],
+          "answer": "$(-1)^n$",
+          "solution": "The terms stay between minus one and one but alternate between two distinct subsequential values.",
+          "hints": [
+            "Look for two persistent alternating values.",
+            "Boundedness alone does not force a single limit."
+          ],
+          "concept": "bounded nonconvergence",
+          "id": "sequences-and-informal-limiting-behavior-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which statement about $a_n=1-1/n$, $n\\ge1$, is correct?",
+          "choices": [
+            "It increases, is bounded above by one, and converges to one.",
+            "It decreases and converges to zero.",
+            "It is unbounded.",
+            "It attains one for some positive integer $n$."
+          ],
+          "answer": "It increases, is bounded above by one, and converges to one.",
+          "solution": "As $n$ increases, $1/n$ decreases, so $1-1/n$ increases and stays below one; its limit is one.",
+          "hints": [
+            "Compare consecutive reciprocal terms.",
+            "Distinguish approaching from attaining a value."
+          ],
+          "concept": "monotone convergence",
+          "id": "sequences-and-informal-limiting-behavior-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "What is the smallest positive integer $n$ such that $|1/n|<0.05$?",
+          "answer": 21,
+          "solution": "The strict inequality $1/n<1/20$ requires $n>20$, so the smallest integer is 21.",
+          "hints": [
+            "Keep the inequality strict.",
+            "Take the next integer after twenty."
+          ],
+          "concept": "eventual accuracy",
+          "tolerance": 0.000001,
+          "id": "sequences-and-informal-limiting-behavior-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "For $a_1=0$ and $a_{n+1}=a_n/3+4$, find the limit.",
+          "answer": 6,
+          "solution": "The fixed point is six. The error satisfies $a_{n+1}-6=(a_n-6)/3$, so it tends to zero geometrically.",
+          "hints": [
+            "Solve the fixed-point equation.",
+            "Justify the candidate using the factor $1/3$."
+          ],
+          "concept": "stable recurrence",
+          "tolerance": 0.000001,
+          "id": "sequences-and-informal-limiting-behavior-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "If a sequence is convergent and its first 100 terms are replaced by arbitrary real numbers, what happens to its limit?",
+          "choices": [
+            "The limit is unchanged.",
+            "The limit becomes the average of the replacements.",
+            "The sequence necessarily diverges.",
+            "The limit becomes its new first term."
+          ],
+          "answer": "The limit is unchanged.",
+          "solution": "For any accuracy, choose an index beyond both the original threshold and 100. Every later term is unchanged, so the same eventual estimate holds.",
+          "hints": [
+            "Limits depend on eventual behavior.",
+            "Move beyond the finitely many altered indices."
+          ],
+          "concept": "finite modifications",
+          "id": "sequences-and-informal-limiting-behavior-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "number",
+          "prompt": "Find $\\lim_{n\\to\\infty}n/(\\sqrt{n^2+n}+n)$.",
+          "answer": 0.5,
+          "solution": "Factor $n$ from the square root for positive $n$: the ratio is $1/(\\sqrt{1+1/n}+1)\\to1/2$.",
+          "hints": [
+            "Divide the denominator by $n$.",
+            "For positive $n$, $\\sqrt{n^2+n}=n\\sqrt{1+1/n}$."
+          ],
+          "concept": "radical sequence limits",
+          "tolerance": 0.000001,
+          "id": "sequences-and-informal-limiting-behavior-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    }
+  ]
+}

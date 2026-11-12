@@ -22,7 +22,7 @@ The separate **Programming Trivia** desk at `/programming` includes 1,200 questi
 
 The **Coding Challenges** lab at `/challenges` contains 170 free LeetCode-indexed algorithm problems—35 easy, 70 medium, and 65 hard—plus 30 original low-level design exercises. None of the algorithm selections are in the current NeetCode 150. Every challenge has original BrainHub guidance, starter code for Python, Java, and C++, three visible examples, and 20 deterministic test cases, for 4,000 verified cases in total. Run checks three cases quickly; Submit checks all 20. The editor inserts four spaces when Tab is pressed and highlights language-specific keywords, strings, numbers, and comments.
 
-The **Learning Roadmaps** area at `/roadmaps` contains complete interactive tracks for Probability, Linear Algebra, Calculus, Real Analysis, and Discrete Math. Every one of the 300 topics has a statically generated lesson page with objectives, concept explanations, a worked example, an independent computational or proof exercise, progressive hints, personal notes, prerequisite links, and a three-question mastery check. Six-lesson stages unlock in dependency order. Profile-backed progress, offline retry, saved study time, adaptive review recommendations, and per-roadmap Stats integration turn the outlines into durable learning paths from foundation through graduate material.
+The **Learning Roadmaps** area at `/roadmaps` maps 300 topics across Probability, Linear Algebra, Calculus, Real Analysis, and Discrete Math. The authored foundation release covers the first six topics of each subject: **30 lessons, 60 concrete solved examples, and 300 original mathematical questions**. Formula rendering includes accessible MathML. Each lesson has an eight-question practice set; two additional questions per lesson are reserved for a balanced twelve-question stage exam. Answers are graded on the API, which accepts decimals, fractions, vectors, matrices, multiple choice, and ordered proof steps without evaluating executable expressions. A 75% practice score completes a lesson. Individual responses and recent correctness feed the mistake review page. The remaining 270 advanced topics are clearly marked curriculum outlines, rather than presented as completed teaching material.
 
 Challenge code is executed by the public [Judge0 CE](https://ce.judge0.com/) sandbox, so source code entered in the lab is sent to that third-party service. Do not paste secrets or proprietary code into the editor.
 
@@ -104,6 +104,14 @@ Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS`
 - `POST /api/challenges/{slug}/run`
 - `GET /api/roadmaps/progress`
 - `PATCH /api/roadmaps/{roadmap_slug}/topics/{topic_slug}`
+- `GET /api/roadmaps/curriculum`
+- `GET /api/roadmaps/{roadmap_slug}/lessons/{topic_slug}`
+- `POST /api/roadmaps/{roadmap_slug}/assessments`
+- `POST /api/roadmaps/assessments/{session_id}/submit`
+- `GET /api/roadmaps/mistakes`
+- `GET /api/roadmaps/learning-stats`
+
+Authored lesson answer keys live only in `backend/app/roadmaps/curriculum/`. Public lesson/session responses exclude correct answers and worked assessment solutions until submission. Proof tasks use exact step ordering and counterexample selection; unrestricted prose proofs are not claimed to be automatically graded. Both lesson and exam questions are original BrainHub material. The implementation and twenty-cycle improvement ledger is in `docs/ROADMAP_DELIVERY.md`.
 
 ## Quality commands
 
@@ -128,6 +136,7 @@ python tools/generate_extended_trivia.py
 python tools/generate_roadmap_topic_catalog.py
 python tools/verify_challenge_sources.py
 python tools/verify_challenge_runner.py
+node tools/verify_math_curriculum.mjs
 ```
 
 GitHub Actions runs these gates on pushes and pull requests.

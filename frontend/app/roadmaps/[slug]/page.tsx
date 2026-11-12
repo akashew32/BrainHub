@@ -113,10 +113,10 @@ export default async function RoadmapDetailPage({ params }: { params: Promise<{ 
               <div>
                 <h2 className="font-semibold">How to use this outline</h2>
                 <p className="mt-2 text-sm leading-6 text-[#8995a7]">
-                  Open any unlocked topic for an explanation, worked example, computational or proof exercise,
-                  and three-question mastery check. A score of at least 67% completes the lesson. Complete all
-                  six topics in a stage to unlock the next one; weaker scores and older material automatically
-                  enter your review queue.
+                  The first six topics include authored explanations, fully solved examples, and
+                  eight-question practice sets. A score of at least 75% completes a lesson. Finish the six
+                  practice sets to take the twelve-question stage exam. Later stages currently provide study
+                  outlines. Individual mistakes and due recall questions appear in your review queue.
                 </p>
               </div>
             </div>

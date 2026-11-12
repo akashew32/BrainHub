@@ -79,9 +79,40 @@ class RoadmapTopicProgress(Base):
     status: Mapped[str] = mapped_column(String(20), default="in_progress")
     quiz_score: Mapped[int] = mapped_column(Integer, default=0)
     quiz_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    mastery_version: Mapped[int] = mapped_column(Integer, default=0)
     time_spent_seconds: Mapped[int] = mapped_column(Integer, default=0)
     last_viewed_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
+class RoadmapAssessmentSession(Base):
+    __tablename__ = "roadmap_assessment_sessions"
+    id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    roadmap_slug: Mapped[str] = mapped_column(String(80))
+    topic_slug: Mapped[str | None] = mapped_column(String(160), nullable=True)
+    stage_index: Mapped[int] = mapped_column(Integer, default=0)
+    mode: Mapped[str] = mapped_column(String(20))
+    question_ids: Mapped[list[str]] = mapped_column(JSON)
+    result: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    expires_at: Mapped[datetime] = mapped_column(DateTime)
+
+
+class RoadmapQuestionAttempt(Base):
+    __tablename__ = "roadmap_question_attempts"
+    __table_args__ = (UniqueConstraint("session_id", "question_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    session_id: Mapped[str] = mapped_column(ForeignKey("roadmap_assessment_sessions.id"))
+    roadmap_slug: Mapped[str] = mapped_column(String(80), index=True)
+    topic_slug: Mapped[str] = mapped_column(String(160))
+    question_id: Mapped[str] = mapped_column(String(220), index=True)
+    concept: Mapped[str] = mapped_column(String(160))
+    answer: Mapped[Any] = mapped_column(JSON)
+    correct: Mapped[bool] = mapped_column(Boolean)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
 
 
 class FermiQuestion(Base):

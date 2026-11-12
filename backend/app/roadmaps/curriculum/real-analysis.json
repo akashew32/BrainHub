@@ -1,0 +1,1431 @@
+{
+  "version": 1,
+  "roadmap_slug": "real-analysis",
+  "stage_index": 0,
+  "sources": [
+    {
+      "title": "MIT OpenCourseWare 18.100A Real Analysis: proof-based course and lecture notes",
+      "url": "https://ocw.mit.edu/courses/18-100a-real-analysis-fall-2020/"
+    },
+    {
+      "title": "MIT OpenCourseWare Mathematics for Computer Science: proof and set foundations readings",
+      "url": "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/pages/readings/"
+    }
+  ],
+  "lessons": [
+    {
+      "topic_slug": "propositions-quantifiers-and-negation",
+      "title": "Propositions, quantifiers, and negation",
+      "summary": "Translate analytic claims into precise quantified statements and negate them without changing variable dependencies.",
+      "objectives": [
+        "Identify truth conditions for implications.",
+        "Track which quantified variables can depend on earlier choices.",
+        "Negate nested quantifiers and inequalities correctly."
+      ],
+      "sections": [
+        {
+          "heading": "Implications assert a conditional obligation",
+          "body": "A proposition has a definite truth value. The implication $P\\Rightarrow Q$ is false exactly when $P$ is true and $Q$ is false; when $P$ is false, the implication is true. Consequently a universal claim about elements satisfying a condition does not assert that such elements exist. Its contrapositive $\\neg Q\\Rightarrow\\neg P$ has the same truth conditions, whereas its converse generally does not."
+        },
+        {
+          "heading": "Quantifier order controls dependence",
+          "body": "The assertion $\\forall x\\in\\mathbb R\\;\\exists y\\in\\mathbb R:\\ y>x$ is true because one may choose $y=x+1$ separately for each $x$. Reversing the order to $\\exists y\\;\\forall x:\\ y>x$ demands a single real number greater than every real number and is false. A witness may depend on quantities selected before it, not on later arbitrary choices."
+        },
+        {
+          "heading": "Negation reverses both quantifiers and conditions",
+          "body": "The negation of $\\forall x\\;P(x)$ is $\\exists x\\;\\neg P(x)$, and the negation of $\\exists x\\;P(x)$ is $\\forall x\\;\\neg P(x)$. Negating $a<b$ gives $a\\ge b$, not merely $a>b$. Applied to convergence, negating $\\forall\\epsilon>0\\;\\exists N\\;\\forall n\\ge N:\\ |a_n-L|<\\epsilon$ produces one positive tolerance for which every threshold has a later violating term."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Negate: every real $x$ admits a real $y$ with $y^2>x$.",
+          "steps": [
+            "Write the assertion as $\\forall x\\in\\mathbb R\\;\\exists y\\in\\mathbb R:\\ y^2>x$.",
+            "Switch the universal quantifier to existential and the existential to universal.",
+            "Negate the strict inequality $y^2>x$ to $y^2\\le x$."
+          ],
+          "result": "$\\exists x\\in\\mathbb R\\;\\forall y\\in\\mathbb R:\\ y^2\\le x$. This is the exact negation, regardless of its truth value."
+        },
+        {
+          "prompt": "Determine whether $\\forall x\\in\\mathbb R\\;\\exists M>0:\\ |x|<M$ is true, and compare the reversed order.",
+          "steps": [
+            "For a given $x$, set $M=|x|+1>0$. Then $|x|<M$.",
+            "The reversed order asks for one $M>0$ bounding every real input.",
+            "For any proposed $M$, choose $x=M+1$, which violates that bound."
+          ],
+          "result": "The original statement is true; the reversed statement is false because one common bound cannot cover all real numbers."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "choice",
+          "prompt": "When is $P\\Rightarrow Q$ false?",
+          "choices": [
+            "$P$ true and $Q$ false",
+            "$P$ false and $Q$ true",
+            "Both false",
+            "Both true"
+          ],
+          "answer": "$P$ true and $Q$ false",
+          "solution": "An implication fails only when its hypothesis holds but its promised conclusion does not.",
+          "hints": [
+            "Separate the hypothesis from its promised conclusion.",
+            "A false hypothesis cannot falsify an implication."
+          ],
+          "concept": "implication truth conditions",
+          "id": "propositions-quantifiers-and-negation-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "How many integers in $\\{-2,-1,0,1,2\\}$ satisfy $x^2<2$?",
+          "answer": 3,
+          "solution": "Only $-1,0,1$ have squares below two, giving three integers.",
+          "hints": [
+            "Square each possible integer.",
+            "Keep the inequality strict."
+          ],
+          "concept": "finite quantified domain",
+          "tolerance": 0.000001,
+          "id": "propositions-quantifiers-and-negation-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Negate $\\forall x\\in\\mathbb R:\\ x^2\\ge1$.",
+          "choices": [
+            "$\\exists x\\in\\mathbb R:\\ x^2<1$",
+            "$\\forall x\\in\\mathbb R:\\ x^2<1$",
+            "$\\exists x\\in\\mathbb R:\\ x^2\\le1$",
+            "$\\forall x\\in\\mathbb R:\\ x^2\\le1$"
+          ],
+          "answer": "$\\exists x\\in\\mathbb R:\\ x^2<1$",
+          "solution": "A universal assertion is refuted by one violating input, and the negation of $\\ge$ is $<$.",
+          "hints": [
+            "Flip the universal quantifier.",
+            "Negate the inequality exactly."
+          ],
+          "concept": "universal negation",
+          "id": "propositions-quantifiers-and-negation-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which statement correctly negates $\\exists M\\in\\mathbb R\\;\\forall x\\in\\mathbb R:\\ x<M$?",
+          "choices": [
+            "$\\forall M\\in\\mathbb R\\;\\exists x\\in\\mathbb R:\\ x\\ge M$",
+            "$\\exists M\\;\\forall x:\\ x\\ge M$",
+            "$\\forall M\\;\\exists x:\\ x>M$ is its exact literal negation",
+            "$\\forall M\\;\\forall x:\\ x<M$"
+          ],
+          "answer": "$\\forall M\\in\\mathbb R\\;\\exists x\\in\\mathbb R:\\ x\\ge M$",
+          "solution": "Negate each quantifier in order and replace $x<M$ with $x\\ge M$. A stronger true statement is not the exact syntactic negation.",
+          "hints": [
+            "Switch both quantifiers.",
+            "Equality belongs in the negated inequality."
+          ],
+          "concept": "nested negation",
+          "id": "propositions-quantifiers-and-negation-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which statement is true?",
+          "choices": [
+            "$\\forall x\\in\\mathbb R\\;\\exists y\\in\\mathbb R:\\ y>x$",
+            "$\\exists y\\in\\mathbb R\\;\\forall x\\in\\mathbb R:\\ y>x$",
+            "$\\forall x\\in\\mathbb R\\;\\exists y\\in\\mathbb R:\\ y^2<0$",
+            "$\\exists x\\in\\mathbb R:\\ x^2<0$"
+          ],
+          "answer": "$\\forall x\\in\\mathbb R\\;\\exists y\\in\\mathbb R:\\ y>x$",
+          "solution": "For each $x$, choosing $y=x+1$ works. No single real number exceeds every real number, and real squares cannot be negative.",
+          "hints": [
+            "Construct a witness that depends on $x$.",
+            "Use nonnegativity of real squares."
+          ],
+          "concept": "witness dependence",
+          "id": "propositions-quantifiers-and-negation-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "What is the contrapositive of 'if $x>2$, then $x^2>4$' over the real numbers?",
+          "choices": [
+            "If $x^2\\le4$, then $x\\le2$.",
+            "If $x^2>4$, then $x>2$.",
+            "If $x\\le2$, then $x^2\\le4$.",
+            "If $x<2$, then $x^2<4$."
+          ],
+          "answer": "If $x^2\\le4$, then $x\\le2$.",
+          "solution": "The contrapositive swaps the conclusion and hypothesis and negates both, including equality in each negated strict inequality.",
+          "hints": [
+            "Use $\\neg Q\\Rightarrow\\neg P$.",
+            "Negate both strict inequalities."
+          ],
+          "concept": "contrapositive",
+          "id": "propositions-quantifiers-and-negation-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "For the false universal claim $\\forall x\\in\\mathbb R:\\ x^2\\ge1$, give the minimum possible absolute value of a real counterexample.",
+          "answer": 0,
+          "solution": "A counterexample satisfies $x^2<1$, so any $x\\in(-1,1)$ works. Absolute values are nonnegative, and $x=0$ attains absolute value zero while violating the claim. Thus the minimum possible absolute value is zero.",
+          "hints": [
+            "One counterexample is sufficient.",
+            "Absolute values cannot be negative; check whether their lower bound is attained by a violating input."
+          ],
+          "concept": "counterexample witness",
+          "tolerance": 0.000001,
+          "id": "propositions-quantifiers-and-negation-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "In $\\forall\\epsilon>0\\;\\exists N\\in\\mathbb N\\;\\forall n\\ge N:\\ 1/n<\\epsilon$, which dependency is permitted?",
+          "choices": [
+            "$N$ may depend on $\\epsilon$, but cannot be chosen separately after seeing $n$.",
+            "$N$ may depend on the later $n$.",
+            "$\\epsilon$ must be chosen after $N$.",
+            "A different $N$ must be chosen for every $n$."
+          ],
+          "answer": "$N$ may depend on $\\epsilon$, but cannot be chosen separately after seeing $n$.",
+          "solution": "The existential threshold follows the tolerance and precedes the arbitrary later index. Its choice must work for every later index.",
+          "hints": [
+            "Read quantifiers from left to right.",
+            "A single threshold must control the entire tail."
+          ],
+          "concept": "convergence dependencies",
+          "id": "propositions-quantifiers-and-negation-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "proof",
+          "prompt": "Order a proof that no real number is an upper bound for all of $\\mathbb R$.",
+          "choices": [
+            "Then $x=M+1>M$, so $M$ is not an upper bound.",
+            "Let $M\\in\\mathbb R$ be an arbitrary proposed upper bound.",
+            "Since every proposed $M$ fails, no upper bound exists.",
+            "Choose the real number $x=M+1$."
+          ],
+          "answer": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "solution": "Choose an arbitrary candidate, construct a violating element depending on it, verify the violation, and universally conclude failure.",
+          "hints": [
+            "Start with an arbitrary candidate bound.",
+            "Construct the witness after choosing the candidate."
+          ],
+          "concept": "unboundedness proof",
+          "id": "propositions-quantifiers-and-negation-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which is the exact negation of $\\forall\\epsilon>0\\;\\exists N\\in\\mathbb N\\;\\forall n\\ge N:\\ |a_n-L|<\\epsilon$?",
+          "choices": [
+            "$\\exists\\epsilon>0\\;\\forall N\\in\\mathbb N\\;\\exists n\\ge N:\\ |a_n-L|\\ge\\epsilon$",
+            "$\\forall\\epsilon>0\\;\\forall N\\;\\exists n\\ge N:\\ |a_n-L|>\\epsilon$",
+            "$\\exists\\epsilon>0\\;\\exists N\\;\\forall n\\ge N:\\ |a_n-L|\\ge\\epsilon$",
+            "$\\exists N\\;\\forall\\epsilon>0\\;\\exists n\\ge N:\\ |a_n-L|<\\epsilon$"
+          ],
+          "answer": "$\\exists\\epsilon>0\\;\\forall N\\in\\mathbb N\\;\\exists n\\ge N:\\ |a_n-L|\\ge\\epsilon$",
+          "solution": "Every quantifier is reversed while preserving its domain; a strict distance bound becomes a non-strict lower bound.",
+          "hints": [
+            "Flip all three quantifiers in their original order.",
+            "The violating index still satisfies $n\\ge N$."
+          ],
+          "concept": "negation of convergence",
+          "id": "propositions-quantifiers-and-negation-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "direct-contrapositive-and-contradiction-proofs",
+      "title": "Direct, contrapositive, and contradiction proofs",
+      "summary": "Build proofs from explicit assumptions, equivalent contrapositives, or contradictory consequences, and identify invalid reversals.",
+      "objectives": [
+        "Choose and execute a proof method suited to the claim.",
+        "Expose unjustified converse and circular arguments.",
+        "Construct counterexamples to false implications."
+      ],
+      "sections": [
+        {
+          "heading": "Direct proofs expand definitions",
+          "body": "To prove a statement about every object satisfying a hypothesis, begin with an arbitrary such object and derive the conclusion. For integers, even means $n=2k$ and odd means $n=2k+1$ for an integer $k$. If $n=2k+1$, then $n^2=4k^2+4k+1=2(2k^2+2k)+1$, proving that an odd integer has an odd square."
+        },
+        {
+          "heading": "Contraposition turns a difficult hypothesis into a useful one",
+          "body": "The implication $P\\Rightarrow Q$ is equivalent to $\\neg Q\\Rightarrow\\neg P$. To prove that an integer with even square is even, prove instead that an odd integer has odd square. This requires the fact that each integer is either even or odd. Proving the converse $Q\\Rightarrow P$ alone would not establish the original implication."
+        },
+        {
+          "heading": "Contradiction must identify a genuine inconsistency",
+          "body": "A proof by contradiction assumes the desired claim is false and derives an impossible conclusion. For irrationality of $\\sqrt2$, write a hypothetical representation $p/q$ in lowest terms. The equation $p^2=2q^2$ forces $p$ even, and substitution then forces $q$ even, contradicting lowest terms. Merely deriving an unexpected statement is insufficient; the contradiction must violate a stated assumption or established fact."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Prove that the sum of two odd integers is even.",
+          "steps": [
+            "Write arbitrary odd integers as $a=2r+1$ and $b=2s+1$, with integers $r,s$.",
+            "Then $a+b=2r+2s+2=2(r+s+1)$.",
+            "Since $r+s+1$ is an integer, the result has the defining form of an even integer."
+          ],
+          "result": "Every sum of two odd integers is even."
+        },
+        {
+          "prompt": "Prove that $\\sqrt2$ is irrational.",
+          "steps": [
+            "Assume $\\sqrt2=p/q$ with positive integers $p,q$ having no common factor.",
+            "Squaring gives $p^2=2q^2$; an odd integer has an odd square, so $p=2r$.",
+            "Substitute to get $q^2=2r^2$, so $q$ is even as well.",
+            "The common factor two contradicts the chosen lowest-term representation."
+          ],
+          "result": "The rational representation is impossible, so $\\sqrt2$ is irrational."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "choice",
+          "prompt": "Which identity proves that the sum of two even integers is even?",
+          "choices": [
+            "$2r+2s=2(r+s)$ with integers $r,s$.",
+            "$2r+2s=4rs$",
+            "$r+s=2(r+s)$",
+            "$2r+2s$ is positive."
+          ],
+          "answer": "$2r+2s=2(r+s)$ with integers $r,s$.",
+          "solution": "The right side is twice an integer, exactly the definition of evenness.",
+          "hints": [
+            "Use the definition of an even integer.",
+            "Factor a common two."
+          ],
+          "concept": "direct parity proof",
+          "id": "direct-contrapositive-and-contradiction-proofs-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "What is the smallest positive integer counterexample to 'for every positive integer $n$, $n^2>2n$'?",
+          "answer": 1,
+          "solution": "At $n=1$, the inequality would say $1>2$, which is false.",
+          "hints": [
+            "Universal statements fail at any violating input.",
+            "Start with the smallest allowed integer."
+          ],
+          "concept": "counterexample search",
+          "tolerance": 0.000001,
+          "id": "direct-contrapositive-and-contradiction-proofs-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "To prove 'if $n^2$ is odd, then $n$ is odd', which contrapositive should be proved?",
+          "choices": [
+            "If $n$ is even, then $n^2$ is even.",
+            "If $n$ is odd, then $n^2$ is odd.",
+            "If $n^2$ is even, then $n$ is even.",
+            "If $n$ is not an integer, then $n^2$ is odd."
+          ],
+          "answer": "If $n$ is even, then $n^2$ is even.",
+          "solution": "Negate and reverse the original hypothesis and conclusion, using the integer even/odd dichotomy.",
+          "hints": [
+            "Use $\\neg Q\\Rightarrow\\neg P$.",
+            "The variable is an integer."
+          ],
+          "concept": "contrapositive selection",
+          "id": "direct-contrapositive-and-contradiction-proofs-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which input refutes '$x^2>4$ implies $x>2$' over $\\mathbb R$?",
+          "choices": [
+            "$x=-3$",
+            "$x=3$",
+            "$x=0$",
+            "$x=2$"
+          ],
+          "answer": "$x=-3$",
+          "solution": "At minus three the hypothesis $9>4$ is true and the conclusion $-3>2$ is false.",
+          "hints": [
+            "A counterexample must make the hypothesis true.",
+            "Try a negative input with magnitude above two."
+          ],
+          "concept": "false converse",
+          "id": "direct-contrapositive-and-contradiction-proofs-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Write $(2k+1)^2=2m+1$ with $m=ak^2+bk$. Give $a+b$.",
+          "answer": 4,
+          "solution": "Expanding gives $4k^2+4k+1=2(2k^2+2k)+1$, so $a=b=2$ and their sum is four.",
+          "hints": [
+            "Expand the square.",
+            "Factor two out of the nonconstant terms."
+          ],
+          "concept": "algebra in parity proof",
+          "tolerance": 0.000001,
+          "id": "direct-contrapositive-and-contradiction-proofs-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Why must a hypothetical fraction $p/q=\\sqrt2$ be selected in lowest terms in the usual proof?",
+          "choices": [
+            "So proving both $p$ and $q$ even contradicts an explicit assumption.",
+            "Because only lowest-term fractions may be squared.",
+            "Because every denominator in lowest terms is odd.",
+            "Because irrational numbers are defined using even numerators."
+          ],
+          "answer": "So proving both $p$ and $q$ even contradicts an explicit assumption.",
+          "solution": "Having both numerator and denominator even is possible for a nonreduced fraction; lowest terms supplies the assumption that this violates.",
+          "hints": [
+            "An unreduced fraction may have a common factor.",
+            "Identify exactly which assumption is contradicted."
+          ],
+          "concept": "contradiction hypothesis",
+          "id": "direct-contrapositive-and-contradiction-proofs-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "A proof of injectivity starts with $f(a)=f(b)$ and derives $a=b$. What must be true of $a,b$?",
+          "choices": [
+            "They are arbitrary elements of the stated domain.",
+            "They are selected examples with equal coordinates.",
+            "They must be unequal by definition.",
+            "They must be positive even if the domain is all real numbers."
+          ],
+          "answer": "They are arbitrary elements of the stated domain.",
+          "solution": "Injectivity requires the implication for every pair of allowed inputs, so arbitrary representatives must be used.",
+          "hints": [
+            "Injectivity is universally quantified.",
+            "Do not restrict the domain without justification."
+          ],
+          "concept": "direct injectivity proof",
+          "id": "direct-contrapositive-and-contradiction-proofs-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "proof",
+          "prompt": "Order a proof that $f(x)=3x-7$ is injective on $\\mathbb R$.",
+          "choices": [
+            "Add seven to both sides to obtain $3a=3b$.",
+            "Take arbitrary $a,b\\in\\mathbb R$ and assume $f(a)=f(b)$.",
+            "Divide by the nonzero coefficient three to obtain $a=b$, proving injectivity.",
+            "Substitute the formula to obtain $3a-7=3b-7$."
+          ],
+          "answer": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "solution": "Begin with arbitrary inputs sharing an output, expand the defining formula, simplify, and derive equality of inputs.",
+          "hints": [
+            "Start with the definition of injectivity.",
+            "Use the fact that three is nonzero."
+          ],
+          "concept": "injectivity proof sequence",
+          "id": "direct-contrapositive-and-contradiction-proofs-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "proof",
+          "prompt": "Order a contradiction proof that a nonzero rational number plus an irrational number is irrational.",
+          "choices": [
+            "Subtract the rational number $r$ to infer $s=(r+s)-r$ is rational.",
+            "Let $r$ be rational and $s$ irrational; suppose $r+s$ is rational.",
+            "This contradicts the irrationality of $s$, proving $r+s$ irrational."
+          ],
+          "answer": [
+            2,
+            1,
+            3
+          ],
+          "solution": "The rationals are closed under subtraction. Assuming the sum rational would force the irrational summand to be rational. In fact the nonzero restriction on $r$ is unnecessary.",
+          "hints": [
+            "Assume the negation of the desired conclusion.",
+            "Use closure of rational numbers under subtraction."
+          ],
+          "concept": "irrational sum proof",
+          "id": "direct-contrapositive-and-contradiction-proofs-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "A student writes: '$a<b$ implies $a^2<b^2$ because squaring preserves every real inequality.' Which additional hypothesis makes the argument valid?",
+          "choices": [
+            "$0\\le a<b$",
+            "$a<b\\le0$",
+            "$a<0<b$ alone",
+            "No additional hypothesis is needed."
+          ],
+          "answer": "$0\\le a<b$",
+          "solution": "For nonnegative inputs, $b^2-a^2=(b-a)(b+a)>0$. With negative inputs, such as $-3<-2$, squaring reverses the comparison.",
+          "hints": [
+            "Factor $b^2-a^2$.",
+            "Both factors must have controlled signs."
+          ],
+          "concept": "proof assumptions",
+          "id": "direct-contrapositive-and-contradiction-proofs-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "induction-and-recursive-arguments",
+      "title": "Induction and recursive arguments",
+      "summary": "Prove statements indexed by natural numbers using complete base cases and valid inductive dependencies.",
+      "objectives": [
+        "Formulate induction hypotheses without assuming the conclusion.",
+        "Use strong induction for multistep recurrences.",
+        "Verify formulas for sums and recursively defined sequences."
+      ],
+      "sections": [
+        {
+          "heading": "Ordinary induction links adjacent indices",
+          "body": "To prove $P(n)$ for all integers $n\\ge n_0$, prove $P(n_0)$ and then show $P(k)\\Rightarrow P(k+1)$ for an arbitrary $k\\ge n_0$. In the step, $P(k)$ is a temporary assumption, while $P(k+1)$ remains the target. A valid step without a valid base does not start the chain; a base without a general step does not extend it."
+        },
+        {
+          "heading": "Strong induction supplies every earlier index",
+          "body": "In strong induction, the step assumes all $P(j)$ for $n_0\\le j\\le k$ before proving $P(k+1)$. It is useful when an object decomposes into several smaller pieces rather than only the immediately previous one. Multiple starting cases may be needed: if a recurrence uses two preceding terms, its proof must initialize both before applying a two-step update."
+        },
+        {
+          "heading": "Recurrences need explicit initial data",
+          "body": "A recurrence specifies dependencies, not usually a unique sequence by itself. With $a_1=2$ and $a_{n+1}=2a_n+3$, define $b_n=a_n+3$ so $b_{n+1}=2b_n$ and $b_1=5$. Thus $a_n=5\\cdot2^{n-1}-3$. An induction proof checks the initial value and substitutes the proposed formula into the recurrence."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Prove $1+2+\\cdots+n=n(n+1)/2$ for positive integers.",
+          "steps": [
+            "For $n=1$, both sides equal one.",
+            "Assume the sum through $k$ is $k(k+1)/2$.",
+            "Add $k+1$: the new sum is $k(k+1)/2+(k+1)=(k+1)(k+2)/2$.",
+            "This is the formula at $k+1$, so induction proves every positive case."
+          ],
+          "result": "The triangular-sum formula holds for every positive integer."
+        },
+        {
+          "prompt": "Show that every integer $n\\ge8$ equals $3a+5b$ for some nonnegative integers $a,b$.",
+          "steps": [
+            "Initialize $8=3+5$, $9=3+3+3$, and $10=5+5$.",
+            "For any $n\\ge11$, assume all integers from eight through $n-1$ have such representations.",
+            "Then $n-3\\ge8$ has a representation, and adding one more three represents $n$."
+          ],
+          "result": "Three base cases and a strong-induction step cover every residue class modulo three."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "number",
+          "prompt": "Use the triangular-sum formula to find $1+2+\\cdots+12$.",
+          "answer": 78,
+          "solution": "Apply $1+\\cdots+n=n(n+1)/2$ at $n=12$: $12\\cdot13/2=78$. The product counts the paired sum before dividing by two.",
+          "hints": [
+            "Pair first and last terms.",
+            "Use $n(n+1)/2$."
+          ],
+          "concept": "inductive sum formula",
+          "tolerance": 0.000001,
+          "id": "induction-and-recursive-arguments-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Find $1+2+4+8+16$.",
+          "answer": 31,
+          "solution": "Writing $S=1+2+4+8+16$, subtract $S$ from $2S$ to obtain $S=32-1=31$.",
+          "hints": [
+            "The terms are powers from $2^0$ through $2^4$.",
+            "Subtract the sum from twice itself."
+          ],
+          "concept": "geometric sum",
+          "tolerance": 0.000001,
+          "id": "induction-and-recursive-arguments-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "If $a_1=2$ and $a_{n+1}=2a_n+3$, find $a_3$.",
+          "answer": 17,
+          "solution": "Start from $a_1=2$: $a_2=2\\cdot2+3=7$, then $a_3=2\\cdot7+3=17$. Each step uses the preceding term.",
+          "hints": [
+            "Use the initial value before recursing.",
+            "Do not omit the additive three."
+          ],
+          "concept": "recurrence evaluation",
+          "tolerance": 0.000001,
+          "id": "induction-and-recursive-arguments-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which is the correct induction hypothesis for proving $\\sum_{i=1}^n i^2=n(n+1)(2n+1)/6$ by ordinary induction?",
+          "choices": [
+            "Assume the identity for an arbitrary fixed $n=k$.",
+            "Assume the identity for $n=k+1$, the case being proved.",
+            "Assume the identity only for $n=1$.",
+            "Assume the identity is true for every real $n$."
+          ],
+          "answer": "Assume the identity for an arbitrary fixed $n=k$.",
+          "solution": "The step may use the preceding arbitrary case to derive the next, but cannot assume that target case.",
+          "hints": [
+            "Distinguish the assumed case from the target case.",
+            "The index is a positive integer."
+          ],
+          "concept": "induction hypothesis",
+          "id": "induction-and-recursive-arguments-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Let $b_0=1$ and $b_{n+1}=3b_n$. Find $b_4$.",
+          "answer": 81,
+          "solution": "The explicit rule is $b_n=3^n$; at four it is 81.",
+          "hints": [
+            "This indexing starts at zero.",
+            "There are four multiplicative updates."
+          ],
+          "concept": "zero-based recurrence",
+          "tolerance": 0.000001,
+          "id": "induction-and-recursive-arguments-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "A proposed induction step proves $P(k)\\Rightarrow P(k+2)$. Which bases suffice to prove every $P(n)$ for integers $n\\ge1$?",
+          "choices": [
+            "$P(1)$ and $P(2)$",
+            "Only $P(1)$",
+            "Only $P(2)$",
+            "No finite collection of base cases can suffice."
+          ],
+          "answer": "$P(1)$ and $P(2)$",
+          "solution": "The step preserves parity. A base for each parity class starts both chains.",
+          "hints": [
+            "Separate odd and even indices.",
+            "A jump of two cannot connect the two classes."
+          ],
+          "concept": "multiple base cases",
+          "id": "induction-and-recursive-arguments-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "For $a_1=2$, $a_{n+1}=2a_n+3$, the formula $a_n=c\\cdot2^{n-1}-3$ holds. Find $c$.",
+          "answer": 5,
+          "solution": "At $n=1$, $2=c-3$, hence $c=5$. Substitution then verifies the update.",
+          "hints": [
+            "Use the initial condition.",
+            "Check the candidate against the recurrence."
+          ],
+          "concept": "solving affine recurrence",
+          "tolerance": 0.000001,
+          "id": "induction-and-recursive-arguments-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "proof",
+          "prompt": "Order the induction step for $1+3+\\cdots+(2n-1)=n^2$.",
+          "choices": [
+            "Simplify to $k^2+2k+1=(k+1)^2$.",
+            "Assume the sum of the first $k$ odd positive integers equals $k^2$.",
+            "The next odd term is $2k+1$, so the new sum is $k^2+(2k+1)$.",
+            "This matches the desired formula at $k+1$."
+          ],
+          "answer": [
+            2,
+            3,
+            1,
+            4
+          ],
+          "solution": "Use the previous sum, identify the correct next term, complete a square, and match the target expression.",
+          "hints": [
+            "Find the $(k+1)$st odd integer.",
+            "The new total should become a perfect square."
+          ],
+          "concept": "inductive algebra",
+          "id": "induction-and-recursive-arguments-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "If $F_0=0$, $F_1=1$, and $F_{n+2}=F_{n+1}+F_n$, find $F_7$.",
+          "answer": 13,
+          "solution": "Successive terms are $0,1,1,2,3,5,8,13$, so index seven has value 13.",
+          "hints": [
+            "Retain the zero-based starting index.",
+            "Each term uses both preceding values."
+          ],
+          "concept": "two-step recurrence",
+          "tolerance": 0.000001,
+          "id": "induction-and-recursive-arguments-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "A purported induction claims every finite nonempty group of horses has just one coat color. Its step compares the first $k$ and last $k$ horses of a group of $k+1$. Why does this step fail?",
+          "choices": [
+            "At $k=1$, the two subsets have no common horse, so the connecting argument fails.",
+            "Induction can never prove statements about sets.",
+            "The base case for singleton sets is false.",
+            "The induction hypothesis may not be applied to subsets."
+          ],
+          "answer": "At $k=1$, the two subsets have no common horse, so the connecting argument fails.",
+          "solution": "For a group of two horses, the first and last one-horse subgroups are disjoint. Each singleton has one coat color, but there is no shared horse forcing those two colors to agree. Thus the proposed $1\\to2$ induction step fails even though the singleton base case is true.",
+          "hints": [
+            "Examine the first induction step.",
+            "An overlap of size $k-1$ is empty when $k=1$."
+          ],
+          "concept": "invalid induction",
+          "id": "induction-and-recursive-arguments-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "sets-functions-images-and-preimages",
+      "title": "Sets, functions, images, and preimages",
+      "summary": "Work precisely with images and inverse images, recognizing which set identities require injectivity or surjectivity.",
+      "objectives": [
+        "Compute finite and interval images and preimages.",
+        "Prove inverse-image identities from membership definitions.",
+        "Identify when image identities fail without injectivity."
+      ],
+      "sections": [
+        {
+          "heading": "Images and preimages use opposite membership directions",
+          "body": "For $f:X\\to Y$ and $A\\subseteq X$, the image is $f(A)=\\{f(x):x\\in A\\}$. For $B\\subseteq Y$, the preimage is $f^{-1}(B)=\\{x\\in X:f(x)\\in B\\}$. A preimage does not require an inverse function or injectivity. Its elements are inputs, whereas elements of an image are outputs."
+        },
+        {
+          "heading": "Preimages preserve the full Boolean structure",
+          "body": "Membership gives $f^{-1}(B\\cap C)=f^{-1}(B)\\cap f^{-1}(C)$ and likewise for unions. Relative complements satisfy $f^{-1}(Y\\setminus B)=X\\setminus f^{-1}(B)$, with the ambient domain and codomain made explicit. These identities hold for every function because one input has one output, so logical and/or/not operations carry directly through its membership test."
+        },
+        {
+          "heading": "Images can merge distinct witnesses",
+          "body": "Images always preserve unions, but in general $f(A\\cap C)\\subseteq f(A)\\cap f(C)$ can be strict. For $f(x)=x^2$, the disjoint sets $A=\\{-1\\}$ and $C=\\{1\\}$ have the same image $\\{1\\}$. Injectivity prevents these merged witnesses and makes the intersection identity an equality. Surjectivity instead guarantees $f(f^{-1}(B))=B$ for every subset of the codomain."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Find the image of $[-1,2]$ under $f(x)=x^2$.",
+          "steps": [
+            "Every square is nonnegative, and zero belongs to the interval, so the smallest output is zero.",
+            "The largest input magnitude is two, which gives the largest square four.",
+            "Every value $y\\in[0,4]$ is attained by $x=\\sqrt y\\in[0,2]$."
+          ],
+          "result": "$f([-1,2])=[0,4]$; checking the endpoints alone would incorrectly miss the minimum at zero."
+        },
+        {
+          "prompt": "Find $f^{-1}((1,4])$ for $f(x)=x^2$ on $\\mathbb R$.",
+          "steps": [
+            "Membership requires $1<x^2\\le4$.",
+            "Equivalently, $1<|x|\\le2$.",
+            "Separate the negative and positive branches while retaining strict and non-strict endpoints."
+          ],
+          "result": "$f^{-1}((1,4])=[-2,-1)\\cup(1,2]$."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "number",
+          "prompt": "For $A=\\{-2,-1,0,1,2\\}$ and $f(x)=x^2$, how many elements are in $f(A)$?",
+          "answer": 3,
+          "solution": "The distinct outputs are $\\{0,1,4\\}$; repeated outputs count only once.",
+          "hints": [
+            "A set contains no duplicates.",
+            "Both signs may have the same square."
+          ],
+          "concept": "finite image",
+          "tolerance": 0.000001,
+          "id": "sets-functions-images-and-preimages-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "For $f(x)=2x+1$, list $f^{-1}(\\{3,7\\})$ in increasing order.",
+          "answer": [
+            1,
+            3
+          ],
+          "solution": "Solve $2x+1=3$ and $2x+1=7$, giving one and three.",
+          "hints": [
+            "Treat each target output separately.",
+            "Preimages contain inputs."
+          ],
+          "concept": "finite preimage",
+          "tolerance": 0.000001,
+          "id": "sets-functions-images-and-preimages-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "For $f(x)=x^2$, give the endpoints $[a,b]$ of $f([-1,2])=[a,b]$.",
+          "answer": [
+            0,
+            4
+          ],
+          "solution": "Zero is attained at the interior input zero; four is attained at two. Every intermediate output is attained.",
+          "hints": [
+            "Check interior as well as endpoint values.",
+            "Squares are nonnegative."
+          ],
+          "concept": "interval image",
+          "tolerance": 0.000001,
+          "id": "sets-functions-images-and-preimages-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which fact is required for the notation $f^{-1}(B)$ to denote a preimage of a set?",
+          "choices": [
+            "Only that $f$ is a function and $B$ is a subset of its codomain.",
+            "$f$ must be bijective.",
+            "$f$ must be strictly increasing.",
+            "$B$ must contain exactly one point."
+          ],
+          "answer": "Only that $f$ is a function and $B$ is a subset of its codomain.",
+          "solution": "The preimage is the set of inputs whose outputs lie in $B$; no inverse function is needed.",
+          "hints": [
+            "Use the membership definition.",
+            "A set preimage and an inverse function are different constructions."
+          ],
+          "concept": "preimage existence",
+          "id": "sets-functions-images-and-preimages-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which identity is true for every function $f:X\\to Y$ and $B,C\\subseteq Y$?",
+          "choices": [
+            "$f^{-1}(B\\cap C)=f^{-1}(B)\\cap f^{-1}(C)$",
+            "$f(A\\cap D)=f(A)\\cap f(D)$ for all domain subsets",
+            "$f^{-1}(f(A))=A$ for every domain subset",
+            "$f(X)=Y$"
+          ],
+          "answer": "$f^{-1}(B\\cap C)=f^{-1}(B)\\cap f^{-1}(C)$",
+          "solution": "Both sides contain exactly those inputs whose output belongs to both $B$ and $C$. The other claims need additional hypotheses.",
+          "hints": [
+            "Translate intersection membership into two conditions.",
+            "No distinct input witnesses are involved in a preimage."
+          ],
+          "concept": "preimage intersections",
+          "id": "sets-functions-images-and-preimages-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "For $f(x)=x^2$, $A=\\{-1\\}$, $B=\\{1\\}$, what compares $f(A\\cap B)$ and $f(A)\\cap f(B)$?",
+          "choices": [
+            "The first is empty and the second is $\\{1\\}$.",
+            "Both are empty.",
+            "Both are $\\{1\\}$.",
+            "The first is $\\{1\\}$ and the second is empty."
+          ],
+          "answer": "The first is empty and the second is $\\{1\\}$.",
+          "solution": "The input sets are disjoint, but both of their sole elements map to one. Thus image does not preserve this intersection.",
+          "hints": [
+            "Intersect the inputs before applying the function.",
+            "Compare with intersecting the two separate images."
+          ],
+          "concept": "image intersection counterexample",
+          "id": "sets-functions-images-and-preimages-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Let $f:\\mathbb R\\to\\mathbb R$, $f(x)=x^2$. How many real inputs belong to $f^{-1}(\\{-1\\})$?",
+          "answer": 0,
+          "solution": "No real square is negative, so this preimage is empty.",
+          "hints": [
+            "Check whether the target is in the range.",
+            "Nonnegative squares cannot equal minus one."
+          ],
+          "concept": "empty preimage",
+          "tolerance": 0.000001,
+          "id": "sets-functions-images-and-preimages-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which is $f^{-1}((1,4])$ when $f(x)=x^2$ on $\\mathbb R$?",
+          "choices": [
+            "$[-2,-1)\\cup(1,2]$",
+            "$(-2,-1]\\cup[1,2)$",
+            "$(1,2]$",
+            "$[-2,2]$"
+          ],
+          "answer": "$[-2,-1)\\cup(1,2]$",
+          "solution": "The requirement is $1<x^2\\le4$, so magnitudes exceed one and are at most two.",
+          "hints": [
+            "Take square roots as a magnitude condition.",
+            "Reflect the positive branch and reverse its endpoints carefully."
+          ],
+          "concept": "preimage interval boundaries",
+          "id": "sets-functions-images-and-preimages-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "proof",
+          "prompt": "Order a membership proof of $f^{-1}(B\\cap C)=f^{-1}(B)\\cap f^{-1}(C)$.",
+          "choices": [
+            "This means $f(x)\\in B$ and $f(x)\\in C$.",
+            "Therefore $x\\in f^{-1}(B)$ and $x\\in f^{-1}(C)$, exactly membership in their intersection; all equivalences reverse.",
+            "Take any $x\\in X$: $x\\in f^{-1}(B\\cap C)$ exactly when $f(x)\\in B\\cap C$."
+          ],
+          "answer": [
+            3,
+            1,
+            2
+          ],
+          "solution": "Translate inverse-image membership, split the intersection condition, and translate back. Reversible equivalences prove both inclusions.",
+          "hints": [
+            "Start with one arbitrary input.",
+            "Every membership rewrite must be reversible."
+          ],
+          "concept": "set identity proof",
+          "id": "sets-functions-images-and-preimages-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "For every function $f:X\\to Y$, which inclusion always holds for $A\\subseteq X$?",
+          "choices": [
+            "$A\\subseteq f^{-1}(f(A))$",
+            "$f^{-1}(f(A))\\subseteq A$",
+            "$f(A)\\subseteq A$",
+            "$f^{-1}(A)\\subseteq Y$"
+          ],
+          "answer": "$A\\subseteq f^{-1}(f(A))$",
+          "solution": "If $x\\in A$, its output belongs to $f(A)$, so $x$ belongs to the preimage of that image. Extra inputs with the same outputs may also belong.",
+          "hints": [
+            "Track one arbitrary $x\\in A$.",
+            "Noninjective maps may add other preimages."
+          ],
+          "concept": "image-preimage inclusion",
+          "id": "sets-functions-images-and-preimages-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "countability-and-diagonal-arguments",
+      "title": "Countability and diagonal arguments",
+      "summary": "Construct enumerations of infinite sets and use diagonalization to prove when no enumeration can exist.",
+      "objectives": [
+        "Distinguish finite, countably infinite, and uncountable sets.",
+        "Construct explicit bijections or enumerations.",
+        "Execute Cantor's diagonal argument without decimal ambiguity."
+      ],
+      "sections": [
+        {
+          "heading": "Countability requires a listing, not finiteness",
+          "body": "A set is at most countable when it is finite or admits a listing by natural-number indices. An infinite subset of a countable set is countably infinite, even if its entries become very sparse. For example, $n\\mapsto2n$ is a bijection from positive integers to positive even integers. The integers can be listed $0,1,-1,2,-2,\\ldots$, showing that adding negatives does not create uncountability."
+        },
+        {
+          "heading": "Diagonals enumerate a product of two countable lists",
+          "body": "List positive integer pairs in increasing order of $i+j$, and within one diagonal in increasing $i$. Every pair lies on a finite diagonal and thus receives a finite index. Applying $(i,j)\\mapsto i/j$ lists every positive rational number, possibly many times; skipping repetitions and interleaving zero and negative rationals gives a listing of $\\mathbb Q$. A dense set can therefore still be countable."
+        },
+        {
+          "heading": "Diagonalization constructs an omitted object",
+          "body": "Suppose every infinite binary sequence were listed as rows $s_1,s_2,\\ldots$. Define a new sequence by $d_n=1-s_n(n)$, where $s_n(n)$ is the $n$th bit of row $n$. The new sequence disagrees with row $n$ at position $n$, so it appears nowhere in the listing. Using binary sequences directly avoids the nonunique positional representations that complicate an argument stated only in terms of real expansions."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Enumerate positive pairs through the first three diagonals.",
+          "steps": [
+            "For $i+j=2$, list $(1,1)$.",
+            "For $i+j=3$, list $(1,2),(2,1)$.",
+            "For $i+j=4$, list $(1,3),(2,2),(3,1)$. Every later pair is reached by continuing finite diagonals."
+          ],
+          "result": "The first six pairs are $(1,1),(1,2),(2,1),(1,3),(2,2),(3,1)$."
+        },
+        {
+          "prompt": "Prove that no map $f:X\\to\\mathcal P(X)$ can be surjective.",
+          "steps": [
+            "Define the subset $D=\\{x\\in X:x\\notin f(x)\\}$.",
+            "If $f$ were surjective, there would be $d\\in X$ with $f(d)=D$.",
+            "Then $d\\in D$ is equivalent to $d\\notin f(d)=D$, a contradiction."
+          ],
+          "result": "The power set has strictly greater cardinality than the original set, by Cantor's theorem."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "choice",
+          "prompt": "Which function is a bijection from positive integers to positive even integers?",
+          "choices": [
+            "$f(n)=2n$",
+            "$f(n)=n^2$",
+            "$f(n)=2n+1$",
+            "$f(n)=n/2$"
+          ],
+          "answer": "$f(n)=2n$",
+          "solution": "It is injective because $2a=2b$ forces $a=b$, and each positive even integer $2k$ has preimage $k$.",
+          "hints": [
+            "Check both uniqueness and existence of a preimage.",
+            "The codomain contains only positive even integers."
+          ],
+          "concept": "countable bijection",
+          "id": "countability-and-diagonal-arguments-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "If a finite set has five elements, how many subsets are in its power set?",
+          "answer": 32,
+          "solution": "Each element independently belongs or does not belong to a subset, giving $2^5=32$.",
+          "hints": [
+            "There are two membership choices per element.",
+            "Multiply the choices."
+          ],
+          "concept": "finite power sets",
+          "tolerance": 0.000001,
+          "id": "countability-and-diagonal-arguments-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which set is uncountable?",
+          "choices": [
+            "The set of all infinite binary sequences",
+            "The integers",
+            "The rational numbers",
+            "The positive integer pairs"
+          ],
+          "answer": "The set of all infinite binary sequences",
+          "solution": "A diagonal complement differs from the $n$th listed sequence at its $n$th bit, defeating every proposed listing.",
+          "hints": [
+            "Distinguish finite strings from infinite sequences.",
+            "Apply a diagonal argument."
+          ],
+          "concept": "uncountable sequences",
+          "id": "countability-and-diagonal-arguments-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "Enumerate positive pairs by increasing $i+j$, then increasing $i$. What is the fifth pair $[i,j]$?",
+          "answer": [
+            2,
+            2
+          ],
+          "solution": "The sequence begins $(1,1),(1,2),(2,1),(1,3),(2,2)$.",
+          "hints": [
+            "The sum-four diagonal contains three pairs.",
+            "Count from the first sum-two pair."
+          ],
+          "concept": "pair enumeration",
+          "tolerance": 0.000001,
+          "id": "countability-and-diagonal-arguments-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Why does listing all positive pairs and mapping $(i,j)$ to $i/j$ show that positive rationals are at most countable?",
+          "choices": [
+            "Every positive rational occurs in the resulting list, and repetitions can be skipped.",
+            "Each rational must occur exactly once initially.",
+            "The map $(i,j)\\mapsto i/j$ is injective.",
+            "There are only finitely many fractions."
+          ],
+          "answer": "Every positive rational occurs in the resulting list, and repetitions can be skipped.",
+          "solution": "Surjective enumeration suffices for countability. Repeated representations such as $1/2=2/4$ do not prevent listing all distinct outputs.",
+          "hints": [
+            "One fraction can have many representations.",
+            "Coverage is essential; initial uniqueness is not."
+          ],
+          "concept": "rational enumeration",
+          "id": "countability-and-diagonal-arguments-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "The diagonal bits of four listed infinite binary rows are $[0,1,1,0]$. Give the first four bits of the diagonal complement.",
+          "answer": [
+            1,
+            0,
+            0,
+            1
+          ],
+          "solution": "Complement each diagonal bit using $d_n=1-s_n(n)$, giving $1,0,0,1$.",
+          "hints": [
+            "Flip zero to one and one to zero.",
+            "Use the diagonal coordinate of each row."
+          ],
+          "concept": "diagonal construction",
+          "tolerance": 0.000001,
+          "id": "countability-and-diagonal-arguments-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which statement about countability is true?",
+          "choices": [
+            "A subset of a countable set is at most countable.",
+            "Every dense subset of $\\mathbb R$ is uncountable.",
+            "Every infinite subset of $\\mathbb R$ is countable.",
+            "Every sequence of real numbers lists all real numbers."
+          ],
+          "answer": "A subset of a countable set is at most countable.",
+          "solution": "A listing of the larger set can be filtered to retain only subset elements. Density does not imply uncountability: the rationals are a counterexample.",
+          "hints": [
+            "Filter a known enumeration.",
+            "Recall that rational numbers are dense and countable."
+          ],
+          "concept": "countable subsets",
+          "id": "countability-and-diagonal-arguments-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "In Cantor's argument for $f:X\\to\\mathcal P(X)$, which subset is chosen?",
+          "choices": [
+            "$D=\\{x\\in X:x\\notin f(x)\\}$",
+            "$D=\\{x\\in X:x\\in f(x)\\}$",
+            "$D=f(X)$",
+            "$D=X$ in every case"
+          ],
+          "answer": "$D=\\{x\\in X:x\\notin f(x)\\}$",
+          "solution": "This membership reversal ensures that assuming $D=f(d)$ forces $d\\in D$ exactly when $d\\notin D$.",
+          "hints": [
+            "The contradiction depends on negating membership.",
+            "The subset must consist of elements of $X$."
+          ],
+          "concept": "Cantor diagonal set",
+          "id": "countability-and-diagonal-arguments-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "proof",
+          "prompt": "Order a proof that infinite binary sequences cannot all be listed.",
+          "choices": [
+            "For each $n$, $d$ differs from row $s_n$ at coordinate $n$, so $d\\ne s_n$.",
+            "Suppose $s_1,s_2,\\ldots$ lists every infinite binary sequence.",
+            "Therefore $d$ is absent from the supposed complete list, a contradiction.",
+            "Define $d_n=1-s_n(n)$ for every positive integer $n$."
+          ],
+          "answer": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "solution": "Assume a complete listing, construct a valid binary sequence, identify a disagreement with each row, and contradict completeness.",
+          "hints": [
+            "Construct a sequence only after assuming a listing.",
+            "Prove disagreement with an arbitrary row."
+          ],
+          "concept": "diagonal proof",
+          "id": "countability-and-diagonal-arguments-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "Why should a decimal diagonal proof avoid casually using only the digits zero and nine?",
+          "choices": [
+            "Some real numbers have two decimal expansions, so different digit strings need not represent different reals.",
+            "Zero and nine are not decimal digits.",
+            "Every string of zeros and nines represents a rational.",
+            "Decimal representations are always finite."
+          ],
+          "answer": "Some real numbers have two decimal expansions, so different digit strings need not represent different reals.",
+          "solution": "For example $0.4999\\ldots=0.5000\\ldots$. Using digits such as one and two for the constructed expansion, or proving uncountability of binary sequences directly, avoids that ambiguity.",
+          "hints": [
+            "Recall terminating decimals with a tail of nines.",
+            "Distinguish strings from the real values they represent."
+          ],
+          "concept": "representation ambiguity",
+          "id": "countability-and-diagonal-arguments-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "suprema-infima-and-order",
+      "title": "Suprema, infima, and order",
+      "summary": "Use least-upper-bound and greatest-lower-bound definitions, including the approximation property that distinguishes an extremal bound.",
+      "objectives": [
+        "Distinguish upper bounds and suprema from maxima.",
+        "Compute infima and suprema of bounded sets.",
+        "Prove a candidate is a supremum with arbitrary positive accuracy."
+      ],
+      "sections": [
+        {
+          "heading": "Bounds need not belong to the set",
+          "body": "An upper bound $U$ for $S\\subseteq\\mathbb R$ satisfies $s\\le U$ for every $s\\in S$. The supremum is the least such bound, and a maximum is an element of $S$ at least as large as every other element. Thus $[0,1)$ has supremum one but no maximum. Lower bounds, infima, and minima reverse all of these inequalities."
+        },
+        {
+          "heading": "The approximation property proves leastness",
+          "body": "For nonempty $S$, a real number $u$ is its supremum exactly when it is an upper bound and, for every $\\epsilon>0$, some $s\\in S$ satisfies $u-\\epsilon<s\\le u$. If no such element existed for one tolerance, $u-\\epsilon$ would be a smaller upper bound. The strict lower inequality is essential: the set must approach $u$ arbitrarily closely from below."
+        },
+        {
+          "heading": "Completeness and transformations",
+          "body": "Completeness says every nonempty subset of $\\mathbb R$ bounded above has a real supremum. This is a structural axiom, not a statement true in every ordered field: $\\{q\\in\\mathbb Q:q^2<2\\}$ has no rational supremum when considered inside $\\mathbb Q$. For bounded nonempty real sets, translating by $c$ translates the supremum by $c$; multiplying by a negative scalar turns an upper-bound problem into a lower-bound problem."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Find the infimum, supremum, minimum, and maximum of $S=\\{1-1/n:n\\ge1\\}$.",
+          "steps": [
+            "The first term is zero, and all terms lie in $[0,1)$, so zero is the minimum and infimum.",
+            "One is an upper bound and is never attained.",
+            "For every $\\epsilon>0$, choose $n>1/\\epsilon$. Then $1-1/n>1-\\epsilon$, so no smaller bound works."
+          ],
+          "result": "The infimum and minimum are zero; the supremum is one; a maximum does not exist."
+        },
+        {
+          "prompt": "If $\\inf S=-2$ and $\\sup S=5$, find the bounds of $T=\\{3-2s:s\\in S\\}$.",
+          "steps": [
+            "The map $s\\mapsto3-2s$ reverses order.",
+            "The largest possible limiting value comes from $s$ near minus two: $3-2(-2)=7$.",
+            "The smallest limiting value comes from $s$ near five: $3-2(5)=-7$. Approximation to the original bounds establishes sharpness."
+          ],
+          "result": "$\\inf T=-7$ and $\\sup T=7$, whether or not either endpoint is attained."
+        }
+      ],
+      "questions": [
+        {
+          "kind": "number",
+          "prompt": "Find $\\sup[0,1)$.",
+          "answer": 1,
+          "solution": "One bounds every element above, and elements arbitrarily close to one rule out any smaller upper bound.",
+          "hints": [
+            "The endpoint need not be a member.",
+            "Find the least upper bound."
+          ],
+          "concept": "supremum of interval",
+          "tolerance": 0.000001,
+          "id": "suprema-infima-and-order-01",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "Find $\\inf\\{1/n:n\\ge1\\}$.",
+          "answer": 0,
+          "solution": "Every term is positive, and for any $\\epsilon>0$ a sufficiently large $n$ gives $1/n<\\epsilon$.",
+          "hints": [
+            "All terms are above zero.",
+            "They can become arbitrarily small."
+          ],
+          "concept": "infimum of sequence set",
+          "tolerance": 0.000001,
+          "id": "suprema-infima-and-order-02",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which statement about $S=(2,5]$ is correct?",
+          "choices": [
+            "Its maximum is five and its infimum is two, but it has no minimum.",
+            "Its minimum is two and maximum is five.",
+            "It has no supremum.",
+            "Its supremum is strictly greater than five."
+          ],
+          "answer": "Its maximum is five and its infimum is two, but it has no minimum.",
+          "solution": "Five belongs to the set and bounds it above. Two is the greatest lower bound but is excluded.",
+          "hints": [
+            "Check endpoint inclusion separately from bounds.",
+            "A minimum must belong to the set."
+          ],
+          "concept": "attainment",
+          "id": "suprema-infima-and-order-03",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "For $S=\\{-3,2,7\\}$, return $[\\inf S,\\sup S]$.",
+          "answer": [
+            -3,
+            7
+          ],
+          "solution": "The smallest and largest elements of this nonempty finite set are minus three and seven.",
+          "hints": [
+            "A finite set attains both extrema.",
+            "Compare the three values."
+          ],
+          "concept": "finite extremal bounds",
+          "tolerance": 0.000001,
+          "id": "suprema-infima-and-order-04",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "If $\\sup S=4$ for a nonempty bounded set, find $\\sup\\{s+3:s\\in S\\}$.",
+          "answer": 7,
+          "solution": "Adding three translates all upper bounds and the least one: $4+3=7$.",
+          "hints": [
+            "Translate every element by the same amount.",
+            "Translate the least upper bound too."
+          ],
+          "concept": "translated supremum",
+          "tolerance": 0.000001,
+          "id": "suprema-infima-and-order-05",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "vector",
+          "prompt": "If $\\inf S=-2$ and $\\sup S=5$, return $[\\inf(-2S),\\sup(-2S)]$.",
+          "answer": [
+            -10,
+            4
+          ],
+          "solution": "Multiplication by minus two reverses order: the new infimum is $-2\\cdot5=-10$ and supremum is $-2\\cdot(-2)=4$.",
+          "hints": [
+            "A negative multiplier reverses inequalities.",
+            "Swap the roles of infimum and supremum."
+          ],
+          "concept": "negative scaling",
+          "tolerance": 0.000001,
+          "id": "suprema-infima-and-order-06",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "choice",
+          "prompt": "Which condition, together with $u$ being an upper bound of nonempty $S$, proves $u=\\sup S$?",
+          "choices": [
+            "For every $\\epsilon>0$ there exists $s\\in S$ with $s>u-\\epsilon$.",
+            "There exists one $s\\in S$ with $s<u$.",
+            "Every $s\\in S$ is strictly less than $u$.",
+            "There exists $\\epsilon>0$ such that every $s\\in S$ satisfies $s\\le u-\\epsilon$."
+          ],
+          "answer": "For every $\\epsilon>0$ there exists $s\\in S$ with $s>u-\\epsilon$.",
+          "solution": "If $v<u$, use $\\epsilon=u-v>0$ to obtain an element $s>u-\\epsilon=v$, so $v$ cannot be an upper bound. Since $u$ is already an upper bound, it is the least one. Merely requiring every element to be below $u$ is insufficient: $S=(0,1)$ and $u=2$ satisfy that condition, but $\\sup S=1$.",
+          "hints": [
+            "You must rule out every smaller bound.",
+            "The tolerance is arbitrary and positive."
+          ],
+          "concept": "supremum approximation",
+          "id": "suprema-infima-and-order-07",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "number",
+          "prompt": "For $S=\\{2-3/n:n\\ge1\\}$, find the minimum.",
+          "answer": -1,
+          "solution": "The first term is $2-3=-1$. The sequence increases with $n$, so this attained value is the minimum.",
+          "hints": [
+            "Determine monotonicity.",
+            "Evaluate the first allowed index."
+          ],
+          "concept": "minimum versus limit",
+          "tolerance": 0.000001,
+          "id": "suprema-infima-and-order-08",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "kind": "proof",
+          "prompt": "Order a proof that $\\sup\\{3-2/n:n\\ge1\\}=3$.",
+          "choices": [
+            "Choose an integer $n>2/\\epsilon$; then $2/n<\\epsilon$, so $3-2/n>3-\\epsilon$.",
+            "Every term $3-2/n$ is less than three, so three is an upper bound.",
+            "Hence no number below three is an upper bound, and three is the supremum.",
+            "Let $\\epsilon>0$ be arbitrary."
+          ],
+          "answer": [
+            2,
+            4,
+            1,
+            3
+          ],
+          "solution": "Every $3-2/n<3$, so three is an upper bound. Given $\\epsilon>0$, the Archimedean property provides an integer $n>2/\\epsilon$, yielding $3-2/n>3-\\epsilon$. For any proposed smaller bound $v<3$, use $\\epsilon=3-v$ to obtain a set element greater than $v$. Thus three is the least upper bound.",
+          "hints": [
+            "The approximation argument alone does not show an upper bound.",
+            "Choose $n$ after choosing $\\epsilon$."
+          ],
+          "concept": "supremum proof",
+          "id": "suprema-infima-and-order-09",
+          "difficulty": "stretch",
+          "exam": true
+        },
+        {
+          "kind": "choice",
+          "prompt": "Why does the least-upper-bound property fail in $\\mathbb Q$ for $S=\\{q\\in\\mathbb Q:q\\ge0,\\ q^2<2\\}$?",
+          "choices": [
+            "Its real supremum is $\\sqrt2$, which is not rational.",
+            "The set is unbounded in $\\mathbb Q$.",
+            "The set is empty.",
+            "Every member is an upper bound."
+          ],
+          "answer": "Its real supremum is $\\sqrt2$, which is not rational.",
+          "solution": "The set is nonempty and bounded, but no rational is the least upper bound. Completeness supplies its bound in $\\mathbb R$, where the missing irrational exists.",
+          "hints": [
+            "The set contains zero and is bounded above by two.",
+            "Distinguish boundedness from existence of a bound inside the same field."
+          ],
+          "concept": "ordered-field completeness",
+          "id": "suprema-infima-and-order-10",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    }
+  ]
+}

@@ -12,12 +12,37 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json", ...init?.headers },
   });
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { detail?: string } | null;
-    throw new Error(payload?.detail ?? `Request failed with status ${response.status}`);
+    const payload = (await response.json().catch(() => null)) as {
+      detail?: string | Array<{ msg?: string }>;
+    } | null;
+    const detail = Array.isArray(payload?.detail)
+      ? payload.detail.map((item) => item.msg ?? "Invalid answer").join("; ")
+      : payload?.detail;
+    throw new Error(detail ?? `Request failed with status ${response.status}`);
   }
   return response.json() as Promise<T>;
 }
 export const api = {
+  authoredLesson: (roadmapSlug: string, topicSlug: string) =>
+    request<import("@/lib/curriculum").AuthoredLesson>(`/roadmaps/${roadmapSlug}/lessons/${topicSlug}`),
+  startAssessment: (
+    roadmapSlug: string,
+    body: { mode: "practice" | "exam" | "review"; topic_slug?: string; stage_index?: number },
+  ) =>
+    request<import("@/lib/curriculum").AssessmentSession>(`/roadmaps/${roadmapSlug}/assessments`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  submitAssessment: (
+    sessionId: string,
+    body: { answers: Array<{ question_id: string; answer: unknown }>; time_spent_seconds: number },
+  ) =>
+    request<import("@/lib/curriculum").AssessmentResult>(`/roadmaps/assessments/${sessionId}/submit`, {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  roadmapMistakes: () => request<import("@/lib/curriculum").MistakeQueue>("/roadmaps/mistakes"),
+  learningStats: () => request<import("@/lib/curriculum").LearningStats>("/roadmaps/learning-stats"),
   roadmapProgress: () => request<RoadmapProgressResponse>("/roadmaps/progress"),
   updateRoadmapProgress: (roadmapSlug: string, topicSlug: string, body: RoadmapProgressUpdate) =>
     request<RoadmapProgressItem>(`/roadmaps/${roadmapSlug}/topics/${topicSlug}`, {

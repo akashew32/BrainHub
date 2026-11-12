@@ -82,20 +82,20 @@ def test_session_action_completion_and_recent_attempt(client):
 
 def test_roadmap_progress_requires_quiz_mastery_and_flows_into_stats(client):
     started = client.patch(
-        "/api/roadmaps/linear-algebra/topics/vector-arithmetic-and-linear-combinations",
+        "/api/roadmaps/linear-algebra/topics/gaussian-and-gauss-jordan-elimination",
         json={"status": "in_progress", "time_spent_seconds": 45},
     )
     assert started.status_code == 200
     assert started.json()["time_spent_seconds"] == 45
 
     blocked = client.patch(
-        "/api/roadmaps/linear-algebra/topics/vector-arithmetic-and-linear-combinations",
+        "/api/roadmaps/linear-algebra/topics/gaussian-and-gauss-jordan-elimination",
         json={"status": "completed", "quiz_score": 33},
     )
     assert blocked.status_code == 422
 
     completed = client.patch(
-        "/api/roadmaps/linear-algebra/topics/vector-arithmetic-and-linear-combinations",
+        "/api/roadmaps/linear-algebra/topics/gaussian-and-gauss-jordan-elimination",
         json={"status": "completed", "quiz_score": 100, "time_spent_seconds": 15},
     )
     assert completed.status_code == 200
@@ -107,7 +107,7 @@ def test_roadmap_progress_requires_quiz_mastery_and_flows_into_stats(client):
     progress = client.get("/api/roadmaps/progress").json()
     assert progress["summary"]["completed"] == 1
     assert progress["summary"]["roadmaps"][1]["percent"] == 2
-    assert progress["items"][0]["topic_slug"] == "vector-arithmetic-and-linear-combinations"
+    assert progress["items"][0]["topic_slug"] == "gaussian-and-gauss-jordan-elimination"
 
     stats = client.get("/api/stats").json()
     assert stats["roadmaps"]["completed"] == 1

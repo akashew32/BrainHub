@@ -13,8 +13,8 @@ import {
 import { api } from "@/lib/api";
 import { progressKey, type RoadmapProgressItem, type RoadmapProgressUpdate } from "@/lib/roadmap-progress";
 
-const CACHE_KEY = "brainhub:roadmap-progress:v1";
-const PENDING_KEY = "brainhub:roadmap-progress-pending:v1";
+const CACHE_KEY = "brainhub:roadmap-progress:v2";
+const PENDING_KEY = "brainhub:roadmap-progress-pending:v2";
 
 type SyncState = "loading" | "synced" | "offline";
 
@@ -30,6 +30,7 @@ type ProgressContextValue = {
   progress: ReadonlyMap<string, RoadmapProgressItem>;
   ready: boolean;
   syncState: SyncState;
+  acceptProgress: (item: RoadmapProgressItem) => void;
   recordProgress: (
     roadmapSlug: string,
     topicSlug: string,
@@ -239,9 +240,15 @@ export function RoadmapProgressProvider({ children }: { children: ReactNode }) {
     () => new Map(items.map((item) => [progressKey(item.roadmap_slug, item.topic_slug), item])),
     [items],
   );
+  const acceptProgress = useCallback(
+    (item: RoadmapProgressItem) => {
+      commitItems((current) => mergeItem(current, item));
+    },
+    [commitItems],
+  );
   const value = useMemo(
-    () => ({ items, progress, ready, syncState, recordProgress }),
-    [items, progress, ready, recordProgress, syncState],
+    () => ({ items, progress, ready, syncState, recordProgress, acceptProgress }),
+    [items, progress, ready, recordProgress, syncState, acceptProgress],
   );
 
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>;

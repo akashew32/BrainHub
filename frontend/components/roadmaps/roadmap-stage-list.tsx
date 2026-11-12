@@ -36,7 +36,9 @@ export function RoadmapStageList({ roadmap }: { roadmap: LearningRoadmap }) {
                     <h3 className="mt-1 text-xl font-semibold sm:text-2xl">{stage.title}</h3>
                   </div>
                   <span className="rounded-full border border-[#2e3a4d] bg-[#111823] px-3 py-1 text-xs text-[#91a0b3]">
-                    {unlocked ? `${completeCount}/${stage.topics.length} complete` : "Locked"}
+                    {stageIndex === 0
+                      ? `${completeCount}/${stage.topics.length} complete · Authored`
+                      : "Curriculum outline"}
                   </span>
                 </div>
                 <p className="mt-3 leading-7 text-[#9ca8b8]">{stage.description}</p>
@@ -116,6 +118,11 @@ export function RoadmapStageList({ roadmap }: { roadmap: LearningRoadmap }) {
                     <p className="mt-1 text-sm leading-6 text-[#aeb8c6]">{stage.checkpoint}</p>
                   </div>
                 </div>
+                {stageIndex === 0 ? (
+                  <Link className="btn mt-4 inline-block" href={`/roadmaps/${roadmap.slug}/exam`}>
+                    Stage 1 exam · 12 questions
+                  </Link>
+                ) : null}
               </article>
             </div>
           </li>

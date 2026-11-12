@@ -5,6 +5,7 @@ import RoadmapLessonPage from "@/app/roadmaps/[slug]/[topic]/page";
 import RoadmapDetailPage from "@/app/roadmaps/[slug]/page";
 import RoadmapsPage from "@/app/roadmaps/page";
 import { RoadmapProgressProvider } from "@/components/roadmaps/roadmap-progress-provider";
+import type { AssessmentResult, AssessmentSession, AuthoredLesson } from "@/lib/curriculum";
 import { roadmapLessonMap, roadmapLessons } from "@/lib/roadmap-lessons";
 import { learningRoadmaps, roadmapCounts } from "@/lib/roadmaps";
 
@@ -26,6 +27,91 @@ const emptyProgress = {
   },
 };
 
+const authoredLesson: AuthoredLesson = {
+  roadmap_slug: "probability",
+  topic_slug: "sum-and-product-rules",
+  title: "Sum and product rules",
+  summary: "Count disjoint choices by addition and successive choices by multiplication.",
+  objectives: ["Separate disjoint cases.", "Count successive choices.", "Check for repeated outcomes."],
+  sections: [
+    { heading: "Disjoint alternatives", body: "For disjoint finite sets, $|A\\cup B|=|A|+|B|$." },
+    { heading: "Successive choices", body: "Two stages with $m$ and $n$ choices produce $mn$ outcomes." },
+    { heading: "Overlapping cases", body: "If cases overlap, subtract their intersection once." },
+  ],
+  worked_examples: [
+    {
+      prompt: "A route has two first legs and three second legs. Count the complete routes.",
+      steps: ["Each first leg admits three continuations.", "There are $2\\cdot3=6$ pairs."],
+      result: "There are six complete routes.",
+    },
+  ],
+  sources: [{ title: "MIT OpenCourseWare", url: "https://ocw.mit.edu/" }],
+  practice_count: 8,
+  question_count: 10,
+  pass_score: 75,
+};
+
+const assessmentSession: AssessmentSession = {
+  id: "practice-session",
+  mode: "practice",
+  roadmap_slug: "probability",
+  topic_slug: "sum-and-product-rules",
+  expires_at: "2099-01-01T00:00:00Z",
+  pass_score: 75,
+  questions: [
+    {
+      id: "count-successive-choices",
+      kind: "number",
+      prompt: "Two first legs each allow three second legs. How many routes exist?",
+      hints: ["Count ordered pairs.", "Multiply the two choice counts."],
+      concept: "Product rule",
+      difficulty: "foundation",
+      topic_slug: authoredLesson.topic_slug,
+      lesson_title: authoredLesson.title,
+    },
+    {
+      id: "choose-disjoint-rule",
+      kind: "choice",
+      prompt: "How do you combine the counts of two disjoint alternatives?",
+      choices: ["Add the counts.", "Multiply the counts."],
+      hints: ["The alternatives do not overlap.", "Each outcome belongs to exactly one alternative."],
+      concept: "Sum rule",
+      difficulty: "foundation",
+      topic_slug: authoredLesson.topic_slug,
+      lesson_title: authoredLesson.title,
+    },
+  ],
+};
+
+const assessmentResult: AssessmentResult = {
+  session_id: assessmentSession.id,
+  mode: "practice",
+  score: 100,
+  passed: true,
+  correct: 2,
+  total: 2,
+  feedback: assessmentSession.questions.map((question, index) => ({
+    question_id: question.id,
+    prompt: question.prompt,
+    concept: question.concept,
+    correct: true,
+    submitted_answer: index === 0 ? "6" : "Add the counts.",
+    expected_answer: index === 0 ? 6 : "Add the counts.",
+    solution: index === 0 ? "There are $2\\cdot3=6$ ordered pairs." : "Disjoint alternatives add.",
+    topic_slug: authoredLesson.topic_slug,
+  })),
+  progress: {
+    roadmap_slug: authoredLesson.roadmap_slug,
+    topic_slug: authoredLesson.topic_slug,
+    status: "completed",
+    quiz_score: 100,
+    quiz_attempts: 1,
+    time_spent_seconds: 30,
+    last_viewed_at: "2026-11-12T12:00:00Z",
+    completed_at: "2026-11-12T12:00:00Z",
+  },
+};
+
 function renderWithProgress(children: ReactNode) {
   return render(<RoadmapProgressProvider>{children}</RoadmapProgressProvider>);
 }
@@ -37,8 +123,11 @@ beforeEach(() => {
     vi.fn(async (input: string | URL | Request, init?: RequestInit) => {
       const url = String(input);
       if (!init?.method || init.method === "GET") {
+        if (url.includes("/lessons/")) return { ok: true, json: async () => authoredLesson };
         return { ok: true, json: async () => emptyProgress };
       }
+      if (url.endsWith("/assessments")) return { ok: true, json: async () => assessmentSession };
+      if (url.endsWith("/submit")) return { ok: true, json: async () => assessmentResult };
       const body = JSON.parse(String(init.body)) as {
         status: "in_progress" | "completed" | "review";
         quiz_score?: number;
@@ -80,17 +169,14 @@ describe("learning roadmaps", () => {
     }
   });
 
-  it("builds a complete, internally valid lesson for every topic", () => {
+  it("provides unique topic routes with valid prerequisite references", () => {
     expect(roadmapLessons).toHaveLength(300);
     expect(new Set(roadmapLessons.map((lesson) => lesson.id)).size).toBe(300);
     for (const lesson of roadmapLessons) {
-      expect(lesson.objectives).toHaveLength(3);
-      expect(lesson.sections).toHaveLength(3);
-      expect(lesson.workedExample.steps).toHaveLength(4);
-      expect(lesson.exercise.hints).toHaveLength(3);
-      expect(lesson.quiz).toHaveLength(3);
-      expect(lesson.quiz.every((question) => question.answer >= 0 && question.answer < 4)).toBe(true);
-      expect(lesson.quiz.every((question) => new Set(question.choices).size === 4)).toBe(true);
+      expect(lesson.topicSlug).toMatch(/^[a-z0-9]+(?:-[a-z0-9]+)*$/);
+      expect(lesson.title.trim()).not.toBe("");
+      expect(lesson.stageIndex).toBeGreaterThanOrEqual(0);
+      expect(lesson.stageIndex).toBeLessThan(10);
       expect(lesson.prerequisiteIds.every((id) => roadmapLessonMap[id])).toBe(true);
     }
   });
@@ -114,24 +200,41 @@ describe("learning roadmaps", () => {
     expect(within(stageNavigation).getAllByRole("link")).toHaveLength(10);
     expect(screen.getByText("Martingale convergence theorems")).toBeInTheDocument();
     expect(screen.getAllByText("Readiness checkpoint")).toHaveLength(10);
-    expect(screen.getAllByText("Locked")).toHaveLength(9);
+    expect(screen.getAllByText("Curriculum outline")).toHaveLength(9);
+    expect(screen.getByRole("link", { name: "Stage 1 exam · 12 questions" })).toHaveAttribute(
+      "href",
+      "/roadmaps/probability/exam",
+    );
   });
 
-  it("renders a lesson and completes it after a passing mastery check", async () => {
+  it("loads authored content and applies the server-graded practice result", async () => {
     const lesson = roadmapLessons[0]!;
     const page = await RoadmapLessonPage({
       params: Promise.resolve({ slug: lesson.roadmapSlug, topic: lesson.topicSlug }),
     });
     renderWithProgress(page);
     expect(await screen.findByRole("heading", { name: lesson.title, level: 1 })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Apply the structure deliberately" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Computational or proof exercise" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Worked examples" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Disjoint alternatives" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Submit mastery check" })).not.toBeInTheDocument();
 
-    for (const question of lesson.quiz) {
-      fireEvent.click(screen.getByLabelText(question.choices[question.answer]!));
-    }
-    fireEvent.click(screen.getByRole("button", { name: "Submit mastery check" }));
-    await waitFor(() => expect(screen.getByText(/Mastery check passed/)).toBeInTheDocument());
-    expect(screen.getByText("Score: 100%")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Start practice" }));
+    fireEvent.change(await screen.findByRole("textbox", { name: "Answer to question 1" }), {
+      target: { value: "6" },
+    });
+    fireEvent.click(screen.getByLabelText("Add the counts."));
+    fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
+    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText("Completed · Best practice 100%")).toBeInTheDocument());
+    const requests = vi.mocked(fetch).mock.calls;
+    const submission = requests.find(([input]) => String(input).endsWith("/practice-session/submit"));
+    expect(submission).toBeDefined();
+    expect(JSON.parse(String(submission?.[1]?.body))).toEqual({
+      answers: [
+        { question_id: "count-successive-choices", answer: "6" },
+        { question_id: "choose-disjoint-rule", answer: "Add the counts." },
+      ],
+      time_spent_seconds: expect.any(Number),
+    });
   });
 });

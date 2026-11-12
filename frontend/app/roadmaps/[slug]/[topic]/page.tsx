@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { LessonWorkspace } from "@/components/roadmaps/lesson-workspace";
+import { AuthoredLesson } from "@/components/roadmaps/authored-lesson";
 import {
   getAdjacentLessons,
   getRoadmapLesson,
-  roadmapLessonMap,
   roadmapLessons,
   type RoadmapLesson,
 } from "@/lib/roadmap-lessons";
@@ -68,19 +67,36 @@ export default async function RoadmapLessonPage({
           {lesson.title}
         </span>
       </nav>
-      <LessonWorkspace
-        lesson={lesson}
-        roadmap={roadmap}
-        previous={navItem(adjacent.previous)}
-        next={navItem(adjacent.next)}
-        prerequisites={lesson.prerequisiteIds.map((id) => {
-          const prerequisite = roadmapLessonMap[id]!;
-          return {
-            title: prerequisite.title,
-            href: `/roadmaps/${prerequisite.roadmapSlug}/${prerequisite.topicSlug}`,
-          };
-        })}
-      />
+      {lesson.stageIndex === 0 ? (
+        <AuthoredLesson roadmapSlug={slug} topicSlug={topic} accent={roadmap.accent} />
+      ) : (
+        <section className="panel p-8 sm:p-12">
+          <p className="metric" style={{ color: roadmap.accent }}>
+            Stage {lesson.stageIndex + 1} · Curriculum outline
+          </p>
+          <h1 className="mt-3 text-4xl font-semibold">{lesson.title}</h1>
+          <p className="mt-5 leading-8 text-[#a4b4c8]">{lesson.summary}</p>
+          <p className="mt-4 leading-8 text-[#a4b4c8]">
+            The authored release currently covers the first six lessons in each subject. This advanced topic
+            is a study outline; worked lessons and graded assessments will be added in a later curriculum
+            release.
+          </p>
+          <h2 className="mt-6 text-xl font-semibold">Stage learning goal</h2>
+          <p className="mt-3 leading-8 text-[#a4b4c8]">{roadmap.stages[lesson.stageIndex]!.checkpoint}</p>
+          <Link className="btn mt-6 inline-block" href={`/roadmaps/${slug}`}>
+            Return to the curriculum
+          </Link>
+        </section>
+      )}
+      <nav className="mt-6 flex flex-wrap justify-between gap-4" aria-label="Lesson navigation">
+        {[navItem(adjacent.previous), navItem(adjacent.next)].map((item) =>
+          item ? (
+            <Link key={item.href} className="btn" href={item.href}>
+              {item.title}
+            </Link>
+          ) : null,
+        )}
+      </nav>
     </div>
   );
 }

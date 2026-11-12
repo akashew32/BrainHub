@@ -28,9 +28,9 @@ export default function RoadmapsPage() {
             <span className="text-[#778398]">Then master it in order.</span>
           </h1>
           <p className="mt-5 max-w-2xl leading-7 text-[#98a4b5]">
-            Five complete, dependency-aware learning tracks with 300 interactive lessons, worked examples,
-            exercises, mastery quizzes, durable progress, and review recommendations from foundations through
-            graduate-level frontiers.
+            Explore 300 topics across five mathematics tracks. Start with 30 authored foundation lessons, 60
+            solved examples, and 300 mathematical questions, with graded practice, stage exams, and review
+            based on your recent answers. Advanced stages show the full study outline.
           </p>
         </div>
 
@@ -49,8 +49,8 @@ export default function RoadmapsPage() {
             <h2 className="mt-1 text-2xl font-semibold">Choose a mathematical track</h2>
           </div>
           <p className="max-w-xl text-sm leading-6 text-[#778398]">
-            Each lesson combines explanation with deliberate practice. Pass a stage&apos;s quizzes to unlock
-            the next stage, then use the review queue to revisit weak or aging material.
+            Each subject starts with six authored lessons and a stage examination. Solve the practice
+            questions, study the worked feedback, and revisit the concepts behind your mistakes.
           </p>
         </div>
         <RoadmapCatalog roadmaps={learningRoadmaps} />

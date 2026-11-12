@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, RotateCcw } from "lucide-react";
-import { ReviewQueue } from "@/components/roadmaps/review-queue";
-import { roadmapLessons } from "@/lib/roadmap-lessons";
+import { MistakeReview } from "@/components/roadmaps/mistake-review";
 
 export const metadata: Metadata = {
   title: "Roadmap Review Queue — BrainHub",
@@ -26,35 +25,11 @@ export default function RoadmapReviewPage() {
           Return at the right time.
         </h1>
         <p className="mt-4 max-w-2xl leading-7 text-[#98a4b5]">
-          The queue prioritizes unfinished lessons, weaker quiz scores, and mastered material that has not
-          been visited recently. It also surfaces the next unlocked lesson in every active track.
+          Practice the concepts behind your recent mistakes. Recommendations use individual answers and
+          retrieval dates, so revisiting a lesson page does not reset your review schedule.
         </p>
       </section>
-      <ReviewQueue
-        lessons={roadmapLessons.map(
-          ({
-            id,
-            roadmapSlug,
-            roadmapTitle,
-            topicSlug,
-            title,
-            stageIndex,
-            topicIndex,
-            accent,
-            estimatedMinutes,
-          }) => ({
-            id,
-            roadmapSlug,
-            roadmapTitle,
-            topicSlug,
-            title,
-            stageIndex,
-            topicIndex,
-            accent,
-            estimatedMinutes,
-          }),
-        )}
-      />
+      <MistakeReview />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { BarChart3, BrainCircuit, Code2, Map, TerminalSquare } from "lucide-react";
 import "./globals.css";
+import "katex/dist/katex.min.css";
 
 export const metadata: Metadata = {
   title: "BrainHub — Quant & Programming Training",

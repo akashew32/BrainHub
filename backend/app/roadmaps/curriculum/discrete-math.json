@@ -1,0 +1,1330 @@
+{
+  "version": 1,
+  "roadmap_slug": "discrete-math",
+  "stage_index": 0,
+  "sources": [
+    {
+      "title": "MIT OpenCourseWare: Mathematics for Computer Science, proof and discrete structures readings",
+      "url": "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/pages/readings/"
+    }
+  ],
+  "lessons": [
+    {
+      "topic_slug": "propositional-and-predicate-logic",
+      "title": "Propositional and predicate logic",
+      "summary": "Translate mathematical statements into propositions and predicates, then reason accurately with implication and logical connectives.",
+      "objectives": [
+        "Evaluate compound propositions under a truth assignment.",
+        "Distinguish a proposition from a predicate with a free variable.",
+        "Translate implications and test proposed converses using counterexamples."
+      ],
+      "sections": [
+        {
+          "heading": "Propositions and connectives",
+          "body": "A proposition is a declarative statement with a definite truth value. If $p$ and $q$ are propositions, $p\\land q$ requires both to be true, while $p\\lor q$ requires at least one to be true and includes the case where both are true. Exclusive or requires exactly one true input. A truth assignment to $n$ independent propositional variables is a choice among $2^n$ rows."
+        },
+        {
+          "heading": "Implication has one false case",
+          "body": "The implication $p\\Rightarrow q$ says no case has $p$ true and $q$ false. It is equivalent to $\\neg p\\lor q$, so an implication with a false antecedent is true. This logical convention describes whether the promised condition is violated; it does not assert causation. The converse $q\\Rightarrow p$ generally differs, while the contrapositive $\\neg q\\Rightarrow\\neg p$ has the same truth value as the original."
+        },
+        {
+          "heading": "Predicates require a domain",
+          "body": "An expression such as $P(x):x^2=x$ has a free variable and becomes a proposition only after substituting a value or quantifying over a specified domain. Over $\\{0,1,2\\}$ it holds at 0 and 1 but not 2. A universal claim requires every domain element; an existential claim requires a witness. A single counterexample refutes a universal claim but does not refute an existential one."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Evaluate $(p\\Rightarrow q)\\land(q\\Rightarrow p)$ when $p$ is true and $q$ is false.",
+          "steps": [
+            "The implication $p\\Rightarrow q$ has a true antecedent and false conclusion, so it is false.",
+            "The reverse implication $q\\Rightarrow p$ has a false antecedent, so it is true.",
+            "A conjunction requires both components to be true.",
+            "Therefore the whole expression is false."
+          ],
+          "result": "The biconditional is false because the two propositions have different truth values."
+        },
+        {
+          "prompt": "Test the claim: for every integer $n$, if $4$ divides $n$, then $2$ divides $n$. Is its converse valid?",
+          "steps": [
+            "If $n=4k$, then $n=2(2k)$, so divisibility by 2 follows.",
+            "The converse would say that divisibility by 2 forces divisibility by 4.",
+            "Choose $n=2$; it equals $2\\cdot1$ but is not an integer multiple of 4.",
+            "This one counterexample disproves the converse."
+          ],
+          "result": "The implication is true and the converse is false. They must be evaluated separately."
+        }
+      ],
+      "questions": [
+        {
+          "id": "propositional-and-predicate-logic-01",
+          "kind": "choice",
+          "prompt": "Let $p$ be true and $q$ false. What is the truth value of $p\\Rightarrow q$?",
+          "choices": [
+            "False",
+            "True",
+            "It depends on whether p causes q.",
+            "Undefined"
+          ],
+          "answer": "False",
+          "hints": [
+            "An implication forbids a true antecedent with a false conclusion.",
+            "This is its only false truth-table row."
+          ],
+          "solution": "The antecedent is true and the consequent false, which violates the implication. Thus the implication is false.",
+          "concept": "implication truth condition",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "propositional-and-predicate-logic-02",
+          "kind": "number",
+          "prompt": "How many truth assignments exist for four independent propositional variables?",
+          "answer": 16,
+          "hints": [
+            "Each variable has two truth values.",
+            "Multiply the four binary choices."
+          ],
+          "solution": "Each of the four variables independently takes true or false. The product rule gives $2\\cdot2\\cdot2\\cdot2=16$ assignments.",
+          "concept": "truth assignment count",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "propositional-and-predicate-logic-03",
+          "kind": "number",
+          "prompt": "On domain $\\{0,1,2,3\\}$, how many values satisfy the predicate $x^2=x$?",
+          "answer": 2,
+          "hints": [
+            "Rewrite the equation as $x(x-1)=0$.",
+            "Count its roots that lie in the domain."
+          ],
+          "solution": "The equation factors to $x(x-1)=0$, so only 0 and 1 satisfy it. The count is 2.",
+          "concept": "predicate evaluation",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "propositional-and-predicate-logic-04",
+          "kind": "choice",
+          "prompt": "What is the converse of 'If an integer is divisible by 6, then it is divisible by 3'?",
+          "choices": [
+            "If an integer is divisible by 3, then it is divisible by 6.",
+            "If an integer is not divisible by 3, then it is not divisible by 6.",
+            "Every integer is divisible by 6 and by 3.",
+            "No integer divisible by 6 is divisible by 3."
+          ],
+          "answer": "If an integer is divisible by 3, then it is divisible by 6.",
+          "hints": [
+            "A converse exchanges antecedent and consequent.",
+            "Negating both components instead gives an inverse, not the converse."
+          ],
+          "solution": "The converse reverses the direction. It is false, for example at 3, even though the original implication is true.",
+          "concept": "converse versus contrapositive",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "propositional-and-predicate-logic-05",
+          "kind": "choice",
+          "prompt": "When $p$ is false and $q$ true, what is the value of their exclusive or?",
+          "choices": [
+            "True",
+            "False",
+            "Both true and false",
+            "Undefined because p is false"
+          ],
+          "answer": "True",
+          "hints": [
+            "Exclusive or requires exactly one true input.",
+            "Count the true inputs in this assignment."
+          ],
+          "solution": "Exclusive or holds when the inputs differ. Here p is false and q is true, so exactly one input is true and the compound proposition is true.",
+          "concept": "exclusive disjunction",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "propositional-and-predicate-logic-06",
+          "kind": "number",
+          "prompt": "Give the smallest nonnegative integer counterexample to the claim $n^2>n$ for every nonnegative integer n.",
+          "answer": 0,
+          "hints": [
+            "Test the boundary of the domain.",
+            "A strict inequality can fail at equality."
+          ],
+          "solution": "At $n=0$, both sides are 0, so $0>0$ is false. Since 0 is the domain's smallest element, it is the requested counterexample.",
+          "concept": "refuting a universal statement",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "propositional-and-predicate-logic-07",
+          "kind": "number",
+          "prompt": "Supply an integer witness for 'there exists an even prime number'.",
+          "answer": 2,
+          "hints": [
+            "A prime has exactly two positive divisors.",
+            "An even integer greater than two has two as a proper divisor."
+          ],
+          "solution": "The number 2 is even and has exactly the positive divisors 1 and 2. Every larger even number is composite, so 2 is the unique witness.",
+          "concept": "existential witness",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "propositional-and-predicate-logic-08",
+          "kind": "choice",
+          "prompt": "Which expression has a free variable and therefore is not yet a proposition?",
+          "choices": [
+            "$x^2>3$ over the real numbers, with x unspecified.",
+            "$2^2>3$.",
+            "There exists a real x with $x^2>3$.",
+            "Every real x satisfies $x^2\\ge0$."
+          ],
+          "answer": "$x^2>3$ over the real numbers, with x unspecified.",
+          "hints": [
+            "Look for an unspecified variable without a quantifier.",
+            "Substitution or quantification makes a definite statement."
+          ],
+          "solution": "The first expression's truth depends on x. The others substitute a value or quantify x, so they have definite truth values.",
+          "concept": "free and bound variables",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "propositional-and-predicate-logic-09",
+          "kind": "choice",
+          "prompt": "Can $p\\Rightarrow q$, p, and $\\neg q$ all be true under one truth assignment?",
+          "choices": [
+            "No, because p and the implication force q.",
+            "Yes, when p is true and q is false.",
+            "Yes, when p and q are false.",
+            "Yes, under every assignment."
+          ],
+          "answer": "No, because p and the implication force q.",
+          "hints": [
+            "Use the truth condition for implication.",
+            "The required assignment would have p true and q false."
+          ],
+          "solution": "Since p is required to be true and q false, $p\\Rightarrow q$ would be false. No assignment satisfies all three premises.",
+          "concept": "joint satisfiability",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "propositional-and-predicate-logic-10",
+          "kind": "proof",
+          "prompt": "Given $p\\Rightarrow q$, $q\\Rightarrow r$, and p, order the steps proving r.",
+          "choices": [
+            "Use p and $p\\Rightarrow q$ to infer q.",
+            "Use q and $q\\Rightarrow r$ to infer r.",
+            "Begin with the given fact p."
+          ],
+          "answer": [3, 1, 2],
+          "hints": [
+            "Start with an established premise.",
+            "Each implication can be applied only once its antecedent is available."
+          ],
+          "solution": "Start with p (step 3), infer q by the first implication (step 1), then infer r by the second (step 2). This is two applications of modus ponens.",
+          "concept": "chaining implications",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "truth-tables-and-logical-equivalence",
+      "title": "Truth tables and logical equivalence",
+      "summary": "Check formulas on every assignment and derive equivalent forms using De Morgan's laws, distribution, and implication elimination.",
+      "objectives": [
+        "Count satisfying assignments using a truth table.",
+        "Apply equivalence laws without confusing them with one-way implications.",
+        "Disprove a claimed equivalence with a single distinguishing assignment."
+      ],
+      "sections": [
+        {
+          "heading": "Equivalence is agreement on every row",
+          "body": "Two formulas are logically equivalent when their truth values agree under every assignment to their variables. A truth table is exhaustive because $n$ variables have only $2^n$ assignments. A tautology is true on every row, a contradiction false on every row, and a satisfiable formula true on at least one row. Checking one favorable row cannot establish equivalence."
+        },
+        {
+          "heading": "Laws that preserve truth",
+          "body": "De Morgan's laws are $\\neg(p\\land q)\\equiv\\neg p\\lor\\neg q$ and $\\neg(p\\lor q)\\equiv\\neg p\\land\\neg q$. Distribution gives $p\\land(q\\lor r)\\equiv(p\\land q)\\lor(p\\land r)$ and its dual. Replacing an implication by $\\neg p\\lor q$ is often the fastest way to simplify a formula. Parentheses record the structure; changing them silently can change the proposition."
+        },
+        {
+          "heading": "A counterexample row is decisive",
+          "body": "To refute equivalence, exhibit an assignment where one formula is true and the other false. For instance, $p\\Rightarrow q$ and $p\\land q$ differ when both inputs are false: the implication is true but the conjunction false. By contrast, proving equivalence requires a complete table or a chain of already valid equivalence laws."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Simplify $(p\\Rightarrow q)\\land(p\\Rightarrow\\neg q)$.",
+          "steps": [
+            "Eliminate implications to obtain $(\\neg p\\lor q)\\land(\\neg p\\lor\\neg q)$.",
+            "Use $(a\\lor b)\\land(a\\lor c)\\equiv a\\lor(b\\land c)$.",
+            "The result is $\\neg p\\lor(q\\land\\neg q)$.",
+            "The conjunction $q\\land\\neg q$ is false, leaving $\\neg p$."
+          ],
+          "result": "The original formula is equivalent to $\\neg p$, independently of q."
+        },
+        {
+          "prompt": "Count assignments satisfying $p\\land(q\\lor r)$.",
+          "steps": [
+            "The conjunction forces p to be true.",
+            "Of the four assignments to q and r, only (false,false) makes $q\\lor r$ false.",
+            "The remaining three pairs are (true,false), (false,true), and (true,true).",
+            "Each pair combines with exactly one allowed value of p."
+          ],
+          "result": "Exactly 3 of the 8 assignments satisfy the formula."
+        }
+      ],
+      "questions": [
+        {
+          "id": "truth-tables-and-logical-equivalence-01",
+          "kind": "number",
+          "prompt": "How many truth assignments to p and q satisfy $p\\lor q$?",
+          "answer": 3,
+          "hints": [
+            "There are four assignments in total.",
+            "Only the row with both false is excluded."
+          ],
+          "solution": "The satisfying rows are TT, TF, and FT. Therefore the count is 3.",
+          "concept": "disjunction satisfying rows",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-02",
+          "kind": "number",
+          "prompt": "How many assignments to p and q make exactly one of them true?",
+          "answer": 2,
+          "hints": [
+            "TT does not qualify.",
+            "List the two mixed truth-value rows."
+          ],
+          "solution": "Of TT, TF, FT, FF, the mixed rows TF and FT have exactly one true input. TT has two and FF has none, leaving 2 satisfying assignments.",
+          "concept": "exclusive-or truth table",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-03",
+          "kind": "number",
+          "prompt": "How many assignments to p and q satisfy $(p\\Rightarrow q)\\land(q\\Rightarrow p)$?",
+          "answer": 2,
+          "hints": [
+            "Both implications hold exactly when the inputs agree.",
+            "Check TT and FF."
+          ],
+          "solution": "TT makes both implications true; FF also makes both true because their antecedents are false. The mixed rows fail one direction. The count is 2.",
+          "concept": "biconditional",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-04",
+          "kind": "choice",
+          "prompt": "Which formula is equivalent to $\\neg(p\\land q)$?",
+          "choices": [
+            "$\\neg p\\lor\\neg q$",
+            "$\\neg p\\land\\neg q$",
+            "$p\\lor q$",
+            "$p\\land\\neg q$"
+          ],
+          "answer": "$\\neg p\\lor\\neg q$",
+          "hints": [
+            "Negating 'both' means at least one fails.",
+            "The connective changes under De Morgan's law."
+          ],
+          "solution": "The conjunction fails if p is false or q is false, including the case where both are false. Thus its negation is $\\neg p\\lor\\neg q$.",
+          "concept": "De Morgan conjunction law",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-05",
+          "kind": "choice",
+          "prompt": "Which formula is a tautology?",
+          "choices": [
+            "$p\\lor\\neg p$",
+            "$p\\land\\neg p$",
+            "$p\\land q$",
+            "$p\\Rightarrow\\neg p$"
+          ],
+          "answer": "$p\\lor\\neg p$",
+          "hints": [
+            "Test p true and p false.",
+            "A tautology must survive both."
+          ],
+          "solution": "If p is true, the first disjunct holds. If p is false, the second holds. Hence $p\\lor\\neg p$ is true on every row.",
+          "concept": "tautology",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-06",
+          "kind": "number",
+          "prompt": "How many assignments to p, q, r satisfy $p\\land(q\\lor r)$?",
+          "answer": 3,
+          "hints": [
+            "p must be true.",
+            "Three of the four q,r pairs make their disjunction true."
+          ],
+          "solution": "There is one allowed p value and three allowed pairs for q,r, giving $1\\cdot3=3$ satisfying assignments.",
+          "concept": "compound-formula model count",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-07",
+          "kind": "number",
+          "prompt": "Among the eight assignments to p, q, r, how many satisfy $p\\Rightarrow q$? The variable r is unrestricted.",
+          "answer": 6,
+          "hints": [
+            "Three of four assignments to p,q satisfy the implication.",
+            "Each such assignment permits both r values."
+          ],
+          "solution": "The only excluded p,q pair is TF. Three allowed pairs times two r values gives 6.",
+          "concept": "irrelevant-variable multiplicity",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-08",
+          "kind": "choice",
+          "prompt": "Which assignment demonstrates that $p\\Rightarrow q$ is not equivalent to $p\\land q$?",
+          "choices": [
+            "p=false, q=false",
+            "p=true, q=true",
+            "p=true, q=false",
+            "No distinguishing assignment exists."
+          ],
+          "answer": "p=false, q=false",
+          "hints": [
+            "A distinguishing row requires different outputs.",
+            "A false antecedent makes an implication true."
+          ],
+          "solution": "At FF the implication is true, while the conjunction is false. The TT row makes both true, and TF makes both false.",
+          "concept": "counterexample to equivalence",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-09",
+          "kind": "choice",
+          "prompt": "Which formula is equivalent to $(p\\Rightarrow q)\\land(p\\Rightarrow\\neg q)$?",
+          "choices": ["$\\neg p$", "$p$", "$q$", "$\\neg q$"],
+          "answer": "$\\neg p$",
+          "hints": [
+            "Replace implications with disjunctions.",
+            "If p were true, q and its negation would both be required."
+          ],
+          "solution": "Distribution gives $(\\neg p\\lor q)\\land(\\neg p\\lor\\neg q)\\equiv\\neg p\\lor(q\\land\\neg q)\\equiv\\neg p$.",
+          "concept": "implication simplification",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "truth-tables-and-logical-equivalence-10",
+          "kind": "proof",
+          "prompt": "Order the transformations proving $\\neg[p\\lor(\\neg p\\land q)]\\equiv\\neg p\\land\\neg q$.",
+          "choices": [
+            "Apply De Morgan to $\\neg(p\\lor q)$, obtaining $\\neg p\\land\\neg q$.",
+            "Distribute the inner expression: $p\\lor(\\neg p\\land q)\\equiv(p\\lor\\neg p)\\land(p\\lor q)$.",
+            "Use $p\\lor\\neg p\\equiv\\mathrm{true}$ to simplify the inner expression to $p\\lor q$."
+          ],
+          "answer": [2, 3, 1],
+          "hints": [
+            "Simplify what lies under the outer negation first.",
+            "Use De Morgan after reducing the inner expression."
+          ],
+          "solution": "Distribute the inner expression (2), simplify the tautological factor (3), and then apply De Morgan to the remaining outer negation (1). Each step preserves equivalence.",
+          "concept": "equivalence derivation",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "quantifiers-and-nested-negation",
+      "title": "Quantifiers and nested negation",
+      "summary": "Track who chooses each variable, preserve dependency order, and negate nested statements without changing the domain.",
+      "objectives": [
+        "Distinguish a witness depending on x from a single witness for all x.",
+        "Negate nested quantifiers and their final relation correctly.",
+        "Construct explicit witnesses or counterexamples on a specified domain."
+      ],
+      "sections": [
+        {
+          "heading": "The order determines the witness",
+          "body": "The claim $\\forall x\\in\\mathbb R\\;\\exists y\\in\\mathbb R:y>x$ is true with the witness $y=x+1$. Its reversal $\\exists y\\in\\mathbb R\\;\\forall x\\in\\mathbb R:y>x$ is false because choosing $x=y+1$ defeats any fixed y. In the first statement, y may depend on x; in the second, y must be selected before x and cannot change afterward."
+        },
+        {
+          "heading": "Negation switches every quantifier",
+          "body": "The rules are $\\neg\\forall x\\,P(x)\\equiv\\exists x\\,\\neg P(x)$ and $\\neg\\exists x\\,P(x)\\equiv\\forall x\\,\\neg P(x)$. Apply them from the outside inward. Negating $\\forall x\\exists y\\,R(x,y)$ yields $\\exists x\\forall y\\,\\neg R(x,y)$. Negate the final relation too: the negation of $y>x$ is $y\\le x$, including equality."
+        },
+        {
+          "heading": "Restricted domains and implications",
+          "body": "A restricted universal statement $\\forall x\\in D:P(x)$ means every element of D satisfies P; negating it keeps D fixed and demands a counterexample inside D. Similarly, negating an implication requires its antecedent to hold and consequent to fail: $\\neg(A\\Rightarrow B)\\equiv A\\land\\neg B$. This matters in epsilon–delta definitions, where failure requires a point within the proposed neighborhood that violates the promised bound."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Negate: for every positive integer n, there is an integer m with $m>n$.",
+          "steps": [
+            "Move the negation past the universal n, turning it into an existential positive integer n.",
+            "Move it past the existential m, turning it into a universal integer m.",
+            "Negate $m>n$ to $m\\le n$.",
+            "The negation is: there exists a positive integer n such that every integer m satisfies $m\\le n$."
+          ],
+          "result": "The negation asserts an integer upper bound for all integers, which is false; the original statement is true."
+        },
+        {
+          "prompt": "Find the smallest positive integer N so $1/k<1/5$ for every positive integer $k\\ge N$.",
+          "steps": [
+            "For positive k, $1/k<1/5$ is equivalent to $k>5$.",
+            "N=5 fails because the allowed value k=5 gives equality.",
+            "N=6 works because every allowed k is at least 6 and therefore greater than 5.",
+            "Any smaller positive N allows k=5 and fails."
+          ],
+          "result": "The smallest valid N is 6. The strict inequality makes the boundary important."
+        }
+      ],
+      "questions": [
+        {
+          "id": "quantifiers-and-nested-negation-01",
+          "kind": "choice",
+          "prompt": "What is the negation of $\\forall n\\in\\mathbb Z\\;\\exists m\\in\\mathbb Z:m>n$?",
+          "choices": [
+            "$\\exists n\\in\\mathbb Z\\;\\forall m\\in\\mathbb Z:m\\le n$",
+            "$\\forall n\\in\\mathbb Z\\;\\exists m\\in\\mathbb Z:m\\le n$",
+            "$\\exists m\\in\\mathbb Z\\;\\forall n\\in\\mathbb Z:m>n$",
+            "$\\exists n\\in\\mathbb Z\\;\\exists m\\in\\mathbb Z:m<n$"
+          ],
+          "answer": "$\\exists n\\in\\mathbb Z\\;\\forall m\\in\\mathbb Z:m\\le n$",
+          "hints": [
+            "Switch both quantifiers in their original order.",
+            "Negate the strict comparison by including equality."
+          ],
+          "solution": "The outer universal becomes existential, the inner existential becomes universal, and $m>n$ becomes $m\\le n$.",
+          "concept": "nested quantifier negation",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "quantifiers-and-nested-negation-02",
+          "kind": "choice",
+          "prompt": "Which witness proves $\\forall x\\in\\mathbb R\\;\\exists y\\in\\mathbb R:y>x$?",
+          "choices": [
+            "Choose $y=x+1$ after x is given.",
+            "Choose one fixed $y=10^{100}$.",
+            "Choose $y=x$.",
+            "Choose $y=-x$ for every x."
+          ],
+          "answer": "Choose $y=x+1$ after x is given.",
+          "hints": [
+            "The witness may depend on x.",
+            "It must be strictly larger for every real x."
+          ],
+          "solution": "For each given x, the real number $x+1$ satisfies $x+1>x$. No fixed real bound works for all x.",
+          "concept": "dependent existential witness",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "quantifiers-and-nested-negation-03",
+          "kind": "choice",
+          "prompt": "Why is $\\exists y\\in\\mathbb R\\;\\forall x\\in\\mathbb R:y>x$ false?",
+          "choices": [
+            "For any proposed y, choosing $x=y+1$ violates the comparison.",
+            "Because no real number is positive.",
+            "Because an existential quantifier can never precede a universal one.",
+            "Because choosing x=0 always violates it."
+          ],
+          "answer": "For any proposed y, choosing $x=y+1$ violates the comparison.",
+          "hints": [
+            "Treat y as fixed first.",
+            "Construct an x depending on that proposal."
+          ],
+          "solution": "Given any fixed y, the allowed real value $x=y+1$ is larger. Therefore no y satisfies the universal condition.",
+          "concept": "refuting a uniform witness",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "quantifiers-and-nested-negation-04",
+          "kind": "number",
+          "prompt": "On domain $D=\\{1,2,3\\}$, how many ordered pairs $(x,y)\\in D^2$ satisfy $x<y$?",
+          "answer": 3,
+          "hints": [
+            "List pairs in increasing order.",
+            "Equal pairs do not satisfy the strict comparison."
+          ],
+          "solution": "For x=1, y can be 2 or 3. For x=2, only y=3 works. For x=3 no y in the domain is larger. The total is $2+1+0=3$.",
+          "concept": "finite quantified relation",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "quantifiers-and-nested-negation-05",
+          "kind": "choice",
+          "prompt": "Which witness proves $\\forall x\\in\\mathbb Z\\;\\exists y\\in\\mathbb Z:x+y=0$?",
+          "choices": ["$y=-x$", "$y=x$", "$y=0$ for every x", "$y=1-x$"],
+          "answer": "$y=-x$",
+          "hints": [
+            "Solve the displayed equation for y.",
+            "The witness must remain in the integer domain."
+          ],
+          "solution": "If x is an integer then -x is an integer, and $x+(-x)=0$. This supplies a valid witness for every x.",
+          "concept": "witness domain and dependency",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "quantifiers-and-nested-negation-06",
+          "kind": "choice",
+          "prompt": "Negate $\\exists x\\in D:[P(x)\\land Q(x)]$.",
+          "choices": [
+            "$\\forall x\\in D:[\\neg P(x)\\lor\\neg Q(x)]$",
+            "$\\forall x\\in D:[\\neg P(x)\\land\\neg Q(x)]$",
+            "$\\exists x\\in D:[\\neg P(x)\\lor\\neg Q(x)]$",
+            "$\\forall x\\in D:[P(x)\\lor Q(x)]$"
+          ],
+          "answer": "$\\forall x\\in D:[\\neg P(x)\\lor\\neg Q(x)]$",
+          "hints": [
+            "Switch existential to universal.",
+            "Then apply De Morgan to the conjunction."
+          ],
+          "solution": "Saying no x satisfies both properties means every x fails at least one. This is $\\forall x(\\neg P(x)\\lor\\neg Q(x))$.",
+          "concept": "quantifier and connective negation",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "quantifiers-and-nested-negation-07",
+          "kind": "number",
+          "prompt": "On domain $\\{1,2\\}$, how many ordered pairs satisfy $x\\le y$?",
+          "answer": 3,
+          "hints": ["Equality is allowed.", "Check all four ordered pairs."],
+          "solution": "The satisfying pairs are (1,1), (1,2), and (2,2). Only (2,1) fails, so the count is 3.",
+          "concept": "strict versus weak relation",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "quantifiers-and-nested-negation-08",
+          "kind": "choice",
+          "prompt": "Which n refutes $\\forall n\\in\\mathbb Z\\;\\exists m\\in\\mathbb Z:n=2m$?",
+          "choices": ["$n=1$", "$n=2$", "$n=0$", "$n=-4$"],
+          "answer": "$n=1$",
+          "hints": [
+            "The statement claims every integer is even.",
+            "A counterexample must have no integer half."
+          ],
+          "solution": "For n=1, the equation requires m=1/2, which is not an integer. The other listed n values are even and do have integer witnesses.",
+          "concept": "counterexample to a quantified existence",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "quantifiers-and-nested-negation-09",
+          "kind": "number",
+          "prompt": "Find the smallest positive integer N such that $1/k<1/10$ for every integer $k\\ge N$.",
+          "answer": 11,
+          "hints": [
+            "Reciprocals reverse the comparison on positive numbers.",
+            "N=10 permits equality rather than a strict inequality."
+          ],
+          "solution": "The inequality holds exactly when k>10. Taking N=11 ensures it for every later integer; any smaller positive N allows k=10 and fails.",
+          "concept": "eventual-bound witness",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "quantifiers-and-nested-negation-10",
+          "kind": "choice",
+          "prompt": "Negate $\\forall\\epsilon>0\\;\\exists\\delta>0\\;\\forall x\\in\\mathbb R:[|x|<\\delta\\Rightarrow|f(x)|<\\epsilon]$.",
+          "choices": [
+            "$\\exists\\epsilon>0\\;\\forall\\delta>0\\;\\exists x\\in\\mathbb R:[|x|<\\delta\\land|f(x)|\\ge\\epsilon]$",
+            "$\\exists\\epsilon>0\\;\\forall\\delta>0\\;\\exists x\\in\\mathbb R:[|x|\\ge\\delta\\land|f(x)|<\\epsilon]$",
+            "$\\forall\\epsilon>0\\;\\exists\\delta>0\\;\\exists x\\in\\mathbb R:[|x|<\\delta\\land|f(x)|\\ge\\epsilon]$",
+            "$\\exists\\epsilon>0\\;\\exists\\delta>0\\;\\forall x\\in\\mathbb R:[|x|<\\delta\\Rightarrow|f(x)|\\ge\\epsilon]$"
+          ],
+          "answer": "$\\exists\\epsilon>0\\;\\forall\\delta>0\\;\\exists x\\in\\mathbb R:[|x|<\\delta\\land|f(x)|\\ge\\epsilon]$",
+          "hints": [
+            "Switch all three quantifiers without changing their order.",
+            "The negation of an implication is its antecedent and the negation of its consequent."
+          ],
+          "solution": "The quantifiers become existential epsilon, universal delta, existential x. Failure means a point inside the proposed delta neighborhood has $|f(x)|\\ge\\epsilon$, including equality.",
+          "concept": "negating a neighborhood definition",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "direct-contrapositive-and-contradiction-proofs",
+      "title": "Direct, contrapositive, and contradiction proofs",
+      "summary": "Build valid implication proofs from definitions and identify which assumptions each proof strategy permits.",
+      "objectives": [
+        "Construct direct divisibility and parity arguments.",
+        "Choose and correctly state a contrapositive.",
+        "Organize a contradiction argument without assuming the desired conclusion."
+      ],
+      "sections": [
+        {
+          "heading": "Direct proofs unfold the hypothesis",
+          "body": "To prove $P\\Rightarrow Q$ directly, assume P and derive Q using definitions and established facts. For example, if $a\\mid b$ and $b\\mid c$, write $b=ar$ and $c=bs$ with integer r,s. Substitution gives $c=a(rs)$, whose integer coefficient proves $a\\mid c$. The witness rs is the proof's decisive construction, not an unexplained divisibility assertion."
+        },
+        {
+          "heading": "Contraposition changes the starting point",
+          "body": "The contrapositive of $P\\Rightarrow Q$ is $\\neg Q\\Rightarrow\\neg P$. It is equivalent because both are false exactly when P is true and Q false. To prove that an even square has an even integer root, prove instead that an odd integer $n=2k+1$ has odd square $n^2=2(2k^2+2k)+1$. The converse exchanges P and Q and is a different statement."
+        },
+        {
+          "heading": "Contradiction requires a precise negation",
+          "body": "A proof by contradiction assumes the statement's negation and derives an impossibility. If proving an implication, the combined contradictory assumption is $P\\land\\neg Q$. In the irrationality of $\\sqrt2$, assume a lowest-terms fraction a/b. The equation $a^2=2b^2$ forces both a and b even, contradicting lowest terms. Merely discovering a property one dislikes is not a contradiction; name the incompatible facts."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Prove the sum of two odd integers is even.",
+          "steps": [
+            "Let the odd integers be $2a+1$ and $2b+1$ for integers a,b.",
+            "Add them: $(2a+1)+(2b+1)=2a+2b+2$.",
+            "Factor out 2 to obtain $2(a+b+1)$.",
+            "The coefficient $a+b+1$ is an integer, so the sum is even by definition."
+          ],
+          "result": "Every pair of odd integers has even sum, including negative odd integers."
+        },
+        {
+          "prompt": "Prove there are infinitely many prime numbers.",
+          "steps": [
+            "Assume only finitely many primes exist, listed $p_1,\\ldots,p_k$.",
+            "Form the integer $N=p_1\\cdots p_k+1>1$.",
+            "Every listed prime leaves remainder 1 on dividing N, so none divides N.",
+            "But every integer greater than 1 has a prime divisor, so N has a prime divisor outside the list."
+          ],
+          "result": "This contradicts the assumption that the list contained every prime. N need not itself be prime."
+        }
+      ],
+      "questions": [
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-01",
+          "kind": "choice",
+          "prompt": "Which identity proves the sum of odd integers $2a+1$ and $2b+1$ is even?",
+          "choices": [
+            "$(2a+1)+(2b+1)=2(a+b+1)$",
+            "$(2a+1)+(2b+1)=2ab+1$",
+            "$(2a+1)+(2b+1)=2(a+b)+1$",
+            "$(2a+1)+(2b+1)=a+b+2$"
+          ],
+          "answer": "$(2a+1)+(2b+1)=2(a+b+1)$",
+          "hints": [
+            "Expand the sum before factoring.",
+            "Evenness requires twice an integer."
+          ],
+          "solution": "Expansion gives $2a+2b+2=2(a+b+1)$, and the parenthesized coefficient is an integer.",
+          "concept": "direct parity proof",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-02",
+          "kind": "choice",
+          "prompt": "State the contrapositive of 'If $n^2$ is even, then n is even' for integer n.",
+          "choices": [
+            "If n is odd, then $n^2$ is odd.",
+            "If n is even, then $n^2$ is even.",
+            "If $n^2$ is odd, then n is odd.",
+            "If n is odd, then $n^2$ is even."
+          ],
+          "answer": "If n is odd, then $n^2$ is odd.",
+          "hints": [
+            "Negate the conclusion and use it as the new hypothesis.",
+            "For integers, not even means odd."
+          ],
+          "solution": "Here P is 'square even' and Q is 'integer even'. The contrapositive is not Q implies not P: an odd integer has an odd square.",
+          "concept": "contrapositive formulation",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-03",
+          "kind": "choice",
+          "prompt": "In a lowest-terms fraction proof that $\\sqrt2$ is irrational, why is showing both numerator and denominator even a contradiction?",
+          "choices": [
+            "They share a factor of 2 despite the fraction being in lowest terms.",
+            "No two even integers can form a fraction.",
+            "Every fraction of even integers is irrational.",
+            "An even denominator is always zero."
+          ],
+          "answer": "They share a factor of 2 despite the fraction being in lowest terms.",
+          "hints": [
+            "Recall the condition imposed on the proposed fraction.",
+            "Evenness violates coprimality, not the existence of a fraction."
+          ],
+          "solution": "Lowest terms means the numerator and denominator are coprime. Both even would give a common divisor of 2, contradicting that assumption.",
+          "concept": "identifying the actual contradiction",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-04",
+          "kind": "choice",
+          "prompt": "Can an integer n be odd while $n^2$ is even?",
+          "choices": [
+            "No; the square of $2k+1$ equals $2(2k^2+2k)+1$.",
+            "Yes; n=3 is an example.",
+            "Yes; every negative odd n is an example.",
+            "Only when n is zero."
+          ],
+          "answer": "No; the square of $2k+1$ equals $2(2k^2+2k)+1$.",
+          "hints": [
+            "Represent odd n as $2k+1$.",
+            "Compute its square modulo 2."
+          ],
+          "solution": "Expansion shows every odd integer has an odd square. Thus the requested combination is impossible.",
+          "concept": "parity by algebraic representation",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-05",
+          "kind": "number",
+          "prompt": "In a divisibility proof, $b=3a$ and $c=5b$. What integer coefficient t satisfies $c=ta$?",
+          "answer": 15,
+          "hints": [
+            "Substitute the expression for b into c.",
+            "Multiply the two integer witnesses."
+          ],
+          "solution": "$c=5b=5(3a)=15a$, so t=15. This is a concrete instance of transitivity of divisibility.",
+          "concept": "divisibility witnesses",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-06",
+          "kind": "number",
+          "prompt": "Give the smallest positive integer refuting 'If n is even, then 4 divides n'.",
+          "answer": 2,
+          "hints": [
+            "Test the first positive even integer.",
+            "The hypothesis must hold while the conclusion fails."
+          ],
+          "solution": "The integer 2 is even but is not divisible by 4. It is the smallest positive even integer and hence the smallest such counterexample.",
+          "concept": "refuting an implication",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-07",
+          "kind": "proof",
+          "prompt": "Order the steps proving every odd integer has an odd square.",
+          "choices": [
+            "The expression equals $2(2k^2+2k)+1$, which is odd because its coefficient is an integer.",
+            "Write the arbitrary odd integer as $n=2k+1$ with $k\\in\\mathbb Z$.",
+            "Expand $n^2=(2k+1)^2=4k^2+4k+1$."
+          ],
+          "answer": [2, 3, 1],
+          "hints": [
+            "Use the definition of odd first.",
+            "Conclude parity only after expansion and factoring."
+          ],
+          "solution": "Represent n (2), expand its square (3), then express the result as twice an integer plus one (1).",
+          "concept": "structured direct proof",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-08",
+          "kind": "choice",
+          "prompt": "Assume primes are exactly $p_1,\\ldots,p_k$ and put $N=p_1\\cdots p_k+1$. Which statement completes the contradiction correctly?",
+          "choices": [
+            "N has a prime divisor absent from the list.",
+            "N must itself be prime.",
+            "N is divisible by every listed prime.",
+            "N is less than every listed prime."
+          ],
+          "answer": "N has a prime divisor absent from the list.",
+          "hints": [
+            "Every listed prime leaves remainder 1 on dividing N.",
+            "An integer greater than one has at least one prime divisor, whether or not it is prime."
+          ],
+          "solution": "No listed prime divides N, but N>1 must have a prime divisor. That divisor is missing from the claimed complete list. Assuming N itself prime would be an unnecessary and false general assertion.",
+          "concept": "Euclid proof precision",
+          "difficulty": "stretch",
+          "exam": false
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-09",
+          "kind": "choice",
+          "prompt": "Which argument proves $n^2+n$ is even for every integer n?",
+          "choices": [
+            "Factor it as $n(n+1)$; one of two consecutive integers is even.",
+            "Both n and $n+1$ are even.",
+            "Every integer square is even.",
+            "Checking n=0,1,2 proves all integer cases."
+          ],
+          "answer": "Factor it as $n(n+1)$; one of two consecutive integers is even.",
+          "hints": [
+            "Factor before considering parity.",
+            "Consecutive integers have opposite parity."
+          ],
+          "solution": "The factorization $n^2+n=n(n+1)$ is valid for all integers. One factor is even, so the product is twice an integer.",
+          "concept": "proof by parity cases",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "direct-contrapositive-and-contradiction-proofs-10",
+          "kind": "proof",
+          "prompt": "Order this contradiction proof that $\\sqrt2$ is irrational.",
+          "choices": [
+            "Square the equation to get $a^2=2b^2$, so a is even.",
+            "Substitute $a=2k$ to obtain $b^2=2k^2$, so b is even.",
+            "Assume $\\sqrt2=a/b$ with integers a,b, $b\\ne0$, in lowest terms.",
+            "Both a and b are even, contradicting the lowest-terms assumption.",
+            "Write $a=2k$ for an integer k."
+          ],
+          "answer": [3, 1, 5, 2, 4],
+          "hints": [
+            "The lowest-terms assumption must precede the contradiction.",
+            "Substitute the even numerator before inferring the denominator is even."
+          ],
+          "solution": "Assume a lowest-terms representation (3), infer a even (1), write a=2k (5), infer b even after substitution (2), then contradict coprimality (4). The parity step uses that an odd square is odd.",
+          "concept": "irrationality contradiction proof",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "induction-and-strong-induction",
+      "title": "Induction and strong induction",
+      "summary": "Prove statements for all integers in a range by linking explicit base cases to a valid induction step.",
+      "objectives": [
+        "Identify the base range and induction hypothesis precisely.",
+        "Complete algebraic induction steps for sums and recurrences.",
+        "Use strong induction when a construction splits into smaller parts."
+      ],
+      "sections": [
+        {
+          "heading": "Ordinary induction has two obligations",
+          "body": "To prove P(n) for every integer $n\\ge n_0$, establish P($n_0$), then show P(k)$\\Rightarrow$P(k+1) for arbitrary $k\\ge n_0$. In the step, P(k) is an allowed temporary assumption; P(k+1) is the goal and cannot be assumed. For a sum identity, separate the final term before invoking the hypothesis, then simplify to the claimed expression at k+1."
+        },
+        {
+          "heading": "Strong induction uses all earlier cases",
+          "body": "Strong induction assumes P(j) for every $n_0\\le j\\le k$ to prove P(k+1). It is especially convenient when k+1 splits into smaller integers, as in prime factorizations or tiling recurrences. It is logically equivalent to ordinary induction, but fits different constructions better. If the step looks back three positions, establish enough initial cases that every use remains inside the proved range."
+        },
+        {
+          "heading": "Audit the bridge between cases",
+          "body": "An induction proof can fail even when its base case is true and its conclusion sounds plausible. The classic invalid 'all horses have one color' argument splits a group into overlapping smaller groups; the overlap disappears when moving from one horse to two. Check the smallest allowed induction step, all index ranges, and that the exact hypothesis required by each use is available."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Prove $1+2+\\cdots+n=n(n+1)/2$ for every $n\\ge1$.",
+          "steps": [
+            "At n=1, both sides equal 1.",
+            "Assume $\\sum_{i=1}^k i=k(k+1)/2$ for an arbitrary k at least 1.",
+            "Then $\\sum_{i=1}^{k+1}i=k(k+1)/2+(k+1)$.",
+            "Factor to get $(k+1)(k+2)/2$, exactly the formula at k+1."
+          ],
+          "result": "The base and induction step establish the identity for all positive integers."
+        },
+        {
+          "prompt": "Prove every integer $n\\ge8$ can be written as $3a+5b$ with nonnegative integers a,b.",
+          "steps": [
+            "Check 8=3+5, 9=3+3+3, and 10=5+5.",
+            "Assume the claim for all integers from 8 through k, with k at least 10.",
+            "For k+1 at least 11, the integer $k-2$ is at least 8 and at most k.",
+            "Represent $k-2=3a+5b$ by the hypothesis; then $k+1=3(a+1)+5b$."
+          ],
+          "result": "Three consecutive base cases allow the step to add a 3 without leaving the valid range."
+        }
+      ],
+      "questions": [
+        {
+          "id": "induction-and-strong-induction-01",
+          "kind": "number",
+          "prompt": "Use the identity $\\sum_{i=1}^n i=n(n+1)/2$ to compute $1+\\cdots+20$.",
+          "answer": 210,
+          "hints": [
+            "Substitute n=20.",
+            "Divide one of the factors by two before multiplying."
+          ],
+          "solution": "Substituting n=20 in the proved identity gives $20(20+1)/2=10\\cdot21=210$. The twenty terms form ten pairs each summing to 21.",
+          "concept": "sum-of-integers identity",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "induction-and-strong-induction-02",
+          "kind": "number",
+          "prompt": "The sum of the first n positive odd integers is $n^2$. Find the sum of the first 12.",
+          "answer": 144,
+          "hints": [
+            "The twelfth odd integer is 23.",
+            "Use the displayed n-term formula, not a sum through the integer 12."
+          ],
+          "solution": "The first twelve odd integers end at $2\\cdot12-1=23$. The proved n-term identity therefore gives $12^2=144$, rather than a sum of all integers through 12.",
+          "concept": "odd-number sum",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "induction-and-strong-induction-03",
+          "kind": "choice",
+          "prompt": "A theorem claims P(n) for all integers $n\\ge3$, and its step proves P(k)$\\Rightarrow$P(k+1) for every $k\\ge3$. What base case is required?",
+          "choices": ["P(3)", "P(0) alone", "P(2) alone", "No base case"],
+          "answer": "P(3)",
+          "hints": [
+            "Start where the induction bridge is valid.",
+            "Earlier cases do not help unless a bridge reaches the starting index."
+          ],
+          "solution": "P(3) starts the chain P(3), P(4), P(5), and so on. P(0) or P(2) alone is disconnected because no earlier step was proved.",
+          "concept": "induction starting index",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "induction-and-strong-induction-04",
+          "kind": "number",
+          "prompt": "To prove every $n\\ge8$ is $3a+5b$ by repeatedly adding 3, how many consecutive initial values beginning at 8 must be checked?",
+          "answer": 3,
+          "hints": [
+            "A step subtracting 3 preserves the residue modulo 3.",
+            "Start a chain for every residue class."
+          ],
+          "solution": "Check 8, 9, and 10. Every integer at least 11 can subtract 3 to reach a smaller integer still at least 8, so three bases suffice.",
+          "concept": "multiple induction base cases",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "induction-and-strong-induction-05",
+          "kind": "number",
+          "prompt": "A sequence has $a_0=2$ and $a_n=3a_{n-1}$ for $n\\ge1$. Find $a_4$.",
+          "answer": 162,
+          "hints": [
+            "The closed form is $a_n=2\\cdot3^n$.",
+            "There are four multiplications after index zero."
+          ],
+          "solution": "Starting from index zero, multiply by 3 four times: $a_1=6,a_2=18,a_3=54,a_4=162$. The closed form $a_n=2\\cdot3^n$ gives the same result.",
+          "concept": "geometric recurrence",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "induction-and-strong-induction-06",
+          "kind": "choice",
+          "prompt": "An invalid induction says all horses have the same color because two n-horse subsets of an (n+1)-horse group overlap. Which step fails?",
+          "choices": [
+            "The n=1 to n=2 step, because the two one-horse subsets have no common horse.",
+            "The base case of one horse, because one horse cannot have a color.",
+            "Every overlap argument is invalid even when overlap exists.",
+            "The algebraic identity n+1=n+1 is false."
+          ],
+          "answer": "The n=1 to n=2 step, because the two one-horse subsets have no common horse.",
+          "hints": [
+            "Check the first induction step separately.",
+            "The supposed shared witness must actually belong to both subsets."
+          ],
+          "solution": "For a two-horse group, the two single-horse subsets are disjoint. There is no shared horse to force agreement of their colors, so the induction bridge fails.",
+          "concept": "invalid induction diagnosis",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "induction-and-strong-induction-07",
+          "kind": "proof",
+          "prompt": "Order an induction proof of $\\sum_{i=1}^n i=n(n+1)/2$ for $n\\ge1$.",
+          "choices": [
+            "Add the next term: $\\sum_{i=1}^{k+1}i=k(k+1)/2+(k+1)$.",
+            "Verify n=1, where both sides equal 1.",
+            "Assume the identity at an arbitrary integer k at least 1.",
+            "Simplify to $(k+1)(k+2)/2$ and conclude the induction step."
+          ],
+          "answer": [2, 3, 1, 4],
+          "hints": [
+            "Establish the base before entering the induction step.",
+            "Use the hypothesis before simplifying the next case."
+          ],
+          "solution": "Check the base (2), state the induction hypothesis (3), use it after separating the last term (1), then simplify to the formula at k+1 (4).",
+          "concept": "complete algebraic induction",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "induction-and-strong-induction-08",
+          "kind": "number",
+          "prompt": "The integer $7^n-1$ is divisible by 6 for every $n\\ge1$. What is $(7^5-1)/6$?",
+          "answer": 2801,
+          "hints": ["Compute $7^5=16807$.", "Subtract one before division."],
+          "solution": "$(16807-1)/6=16806/6=2801$. The divisibility follows inductively from $7^{k+1}-1=7(7^k-1)+6$.",
+          "concept": "inductive divisibility",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "induction-and-strong-induction-09",
+          "kind": "number",
+          "prompt": "A length-n strip is tiled by length-1 squares and length-2 dominoes. With $t_0=t_1=1$ and $t_n=t_{n-1}+t_{n-2}$, find $t_6$.",
+          "answer": 13,
+          "hints": [
+            "Build values from both initial conditions.",
+            "Separate tilings by the size of the final tile."
+          ],
+          "solution": "The sequence begins $t_0=1,t_1=1,t_2=2,t_3=3,t_4=5,t_5=8,t_6=13$. The recurrence is justified by deleting the final square or domino.",
+          "concept": "two-case recurrence construction",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "induction-and-strong-induction-10",
+          "kind": "proof",
+          "prompt": "Order the strong-induction proof that every integer $n\\ge2$ is a product of primes.",
+          "choices": [
+            "If n is composite, write $n=ab$ with $2\\le a,b<n$.",
+            "The base n=2 is prime; for larger n, assume the claim for every integer from 2 through n-1.",
+            "Apply the hypothesis to a and b and multiply their prime factorizations.",
+            "If n is prime, its one-factor expression already proves the claim; otherwise enter the composite case."
+          ],
+          "answer": [2, 4, 1, 3],
+          "hints": [
+            "Set up the smaller-case hypothesis before using it.",
+            "Both factors in the composite case must lie inside that hypothesis's range."
+          ],
+          "solution": "Establish the base and hypothesis (2), split prime from composite (4), choose smaller nontrivial factors in the composite case (1), then factor both by the hypothesis and combine (3).",
+          "concept": "strong induction on factorization",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "invariants-and-extremal-arguments",
+      "title": "Invariants and extremal arguments",
+      "summary": "Prove that a process cannot reach a target or must terminate by tracking preserved properties and monotone quantities.",
+      "objectives": [
+        "Find a parity, sum, coloring, or gcd invariant for an allowed operation.",
+        "Use a nonnegative integer potential to prove termination.",
+        "Choose an extremal object and explain why its defining maximality forces a property."
+      ],
+      "sections": [
+        {
+          "heading": "Invariants restrict reachable states",
+          "body": "An invariant has the same value before and after every legal move. If a starting integer is odd and every move adds or subtracts 2, parity remains odd, so an even target is unreachable. The proof must cover every permitted move. A quantity that happens to stay constant in a few examples is only a candidate until its preservation is proved algebraically."
+        },
+        {
+          "heading": "Coloring and arithmetic invariants",
+          "body": "Color a chessboard in alternating black and white squares. Every domino covering adjacent squares uses one of each color, so equal color counts are necessary for a tiling. Removing opposite corners of an 8-by-8 board removes two squares of one color and violates that necessity. In arithmetic, replacing $(a,b)$ by $(b,a\\bmod b)$ preserves the set of common divisors, hence the gcd."
+        },
+        {
+          "heading": "Monovariants and extremal choices",
+          "body": "A monovariant changes in one direction rather than staying constant. A nonnegative integer potential that decreases by at least one each move cannot support infinitely many moves; an initial potential M permits at most M decreases. Extremal proofs choose a smallest or largest object in a finite nonempty collection, then exploit the impossibility of improving it. Finiteness or another existence argument is necessary: an arbitrary infinite set need not have a largest element."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Starting from 3, repeatedly add or subtract 2. Can the process reach 10?",
+          "steps": [
+            "The starting state 3 is odd.",
+            "Adding or subtracting 2 preserves the residue modulo 2.",
+            "By induction over the number of moves, every reachable state is odd.",
+            "The target 10 is even, so it has a different invariant value."
+          ],
+          "result": "The target is unreachable, regardless of how many moves are allowed."
+        },
+        {
+          "prompt": "Apply Euclid's algorithm to 84 and 30 and explain the preserved quantity.",
+          "steps": [
+            "Divide: $84=2\\cdot30+24$, so replace (84,30) by (30,24).",
+            "Next $30=1\\cdot24+6$, producing (24,6).",
+            "Finally $24=4\\cdot6+0$, producing (6,0).",
+            "Each replacement preserves common divisors, while the positive remainder strictly decreases."
+          ],
+          "result": "The gcd is 6. The invariant proves correctness and the decreasing remainder proves termination."
+        }
+      ],
+      "questions": [
+        {
+          "id": "invariants-and-extremal-arguments-01",
+          "kind": "choice",
+          "prompt": "Start at 3 and repeatedly add or subtract 2. Can 10 be reached?",
+          "choices": [
+            "No, because parity remains odd.",
+            "Yes, because enough moves reach any integer.",
+            "No, because the integer value never changes.",
+            "Yes, by adding 2 four times."
+          ],
+          "answer": "No, because parity remains odd.",
+          "hints": [
+            "Check the change modulo 2.",
+            "The target has a different parity from the start."
+          ],
+          "solution": "Every move changes the value by an even amount, preserving odd parity. Since 10 is even, it cannot be reached.",
+          "concept": "parity obstruction",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "invariants-and-extremal-arguments-02",
+          "kind": "choice",
+          "prompt": "Remove two opposite corners of a standard 8-by-8 chessboard. Why can the remaining board not be tiled by adjacent-square dominoes?",
+          "choices": [
+            "Both removed corners have the same color, but each domino covers one square of each color.",
+            "The board has an odd number of squares remaining.",
+            "Every domino must cover two black squares.",
+            "Removing any two squares always prevents tiling."
+          ],
+          "answer": "Both removed corners have the same color, but each domino covers one square of each color.",
+          "hints": [
+            "Use an alternating coloring.",
+            "Opposite corners on an even-by-even board share a color."
+          ],
+          "solution": "Originally there are 32 squares of each color. Removing the corners leaves 30 of one color and 32 of the other. Dominoes use equal counts, so they cannot cover that imbalance.",
+          "concept": "checkerboard coloring invariant",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "invariants-and-extremal-arguments-03",
+          "kind": "choice",
+          "prompt": "Ten coins start tails up. A move flips exactly two distinct coins. Can a state with exactly one head be reached?",
+          "choices": [
+            "No; the parity of the number of heads stays even.",
+            "Yes; flip one chosen coin twice.",
+            "No; the number of heads stays exactly zero.",
+            "Yes; every move changes the number of heads by one."
+          ],
+          "answer": "No; the parity of the number of heads stays even.",
+          "hints": [
+            "The head count changes by -2, 0, or 2.",
+            "All these changes are even."
+          ],
+          "solution": "Flipping two tails adds two heads, flipping two heads removes two, and flipping one of each changes zero. The count's parity remains even, excluding one head.",
+          "concept": "invariant under all move cases",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "invariants-and-extremal-arguments-04",
+          "kind": "number",
+          "prompt": "Euclid's remainder operation preserves the gcd. Compute $\\gcd(252,105)$.",
+          "answer": 21,
+          "hints": [
+            "The first remainder is 42.",
+            "Continue until the remainder is zero."
+          ],
+          "solution": "$252=2\\cdot105+42$, $105=2\\cdot42+21$, and $42=2\\cdot21$. The final nonzero remainder is 21.",
+          "concept": "gcd invariant",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "invariants-and-extremal-arguments-05",
+          "kind": "number",
+          "prompt": "Start with the integer triple (1,2,3). A move adds 1 to one entry and subtracts 1 from a different entry. What is the invariant sum?",
+          "answer": 6,
+          "hints": [
+            "Compute the initial sum.",
+            "The move changes the sum by $1-1$."
+          ],
+          "solution": "The initial sum is 6 and each move has net change zero. Therefore every reachable triple has sum 6.",
+          "concept": "conserved total",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "invariants-and-extremal-arguments-06",
+          "kind": "choice",
+          "prompt": "A finite nonempty set S of real numbers has maximum m. Which conclusion follows directly from this extremal choice?",
+          "choices": [
+            "No element of S is greater than m.",
+            "Every element of S equals m.",
+            "The number m must be positive.",
+            "The set contains every real number smaller than m."
+          ],
+          "answer": "No element of S is greater than m.",
+          "hints": [
+            "Use the definition of maximum.",
+            "A maximum does not force all other values to agree or to be positive."
+          ],
+          "solution": "The definition says m belongs to S and every x in S satisfies $x\\le m$. Thus no larger member exists.",
+          "concept": "extremal definition",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "invariants-and-extremal-arguments-07",
+          "kind": "choice",
+          "prompt": "A pile starts with 20 stones. Each legal move removes either 1 or 3 stones. If seven legal moves are made, what is the parity of the remaining pile?",
+          "choices": [
+            "Odd",
+            "Even",
+            "It depends on which odd quantity was removed.",
+            "Always zero"
+          ],
+          "answer": "Odd",
+          "hints": [
+            "Removing an odd number toggles parity.",
+            "Seven toggles reverse the starting parity."
+          ],
+          "solution": "Each move removes an odd number and toggles parity. Starting even and toggling seven times leaves odd parity, independent of the individual legal choices.",
+          "concept": "move-count parity",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "invariants-and-extremal-arguments-08",
+          "kind": "number",
+          "prompt": "A process has a nonnegative integer potential initially 20. Each move decreases it by at least 1. What universal upper bound does this give on the number of moves?",
+          "answer": 20,
+          "hints": [
+            "The potential cannot drop below zero.",
+            "Use the smallest permitted decrease to maximize the move count."
+          ],
+          "solution": "After t moves the potential is at most $20-t$. Nonnegativity forces $t\\le20$, so at most 20 moves occur.",
+          "concept": "integer potential termination bound",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "invariants-and-extremal-arguments-09",
+          "kind": "number",
+          "prompt": "Starting from (132,84), repeatedly subtract the smaller positive entry from the larger until the entries are equal. What is their common final value?",
+          "answer": 12,
+          "hints": [
+            "Subtracting preserves all common divisors.",
+            "The sum decreases while both entries stay positive."
+          ],
+          "solution": "The final pair (d,d) has gcd d. Subtraction preserves the starting gcd: $132=84+48$, $84=48+36$, $48=36+12$, and $36=3\\cdot12$, so the common final value is 12. The decreasing positive sum ensures termination.",
+          "concept": "invariant plus termination",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "invariants-and-extremal-arguments-10",
+          "kind": "proof",
+          "prompt": "Order the proof that a process with a nonnegative integer potential decreasing by at least 1 every move must terminate.",
+          "choices": [
+            "An infinite sequence of moves would allow a move count t greater than M.",
+            "Let M be the potential of the initial state.",
+            "After t moves, the potential is at most $M-t$, by summing the decreases.",
+            "For t greater than M this value is negative, contradicting the potential's nonnegativity; hence only finitely many moves occur."
+          ],
+          "answer": [2, 3, 1, 4],
+          "accepted_orders": [[2, 1, 3, 4]],
+          "hints": [
+            "Name the initial bound before deriving a later bound.",
+            "The contradiction needs both too many moves and nonnegativity."
+          ],
+          "solution": "Define M (2), derive the bound after t moves (3), assume infinitely many moves to choose t>M (1), then contradict nonnegativity (4). The integer lower bound prevents endless decreases of size at least one.",
+          "concept": "monovariant termination proof",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    }
+  ]
+}

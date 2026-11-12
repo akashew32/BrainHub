@@ -124,3 +124,25 @@ textarea:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+/* Formula blocks stay readable without widening the page on narrow screens. */
+.math-prose {
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+.math-display {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+}
+.math-prose .katex {
+  font-size: 1.08em;
+}
+.math-answer {
+  width: 100%;
+  border: 1px solid #35445a;
+  border-radius: 0.75rem;
+  padding: 0.8rem 1rem;
+  color: #e4eaf2;
+  background: #080d15;
+}

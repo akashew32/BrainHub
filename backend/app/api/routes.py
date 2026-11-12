@@ -34,6 +34,7 @@ from app.schemas.api import (
     SessionAction,
     SessionCreate,
 )
+from app.services.curriculum import PASS_SCORE, lesson_for
 from app.services.roadmaps import (
     ROADMAP_TOPICS,
     ROADMAP_TOTALS,
@@ -275,7 +276,20 @@ def update_roadmap_progress(
             topic_slug=topic_slug,
         )
 
+    authored = lesson_for(roadmap_slug, topic_slug) is not None
+    if authored and payload.quiz_score is not None:
+        raise HTTPException(
+            422, "Authored lesson scores must come from a server-graded assessment."
+        )
     next_score = max(item.quiz_score or 0, payload.quiz_score or 0)
+    if (
+        authored
+        and payload.status in {"completed", "review"}
+        and (next_score < PASS_SCORE or item.mastery_version != 1)
+    ):
+        raise HTTPException(
+            422, "Pass the server-graded practice set before completing this lesson."
+        )
     if payload.status in {"completed", "review"} and next_score < 67:
         raise HTTPException(422, "Pass the lesson quiz before completing this topic")
 

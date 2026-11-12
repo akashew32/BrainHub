@@ -1,0 +1,1192 @@
+{
+  "version": 1,
+  "roadmap_slug": "probability",
+  "stage_index": 0,
+  "sources": [
+    {
+      "title": "MIT OpenCourseWare: Mathematics for Computer Science, counting and probability readings",
+      "url": "https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/pages/readings/"
+    }
+  ],
+  "lessons": [
+    {
+      "topic_slug": "sum-and-product-rules",
+      "title": "Sum and product rules",
+      "summary": "Build a finite sample space by separating disjoint cases and multiplying the choices along each construction path.",
+      "objectives": [
+        "Decide whether a construction requires addition or multiplication.",
+        "Count constrained strings without assuming every position has the same choices.",
+        "Convert an outcome count to a probability only after checking equiprobability."
+      ],
+      "sections": [
+        {
+          "heading": "Disjoint alternatives add",
+          "body": "If a finite set is partitioned into disjoint classes $A_1,\\ldots,A_k$, then its size is $|A_1|+\\cdots+|A_k|$. The disjointness is essential: a traveler who takes both a bus and a train must not be counted once as a bus traveler and again as a train traveler. Make the cases mutually exclusive before applying the sum rule, or subtract their overlap."
+        },
+        {
+          "heading": "Sequential choices multiply",
+          "body": "If every first choice permits $b$ second choices and there are $a$ first choices, there are $ab$ pairs. More generally a construction with $n_i$ choices at step $i$, independent of earlier choices in number, gives $\\prod_i n_i$ objects. This is a counting condition, not a claim of probabilistic independence. If branch sizes differ, sum the products for the distinct branches."
+        },
+        {
+          "heading": "The sample space controls the probability",
+          "body": "For equally likely elementary outcomes, $P(E)=|E|/|\\Omega|$. A uniform choice of two ordered digits makes 00, 01, and 10 separate outcomes. Merging 01 and 10 into one unordered pair destroys uniformity unless their probabilities are combined. Describe the experiment before deciding which outcomes are equally likely."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "How many three-digit codes have no repeated digit when a leading zero is allowed?",
+          "steps": [
+            "The first position permits all 10 digits.",
+            "After choosing the first digit, the second permits the other 9.",
+            "The final position permits the 8 unused digits.",
+            "Multiply the branch sizes: $10\\cdot9\\cdot8=720$."
+          ],
+          "result": "There are 720 codes. Requiring a three-digit integer instead would change the first factor to 9, giving 648."
+        },
+        {
+          "prompt": "A cafe sells 3 sandwiches with 2 bread choices each, or 4 soups with 3 sizes each. A customer buys exactly one item. Count the orders.",
+          "steps": [
+            "Sandwich orders form one class with $3\\cdot2=6$ outcomes.",
+            "Soup orders form a disjoint class with $4\\cdot3=12$ outcomes.",
+            "A single order cannot be both classes because exactly one item is purchased.",
+            "Add the disjoint counts: $6+12=18$."
+          ],
+          "result": "There are 18 orders; multiplying all four numbers would incorrectly describe a different purchase."
+        }
+      ],
+      "questions": [
+        {
+          "id": "sum-and-product-rules-01",
+          "kind": "number",
+          "prompt": "An outfit consists of one of 5 jackets and one of 3 pairs of trousers. How many outfits are possible?",
+          "answer": 15,
+          "hints": [
+            "There are two sequential choices.",
+            "Each jacket permits all three trousers."
+          ],
+          "solution": "For each of 5 jackets there are 3 trousers, so the product rule gives $5\\cdot3=15$ outfits.",
+          "concept": "product rule",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "sum-and-product-rules-02",
+          "kind": "number",
+          "prompt": "A trip uses exactly one service: one of 6 bus departures or one of 4 rail departures. How many choices are there?",
+          "answer": 10,
+          "hints": [
+            "The traveler selects one service, not one of each.",
+            "Bus and rail departure choices are disjoint."
+          ],
+          "solution": "The alternatives are disjoint, so $6+4=10$. A product would count a bus-and-rail pair, which is not this trip.",
+          "concept": "sum rule",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "sum-and-product-rules-03",
+          "kind": "number",
+          "prompt": "How many length-three uppercase-letter strings are possible when repetition is allowed and there are 26 letters?",
+          "answer": 17576,
+          "hints": [
+            "Each position has the same 26 choices.",
+            "Count ordered strings, not subsets."
+          ],
+          "solution": "The three positions each have 26 choices, giving $26^3=17576$ strings.",
+          "concept": "ordered strings with replacement",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "sum-and-product-rules-04",
+          "kind": "number",
+          "prompt": "How many four-digit positive integers have four distinct digits?",
+          "answer": 4536,
+          "hints": [
+            "The first digit cannot be zero.",
+            "Zero becomes available in every later position if unused."
+          ],
+          "solution": "There are 9 choices for the first digit, then 9, 8, and 7 unused choices. The result is $9\\cdot9\\cdot8\\cdot7=4536$.",
+          "concept": "leading-zero constraint",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "sum-and-product-rules-05",
+          "kind": "number",
+          "prompt": "A meal is either one of 2 vegetarian mains with one of 3 sides, or one of 4 fish mains with one of 2 sides. How many meals are possible?",
+          "answer": 14,
+          "hints": [
+            "Count each branch by multiplication.",
+            "Then combine the two disjoint main categories."
+          ],
+          "solution": "Vegetarian meals number $2\\cdot3=6$ and fish meals number $4\\cdot2=8$. Therefore $6+8=14$ meals are possible.",
+          "concept": "sum of branch products",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "sum-and-product-rules-06",
+          "kind": "number",
+          "prompt": "Three distinguishable fair coins are tossed. How many elementary outcomes contain exactly one head?",
+          "answer": 3,
+          "hints": [
+            "Write outcomes as strings in toss order.",
+            "Choose the position of the single head."
+          ],
+          "solution": "The outcomes are HTT, THT, and TTH, so the count is 3. Each has probability $1/8$, so the event probability would be $3/8$.",
+          "concept": "elementary outcomes versus events",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "sum-and-product-rules-07",
+          "kind": "choice",
+          "prompt": "For finite sets $A$ and $B$ with nonempty overlap, which expression counts $A\\cup B$ exactly?",
+          "choices": [
+            "$|A|+|B|-|A\\cap B|$",
+            "$|A|+|B|$",
+            "$|A|\\,|B|$",
+            "$|A|+|B|+|A\\cap B|$"
+          ],
+          "answer": "$|A|+|B|-|A\\cap B|$",
+          "hints": [
+            "An element in the overlap appears in both initial counts.",
+            "It must contribute exactly one to the final count."
+          ],
+          "solution": "The sum $|A|+|B|$ counts each intersection element twice. Subtracting $|A\\cap B|$ removes exactly one of its two copies.",
+          "concept": "overlap correction",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "sum-and-product-rules-08",
+          "kind": "number",
+          "prompt": "A uniform random code is one uppercase letter followed by one decimal digit. What is the probability of the specific code A7? A fraction or decimal is accepted.",
+          "answer": 0.0038461538461538464,
+          "tolerance": 0.000000001,
+          "hints": [
+            "There are $26\\cdot10$ equally likely codes.",
+            "Exactly one code is favorable."
+          ],
+          "solution": "There are 260 equally likely elementary outcomes and one favorable outcome. Thus $P(\\mathrm{A7})=1/260$.",
+          "concept": "uniform finite probability",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "sum-and-product-rules-09",
+          "kind": "number",
+          "prompt": "How many length-three strings over a five-symbol alphabet have different first and last symbols? Repetition elsewhere is allowed.",
+          "answer": 100,
+          "hints": [
+            "Choose the first symbol before the last.",
+            "The middle symbol is unrestricted."
+          ],
+          "solution": "There are 5 choices for the first symbol, 5 for the middle, and 4 for the last, which must differ from the first. The product is $5\\cdot5\\cdot4=100$.",
+          "concept": "dependent branch sizes",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "sum-and-product-rules-10",
+          "kind": "number",
+          "prompt": "Every route from A to C goes either through B or through D, never both. There are 3 A-to-B paths, 2 B-to-C paths, 4 A-to-D paths, and 3 D-to-C paths. How many routes exist?",
+          "answer": 18,
+          "hints": [
+            "Calculate the product for each intermediate city.",
+            "The two route classes are disjoint."
+          ],
+          "solution": "Routes through B number $3\\cdot2=6$. Routes through D number $4\\cdot3=12$. The disjoint sum is $6+12=18$.",
+          "concept": "partitioning a construction",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "permutations-and-combinations",
+      "title": "Permutations and combinations",
+      "summary": "Distinguish ordered selection from unordered selection and justify the factorial factors that remove overcounting.",
+      "objectives": [
+        "Derive permutation and combination counts from ordered choices.",
+        "Handle repeated symbols and rotations explicitly.",
+        "Use combinations to build a finite sampling probability."
+      ],
+      "sections": [
+        {
+          "heading": "Ordered selections without replacement",
+          "body": "An ordered list of $r$ distinct objects selected from $n$ has $n(n-1)\\cdots(n-r+1)=n!/(n-r)!$ possibilities. Objects can be people assigned to different offices, digits in a code, or race finishers. The roles make the order meaningful: swapping president and secretary creates a different outcome."
+        },
+        {
+          "heading": "Unordered selections and the division principle",
+          "body": "Every $r$-element subset appears exactly $r!$ times among ordered selections, once for each internal order. Dividing by this common multiplicity gives $\\binom nr=n!/[r!(n-r)!]$. The division is valid because every subset has the same number of representations. The symmetry $\\binom nr=\\binom n{n-r}$ follows by pairing a selected subset with its complement."
+        },
+        {
+          "heading": "What counts as the same arrangement?",
+          "body": "A word with $n$ positions and repeated symbol counts $n_1,\\ldots,n_k$ has $n!/(n_1!\\cdots n_k!)$ distinct arrangements. For $n$ distinct people around an unmarked round table, rotations identify $n$ linear seatings, leaving $(n-1)!$ arrangements. Reflections are still different unless the problem explicitly identifies them; labeled seats restore the full $n!$ count."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "From 7 people, count a president-and-secretary assignment and a two-person committee.",
+          "steps": [
+            "For the offices, select a president in 7 ways and a different secretary in 6 ways.",
+            "This gives $7\\cdot6=42$ ordered assignments.",
+            "A committee appears twice among these lists, once in each order.",
+            "Divide by $2!=2$: $\\binom72=21$ committees."
+          ],
+          "result": "There are 42 office assignments but only 21 committees."
+        },
+        {
+          "prompt": "A bag contains 4 red and 3 blue distinguishable balls. Draw 3 uniformly without replacement. Find the probability of exactly 2 red.",
+          "steps": [
+            "There are $\\binom73=35$ equally likely three-ball subsets.",
+            "Choose 2 of 4 red balls in $\\binom42=6$ ways.",
+            "Choose 1 of 3 blue balls in 3 ways, giving $6\\cdot3=18$ favorable subsets.",
+            "Divide favorable by total subsets: $18/35$."
+          ],
+          "result": "The probability is $18/35$. Counting colors alone would incorrectly treat color patterns as equally likely."
+        }
+      ],
+      "questions": [
+        {
+          "id": "permutations-and-combinations-01",
+          "kind": "number",
+          "prompt": "How many linear orders of 5 distinct books are possible?",
+          "answer": 120,
+          "hints": [
+            "Choose books for positions one at a time.",
+            "All five positions are distinct."
+          ],
+          "solution": "The positions have $5,4,3,2,1$ choices, so $5!=120$ orders exist.",
+          "concept": "factorial arrangements",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "permutations-and-combinations-02",
+          "kind": "number",
+          "prompt": "Assign president, secretary, and treasurer to three different people from a group of 8. How many assignments exist?",
+          "answer": 336,
+          "hints": [
+            "The offices are labeled.",
+            "A selected person is unavailable for later offices."
+          ],
+          "solution": "Choose the three office holders in order: $8\\cdot7\\cdot6=336$.",
+          "concept": "ordered selection",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "permutations-and-combinations-03",
+          "kind": "number",
+          "prompt": "How many four-person committees can be chosen from 9 people?",
+          "answer": 126,
+          "hints": [
+            "Committee order has no meaning.",
+            "Divide ordered selections by $4!$."
+          ],
+          "solution": "Choose four of the nine people without assigning roles. Ordered selections count every committee $4!$ times, so division gives $\\binom94=9!/(4!5!)=126$.",
+          "concept": "unordered selection",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "permutations-and-combinations-04",
+          "kind": "number",
+          "prompt": "Seat 7 distinct people around an unmarked round table. Rotations count as the same, reflections as different. How many seatings exist?",
+          "answer": 720,
+          "hints": [
+            "Fix one person as an anchor.",
+            "Permute the six remaining people relative to that anchor."
+          ],
+          "solution": "Fix one person's position to remove rotational symmetry. The other six have $6!=720$ arrangements.",
+          "concept": "circular permutations",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "permutations-and-combinations-05",
+          "kind": "number",
+          "prompt": "Choose 2 people from a group of 5 and 3 people from a disjoint group of 6 for one committee. How many committees exist?",
+          "answer": 200,
+          "hints": [
+            "Make one unordered selection from each group.",
+            "Multiply the two counts."
+          ],
+          "solution": "The first group's two members can be chosen in $\\binom52=10$ ways and the other group's three in $\\binom63=20$ ways. Each pair of choices determines one committee, giving $10\\cdot20=200$.",
+          "concept": "product of combinations",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "permutations-and-combinations-06",
+          "kind": "number",
+          "prompt": "How many distinct arrangements of the letters of MISSISSIPPI exist?",
+          "answer": 34650,
+          "hints": [
+            "The multiplicities are M:1, I:4, S:4, P:2.",
+            "Permuting identical copies does not create a new word."
+          ],
+          "solution": "Temporarily distinguish all 11 letters, giving $11!$. Every actual word has $4!4!2!$ such descriptions, so the count is $11!/(4!4!2!)=34650$.",
+          "concept": "repeated symbols",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "permutations-and-combinations-07",
+          "kind": "number",
+          "prompt": "Choose a three-person committee from 8 people while excluding one specified person. How many committees are possible?",
+          "answer": 35,
+          "hints": [
+            "Remove the excluded person first.",
+            "Then choose an unordered triple."
+          ],
+          "solution": "Seven people remain eligible, so there are $\\binom73=35$ committees.",
+          "concept": "restricted subset selection",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "permutations-and-combinations-08",
+          "kind": "choice",
+          "prompt": "Why is the number of ordered lists of $r$ distinct people divided by $r!$ to count committees?",
+          "choices": [
+            "Each committee has exactly $r!$ internal orders.",
+            "Each committee can omit exactly $r!$ people.",
+            "The objects become indistinguishable before selection.",
+            "Each list contains $r!$ repeated people."
+          ],
+          "answer": "Each committee has exactly $r!$ internal orders.",
+          "hints": [
+            "Fix one selected set and count its representations.",
+            "Only the order changes among those representations."
+          ],
+          "solution": "A fixed set of $r$ people has $r!$ different ordered lists. Every committee has that same representation count, making division by $r!$ valid.",
+          "concept": "uniform overcounting",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "permutations-and-combinations-09",
+          "kind": "number",
+          "prompt": "A bag has 5 red and 4 blue distinguishable balls. A uniform three-ball subset is drawn. What is the probability of exactly 2 red balls?",
+          "answer": 0.47619047619047616,
+          "tolerance": 0.000000001,
+          "hints": [
+            "The total count is $\\binom93$.",
+            "The favorable count is $\\binom52\\binom41$."
+          ],
+          "solution": "There are 84 equally likely subsets and $10\\cdot4=40$ favorable ones. The probability is $40/84=10/21$.",
+          "concept": "sampling without replacement",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "permutations-and-combinations-10",
+          "kind": "number",
+          "prompt": "How many permutations of the six distinct letters A, B, C, D, E, F have A adjacent to B?",
+          "answer": 240,
+          "hints": [
+            "Treat A and B as one block.",
+            "Count both internal block orders."
+          ],
+          "solution": "The block and the four other letters form five distinct objects, with $5!$ orders. The block can be AB or BA, so the total is $2\\cdot5!=240$.",
+          "concept": "block method",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "multinomial-coefficients",
+      "title": "Multinomial coefficients",
+      "summary": "Count labeled category assignments and derive their coefficients and probabilities without confusing identical objects with identical groups.",
+      "objectives": [
+        "Calculate multinomial coefficients for prescribed category sizes.",
+        "Extract coefficients from a multinomial expansion.",
+        "Build a multinomial probability from a count and one ordered outcome's probability."
+      ],
+      "sections": [
+        {
+          "heading": "Distributing labeled positions among categories",
+          "body": "Suppose $n$ distinct positions receive one of $k$ labels, with label $i$ occurring $n_i$ times and $\\sum_i n_i=n$. Choose the first category's positions, then the next category's positions from those remaining. The product telescopes to $\\binom{n}{n_1,\\ldots,n_k}=n!/(n_1!\\cdots n_k!)$. Categories are labeled even when two category sizes are equal."
+        },
+        {
+          "heading": "Coefficients and probabilities",
+          "body": "In $(x_1+\\cdots+x_k)^n$, choosing one term from each factor yields a sequence of category labels. A monomial $x_1^{n_1}\\cdots x_k^{n_k}$ is produced by exactly the multinomial coefficient many sequences. In independent trials with category probabilities $p_i$, each such sequence has probability $\\prod_i p_i^{n_i}$, giving probability $[n!/(\\prod_i n_i!)]\\prod_i p_i^{n_i}$."
+        },
+        {
+          "heading": "Labeled and unlabeled groups differ",
+          "body": "Splitting six people into labeled pairs A, B, and C yields $6!/(2!2!2!)=90$ assignments. If only an unlabeled collection of three pairs matters, each partition is counted $3!$ times, leaving 15. Extra division by a group permutation factor is appropriate only when the corresponding groups really are interchangeable; unequal group sizes already distinguish them by size."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Count arrangements of 7 symbols containing 3 A's, 2 B's, and 2 C's.",
+          "steps": [
+            "Select the 3 A positions in $\\binom73=35$ ways.",
+            "Choose the 2 B positions from the remaining 4 in $\\binom42=6$ ways.",
+            "The last 2 positions must contain C.",
+            "Multiply: $35\\cdot6=210=7!/(3!2!2!)$."
+          ],
+          "result": "There are 210 arrangements. B and C are distinct labels even though their counts coincide."
+        },
+        {
+          "prompt": "Four independent trials have outcomes A, B, C with probabilities 1/2, 1/4, 1/4. Find the probability of two A's, one B, and one C.",
+          "steps": [
+            "The outcome counts total $2+1+1=4$.",
+            "There are $4!/(2!1!1!)=12$ ordered sequences with those counts.",
+            "Each sequence has probability $(1/2)^2(1/4)(1/4)=1/64$.",
+            "The disjoint sequence probabilities add to $12/64=3/16$."
+          ],
+          "result": "The probability is $3/16$; the multinomial factor accounts for every possible order."
+        }
+      ],
+      "questions": [
+        {
+          "id": "multinomial-coefficients-01",
+          "kind": "number",
+          "prompt": "Count arrangements of 8 symbols with 3 red, 3 blue, and 2 green symbols, identical within each color.",
+          "answer": 560,
+          "hints": [
+            "Use category multiplicities 3, 3, and 2.",
+            "Divide $8!$ by each within-color factorial."
+          ],
+          "solution": "There are $8!$ orders if all symbols are temporarily distinguished. Swapping the three reds, three blues, or two greens changes no visible arrangement, so divide by $3!3!2!$ to obtain 560.",
+          "concept": "multinomial counting",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "multinomial-coefficients-02",
+          "kind": "number",
+          "prompt": "What is the coefficient of $x^2y^3z$ in $(x+y+z)^6$?",
+          "answer": 60,
+          "hints": [
+            "The exponents sum to six.",
+            "Choose which factors supply each variable."
+          ],
+          "solution": "Choose two of six factors to supply x, then three of the remaining four to supply y; the last supplies z. This gives $\\binom62\\binom43=15\\cdot4=60$.",
+          "concept": "multinomial theorem",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "multinomial-coefficients-03",
+          "kind": "number",
+          "prompt": "Assign 9 distinct people to labeled teams A, B, C of sizes 2, 3, 4. How many assignments exist?",
+          "answer": 1260,
+          "hints": [
+            "Team labels matter.",
+            "Choose A, then B, and let the remainder form C."
+          ],
+          "solution": "The count is $\\binom92\\binom73=36\\cdot35=1260$, equivalently $9!/(2!3!4!)$.",
+          "concept": "labeled group allocation",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "multinomial-coefficients-04",
+          "kind": "number",
+          "prompt": "Four distinct letters are placed in labeled boxes L, M, R with occupancies 2, 1, 1. How many allocations exist?",
+          "answer": 12,
+          "hints": [
+            "Choose the two letters in L.",
+            "Choose which remaining letter is in M."
+          ],
+          "solution": "Choose the pair in L in $\\binom42=6$ ways. Either of the two remaining letters can go in M, and the last must go in R, giving $6\\cdot2=12$.",
+          "concept": "occupancy with distinct objects",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "multinomial-coefficients-05",
+          "kind": "number",
+          "prompt": "Five independent trials have category probabilities A:0.5, B:0.3, C:0.2. Find the probability of counts A:2, B:2, C:1.",
+          "answer": 0.135,
+          "tolerance": 0.000000001,
+          "hints": [
+            "There are $5!/(2!2!1!)$ valid orders.",
+            "Multiply that count by one sequence's probability."
+          ],
+          "solution": "The probability is $30(0.5)^2(0.3)^2(0.2)=30\\cdot0.25\\cdot0.09\\cdot0.2=0.135$.",
+          "concept": "multinomial distribution",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "multinomial-coefficients-06",
+          "kind": "number",
+          "prompt": "How many partitions of 6 distinct people into three unlabeled pairs exist?",
+          "answer": 15,
+          "hints": [
+            "First count labeled pair groups.",
+            "Then remove the six orders of the three groups."
+          ],
+          "solution": "Labeled pairs give $6!/(2!2!2!)=90$. Each unlabeled partition appears $3!=6$ times, so the answer is 15.",
+          "concept": "unlabeled equal-size groups",
+          "difficulty": "stretch",
+          "exam": false
+        },
+        {
+          "id": "multinomial-coefficients-07",
+          "kind": "number",
+          "prompt": "Find the coefficient of $a^5b^3c^2$ in $(a+b+c)^{10}$.",
+          "answer": 2520,
+          "hints": [
+            "The powers specify the category sizes.",
+            "Use the multinomial coefficient."
+          ],
+          "solution": "Five factors supply a, three supply b, and the remaining two supply c. Their position assignments number $\\binom{10}5\\binom53=252\\cdot10=2520$.",
+          "concept": "coefficient extraction",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "multinomial-coefficients-08",
+          "kind": "choice",
+          "prompt": "Two labeled teams Red and Blue must each receive 3 of 6 distinct people. Which count is correct?",
+          "choices": [
+            "$\\binom63=20$",
+            "$\\binom63/2=10$",
+            "$6!=720$",
+            "$3!3!=36$"
+          ],
+          "answer": "$\\binom63=20$",
+          "hints": [
+            "Once Red is chosen, Blue is forced.",
+            "Swapping the team labels changes the assignment."
+          ],
+          "solution": "Select the 3 Red members in 20 ways. Dividing by two would identify Red and Blue, contrary to the labeled-team requirement.",
+          "concept": "labels prevent extra symmetry division",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "multinomial-coefficients-09",
+          "kind": "number",
+          "prompt": "Ten distinct jobs are assigned to labeled workers A, B, C with workloads 4, 3, 3. How many assignments exist?",
+          "answer": 4200,
+          "hints": [
+            "Equal workloads do not make workers interchangeable.",
+            "Use $10!/(4!3!3!)$."
+          ],
+          "solution": "Choose A's four jobs in $\\binom{10}4=210$ ways, then B's three in $\\binom63=20$ ways. C receives the remaining three, giving $210\\cdot20=4200$. Equal workloads do not make B and C interchangeable.",
+          "concept": "labeled workload assignment",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "multinomial-coefficients-10",
+          "kind": "number",
+          "prompt": "Four independent draws from a uniform four-symbol alphabet yield counts 2 of A, 1 of B, 1 of C, and 0 of D. What is the probability?",
+          "answer": 0.046875,
+          "tolerance": 0.000000001,
+          "hints": [
+            "There are $4^4$ equally likely strings.",
+            "There are $4!/(2!1!1!0!)$ favorable strings."
+          ],
+          "solution": "The favorable count is 12, and the total count is 256. Thus the probability is $12/256=3/64=0.046875$.",
+          "concept": "zero category count",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "stars-and-bars",
+      "title": "Stars and bars",
+      "summary": "Translate allocations of identical units into integer equations, then handle lower bounds, empty boxes, and upper bounds.",
+      "objectives": [
+        "Derive nonnegative and positive integer-solution counts.",
+        "Remove lower bounds by a change of variables.",
+        "Combine stars and bars with subtraction when an upper bound is imposed."
+      ],
+      "sections": [
+        {
+          "heading": "Nonnegative compositions",
+          "body": "A solution of $x_1+\\cdots+x_k=n$ with $x_i\\ge0$ is represented by $n$ stars and $k-1$ bars. The stars before the first bar count $x_1$, and adjacent bars encode an empty box. Among $n+k-1$ positions choose the $k-1$ bar positions, giving $\\binom{n+k-1}{k-1}$. The units are identical, but the boxes or coordinates are labeled."
+        },
+        {
+          "heading": "Positive entries and lower bounds",
+          "body": "For $x_i\\ge1$, substitute $y_i=x_i-1\\ge0$. The new total is $n-k$, so the count becomes $\\binom{n-1}{k-1}$ when $n\\ge k$. More generally, lower bounds $x_i\\ge a_i$ reduce the total to $n-\\sum_i a_i$. A negative residual total means no solutions, not a binomial coefficient to evaluate formally."
+        },
+        {
+          "heading": "Inequalities and upper bounds",
+          "body": "To count $x_1+\\cdots+x_k\\le n$, introduce a nonnegative slack variable $s=n-\\sum_i x_i$. This yields $k+1$ coordinates summing to $n$. To enforce $x_1\\le b$, subtract solutions with $x_1\\ge b+1$, shifting that variable down by $b+1$. Multiple upper bounds require inclusion–exclusion because two bad conditions can overlap."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "How many nonnegative triples satisfy $x+y+z=7$ with $x\\ge2$?",
+          "steps": [
+            "Write $u=x-2$, so $u\\ge0$.",
+            "The equation becomes $u+y+z=5$.",
+            "Represent the five remaining units by stars separated into three labeled coordinates.",
+            "Choose two bar positions among seven positions: $\\binom72=21$."
+          ],
+          "result": "There are 21 solutions. The substitution is reversible, so no valid triple is lost or duplicated."
+        },
+        {
+          "prompt": "Count nonnegative solutions to $x+y+z=6$ with $x\\le2$.",
+          "steps": [
+            "Without the upper bound there are $\\binom82=28$ triples.",
+            "Bad triples have $x\\ge3$; put $u=x-3$.",
+            "The bad equation is $u+y+z=3$, with $\\binom52=10$ solutions.",
+            "Subtract: $28-10=18$."
+          ],
+          "result": "There are 18 valid triples; directly fixing $x=0,1,2$ also gives $7+6+5=18$."
+        }
+      ],
+      "questions": [
+        {
+          "id": "stars-and-bars-01",
+          "kind": "number",
+          "prompt": "How many nonnegative integer triples satisfy $x+y+z=8$?",
+          "answer": 45,
+          "hints": [
+            "There are three labeled coordinates.",
+            "Place two bars among ten positions."
+          ],
+          "solution": "Represent the eight units as stars and separate the three labeled coordinates with two bars. Choosing two bar positions among ten gives $\\binom{10}2=45$.",
+          "concept": "nonnegative solutions",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "stars-and-bars-02",
+          "kind": "number",
+          "prompt": "How many positive integer quadruples satisfy $x_1+x_2+x_3+x_4=9$?",
+          "answer": 56,
+          "hints": [
+            "Give each coordinate one unit first.",
+            "The remaining five units may be distributed freely."
+          ],
+          "solution": "Subtract one from each coordinate. The nonnegative residual sum is 5 in four coordinates, giving $\\binom83=56$.",
+          "concept": "positive solutions",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "stars-and-bars-03",
+          "kind": "number",
+          "prompt": "Find the number of integer solutions of $x+y+z=10$ with each coordinate at least 2.",
+          "answer": 15,
+          "hints": [
+            "The lower bounds consume six units.",
+            "Count residual nonnegative triples summing to four."
+          ],
+          "solution": "Set $u=x-2,v=y-2,w=z-2$. Then $u+v+w=4$, giving $\\binom62=15$.",
+          "concept": "uniform lower bounds",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "stars-and-bars-04",
+          "kind": "number",
+          "prompt": "How many nonnegative integer triples satisfy $x+y+z\\le5$?",
+          "answer": 56,
+          "hints": [
+            "Introduce a fourth slack variable.",
+            "The four variables then sum exactly to five."
+          ],
+          "solution": "Put $s=5-x-y-z\\ge0$. The resulting equation has $\\binom{5+4-1}{4-1}=\\binom83=56$ solutions.",
+          "concept": "slack variable",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "stars-and-bars-05",
+          "kind": "number",
+          "prompt": "Count nonnegative integer solutions of $x+y+z=6$ with $x\\le2$.",
+          "answer": 18,
+          "hints": [
+            "Subtract the cases $x\\ge3$ from all cases.",
+            "Shift $x$ by three in the excluded cases."
+          ],
+          "solution": "The unrestricted count is 28. The excluded count is $\\binom52=10$, leaving $28-10=18$.",
+          "concept": "single upper bound",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "stars-and-bars-06",
+          "kind": "number",
+          "prompt": "Distribute 6 identical balls among 4 labeled boxes, allowing empty boxes. How many allocations exist?",
+          "answer": 84,
+          "hints": [
+            "An allocation is a nonnegative four-coordinate solution.",
+            "The box labels remain distinct."
+          ],
+          "solution": "The four box occupancies are nonnegative integers summing to six. Six stars and three bars encode each allocation once, so choose the three bar positions among nine: $\\binom93=84$.",
+          "concept": "identical units labeled boxes",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "stars-and-bars-07",
+          "kind": "number",
+          "prompt": "Distribute 5 identical balls among 3 labeled boxes so exactly one box is empty. How many allocations exist?",
+          "answer": 12,
+          "hints": [
+            "Choose the empty box in three ways.",
+            "The two other occupancies must both be positive."
+          ],
+          "solution": "There are 3 choices of the empty box. Positive solutions to $a+b=5$ number 4, so the total is $3\\cdot4=12$.",
+          "concept": "exactly one empty box",
+          "difficulty": "stretch",
+          "exam": false
+        },
+        {
+          "id": "stars-and-bars-08",
+          "kind": "choice",
+          "prompt": "In stars and bars for nonnegative solutions, what do two adjacent bars represent?",
+          "choices": [
+            "A coordinate equal to zero.",
+            "An invalid arrangement that must be discarded.",
+            "Two interchangeable boxes that should be merged.",
+            "A negative coordinate."
+          ],
+          "answer": "A coordinate equal to zero.",
+          "hints": [
+            "A coordinate counts the stars between neighboring bars.",
+            "Ask how many stars lie between adjacent bars."
+          ],
+          "solution": "No stars lie between adjacent bars, so the corresponding coordinate is zero. This is allowed for nonnegative solutions and explains why adjacent bars are retained.",
+          "concept": "empty-coordinate representation",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "stars-and-bars-09",
+          "kind": "number",
+          "prompt": "Count integer triples with $x_1+x_2+x_3=12$, $x_1\\ge1$, $x_2\\ge2$, and $x_3\\ge0$.",
+          "answer": 55,
+          "hints": [
+            "Subtract the lower bounds 1 and 2.",
+            "The residual total is nine."
+          ],
+          "solution": "Set $y_1=x_1-1,y_2=x_2-2,y_3=x_3$. Then the nonnegative sum is 9, giving $\\binom{11}2=55$.",
+          "concept": "unequal lower bounds",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "stars-and-bars-10",
+          "kind": "number",
+          "prompt": "How many positive integer triples satisfy $x+y+z=12$ with $x\\le5$?",
+          "answer": 40,
+          "hints": [
+            "The unrestricted positive count is $\\binom{11}2$.",
+            "For excluded cases $x\\ge6$, replace $x$ by $x-5$, which is still positive."
+          ],
+          "solution": "There are 55 positive triples in all. The excluded triples correspond to three positive coordinates summing to 7, giving $\\binom62=15$. Therefore $55-15=40$ remain.",
+          "concept": "positive solutions with an upper bound",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "inclusion-exclusion",
+      "title": "Inclusion–exclusion",
+      "summary": "Correct overlapping counts systematically, then use complements to count onto maps, derangements, and constrained strings.",
+      "objectives": [
+        "Derive two-set and three-set inclusion–exclusion by element multiplicity.",
+        "Count a constrained family by subtracting overlapping bad events.",
+        "Distinguish at least one membership from exactly one membership."
+      ],
+      "sections": [
+        {
+          "heading": "Why alternating corrections work",
+          "body": "For two sets, $|A\\cup B|=|A|+|B|-|A\\cap B|$. For three, add the single-set sizes, subtract the three pair intersections, and add the triple intersection. An element in exactly $r$ sets receives net coefficient $\\binom r1-\\binom r2+\\cdots+(-1)^{r+1}\\binom rr=1$. This identity explains the general formula rather than making it a sign pattern to memorize."
+        },
+        {
+          "heading": "Count the complement of bad conditions",
+          "body": "To count objects satisfying every constraint, identify each bad condition as a set and subtract their union from the universe. An onto function misses none of its target labels; a derangement fixes none of its positions. Inclusion–exclusion is effective when intersections of bad sets are easier to count than the valid objects directly."
+        },
+        {
+          "heading": "Exactly one is a different event",
+          "body": "For two sets, the number in exactly one is $|A|+|B|-2|A\\cap B|$, because an intersection member should contribute zero, not one. For numerical divisibility questions, intersections correspond to divisibility by the least common multiple. Use a floor such as $\\lfloor N/d\\rfloor$ to count positive multiples of $d$ through $N$."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "Among integers 1 through 90, how many are divisible by 4 or 6?",
+          "steps": [
+            "Multiples of 4 number $\\lfloor90/4\\rfloor=22$.",
+            "Multiples of 6 number 15.",
+            "Both conditions mean divisibility by $\\operatorname{lcm}(4,6)=12$, producing 7 integers.",
+            "Count the union: $22+15-7=30$."
+          ],
+          "result": "There are 30 integers divisible by at least one of 4 and 6."
+        },
+        {
+          "prompt": "How many length-four strings over A, B, C contain all three symbols?",
+          "steps": [
+            "Start with all $3^4=81$ strings.",
+            "Missing a specified symbol leaves $2^4=16$ strings; subtract $3\\cdot16$.",
+            "Missing two specified symbols leaves one constant string; add the three such intersections.",
+            "Missing all three is impossible for a nonempty string, so the final count is $81-48+3=36$."
+          ],
+          "result": "There are 36 strings containing A, B, and C at least once."
+        }
+      ],
+      "questions": [
+        {
+          "id": "inclusion-exclusion-01",
+          "kind": "number",
+          "prompt": "Sets A and B have sizes 18 and 15 and intersection size 6. Find $|A\\cup B|$.",
+          "answer": 27,
+          "hints": [
+            "The intersection is initially counted twice.",
+            "Subtract one copy of it."
+          ],
+          "solution": "Adding the set sizes counts the six shared elements twice. Remove one copy of each shared element to get $18+15-6=27$ elements in the union.",
+          "concept": "two-set union",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "inclusion-exclusion-02",
+          "kind": "number",
+          "prompt": "How many positive integers at most 100 are divisible by 2 or 3?",
+          "answer": 67,
+          "hints": [
+            "Count 50 multiples of 2 and 33 of 3.",
+            "Their overlap consists of multiples of 6."
+          ],
+          "solution": "There are 50 multiples of 2, 33 of 3, and 16 of their least common multiple 6. Subtract the overlap once: $50+33-16=67$.",
+          "concept": "divisibility intersections",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "inclusion-exclusion-03",
+          "kind": "number",
+          "prompt": "In a class of 40, 20 take art, 15 take music, and 7 take both. How many take neither?",
+          "answer": 12,
+          "hints": [
+            "First find how many take at least one.",
+            "Subtract that union from the class size."
+          ],
+          "solution": "The union has $20+15-7=28$ students. The complement therefore has $40-28=12$.",
+          "concept": "complement of a union",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "inclusion-exclusion-04",
+          "kind": "number",
+          "prompt": "How many integers from 1 through 60 are divisible by 2, 3, or 5?",
+          "answer": 44,
+          "hints": [
+            "The single counts are 30, 20, and 12.",
+            "Subtract multiples of 6, 10, 15 and add multiples of 30."
+          ],
+          "solution": "The count is $30+20+12-10-6-4+2=44$. The last correction restores integers subtracted in all three pair intersections.",
+          "concept": "three-set inclusion-exclusion",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "inclusion-exclusion-05",
+          "kind": "number",
+          "prompt": "How many permutations of 4 distinct objects have no fixed position?",
+          "answer": 9,
+          "hints": [
+            "Let bad event $A_i$ mean position $i$ is fixed.",
+            "Fixing $j$ prescribed positions leaves $(4-j)!$ permutations."
+          ],
+          "solution": "Inclusion–exclusion gives $4!-\\binom41 3!+\\binom42 2!-\\binom43 1!+\\binom44 0!=24-24+12-4+1=9$.",
+          "concept": "derangements",
+          "difficulty": "stretch",
+          "exam": false
+        },
+        {
+          "id": "inclusion-exclusion-06",
+          "kind": "number",
+          "prompt": "How many functions from a three-element labeled set onto a two-element labeled set exist?",
+          "answer": 6,
+          "hints": [
+            "There are $2^3$ total functions.",
+            "The only non-onto functions are the two constant functions."
+          ],
+          "solution": "There are 8 functions in all and two that miss one target label. Hence $8-2=6$ are onto.",
+          "concept": "onto functions",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "inclusion-exclusion-07",
+          "kind": "number",
+          "prompt": "If $|A|=12$, $|B|=10$, and $|A\\cap B|=4$, how many elements belong to exactly one of A and B?",
+          "answer": 14,
+          "hints": [
+            "Intersection members should contribute zero.",
+            "Remove both copies of the intersection from the single counts."
+          ],
+          "solution": "Exactly one membership gives $12+10-2\\cdot4=14$. Equivalently, the disjoint regions have sizes 8 and 6.",
+          "concept": "symmetric difference",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "inclusion-exclusion-08",
+          "kind": "choice",
+          "prompt": "After adding three set sizes and subtracting all three pair intersections, what correction is needed?",
+          "choices": [
+            "Add the triple intersection once.",
+            "Subtract the triple intersection once.",
+            "Add every pair intersection once again.",
+            "No correction is needed."
+          ],
+          "answer": "Add the triple intersection once.",
+          "hints": [
+            "Track an element in all three sets.",
+            "Its current coefficient is $3-3=0$."
+          ],
+          "solution": "A triple-intersection element was added three times and subtracted three times. Adding the triple intersection once gives its required final multiplicity of one.",
+          "concept": "element-multiplicity proof",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "inclusion-exclusion-09",
+          "kind": "number",
+          "prompt": "Count length-five strings over a three-symbol alphabet in which all three symbols appear.",
+          "answer": 150,
+          "hints": [
+            "Subtract strings missing each specified symbol from $3^5$.",
+            "Restore strings missing two specified symbols."
+          ],
+          "solution": "Start with $3^5=243$ strings. Subtract $2^5$ strings missing each of three specified symbols, then restore the three constant strings subtracted twice. The result is $243-3\\cdot32+3=150$.",
+          "concept": "missing-symbol constraints",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "inclusion-exclusion-10",
+          "kind": "number",
+          "prompt": "How many integers from 1 through 200 are divisible by exactly one of 4 and 6?",
+          "answer": 51,
+          "hints": [
+            "The individual counts are 50 and 33.",
+            "The 16 multiples of 12 must contribute zero."
+          ],
+          "solution": "Subtract the overlap twice: $50+33-2\\lfloor200/12\\rfloor=83-32=51$.",
+          "concept": "exactly-one divisibility",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    },
+    {
+      "topic_slug": "pigeonhole-principle",
+      "title": "Pigeonhole principle",
+      "summary": "Force collisions by partitioning a finite collection, including quantitative occupancy bounds and structural constructions.",
+      "objectives": [
+        "Apply the ceiling bound to a finite partition.",
+        "Find useful boxes such as residues, paired numbers, or geometric cells.",
+        "Prove a forced collision and distinguish its existence from its identity."
+      ],
+      "sections": [
+        {
+          "heading": "Averaging forces a large box",
+          "body": "Placing $N$ objects in $k$ boxes forces one box to contain at least $\\lceil N/k\\rceil$ objects. Otherwise every box contains at most $\\lceil N/k\\rceil-1<N/k$, and the total is less than $N$. To force at least $r$ objects in one box, the sharp universal threshold is $k(r-1)+1$: below it, put $r-1$ objects in every box."
+        },
+        {
+          "heading": "Choose the partition before counting",
+          "body": "A number's residue modulo $m$ gives one of $m$ boxes. Complementary pairs such as $\\{1,10\\},\\{2,9\\},\\ldots,\\{5,6\\}$ give five boxes in which a collision produces a sum of 11. The useful property comes from the box definition. A collision by itself is meaningful only when two occupants of the same box imply the desired conclusion."
+        },
+        {
+          "heading": "Geometric and divisibility constructions",
+          "body": "Partitioning a unit square into four cells of side $1/2$ guarantees that five points include a pair no farther apart than a cell diagonal, $\\sqrt2/2$. For divisibility, every positive integer has a unique odd part after removing factors of two. Two numbers with the same odd part lie on one doubling chain, so the smaller divides the larger. Assign boundary points consistently to one cell so the boxes form an actual partition."
+        }
+      ],
+      "worked_examples": [
+        {
+          "prompt": "How many socks must be drawn from a drawer containing at least two socks of each of 5 colors to guarantee a same-color pair?",
+          "steps": [
+            "Use colors as the five boxes.",
+            "Five draws might give one sock of each color, so five do not suffice.",
+            "With six draws, $\\lceil6/5\\rceil=2$ socks share a color.",
+            "The example of five distinct colors also proves the threshold is sharp."
+          ],
+          "result": "Six socks are necessary and sufficient for the guarantee."
+        },
+        {
+          "prompt": "Prove any 6 selected integers from 1 through 10 contain a pair summing to 11.",
+          "steps": [
+            "Partition the ten numbers into $\\{1,10\\},\\{2,9\\},\\{3,8\\},\\{4,7\\},\\{5,6\\}$.",
+            "These are five disjoint boxes.",
+            "Six selected distinct integers force two selections into the same box.",
+            "The two members of every box sum to 11."
+          ],
+          "result": "A pair summing to 11 must exist; the proof does not need to identify which pair it is."
+        }
+      ],
+      "questions": [
+        {
+          "id": "pigeonhole-principle-01",
+          "kind": "number",
+          "prompt": "A drawer has socks of 5 colors, with ample supply of each. What is the minimum number of blind draws guaranteeing a same-color pair?",
+          "answer": 6,
+          "hints": [
+            "Avoiding a pair permits at most one sock per color.",
+            "Take one more than that worst case."
+          ],
+          "solution": "Five draws can all have different colors; six cannot. Therefore the minimum is $5+1=6$.",
+          "concept": "sharp collision threshold",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "pigeonhole-principle-02",
+          "kind": "number",
+          "prompt": "Ignoring days and using the 12 birth months as categories, how many people guarantee that at least 3 share a birth month?",
+          "answer": 25,
+          "hints": [
+            "Two people can occupy every month without a triple.",
+            "One additional person forces the triple."
+          ],
+          "solution": "The largest no-triple arrangement has $12\\cdot2=24$ people. Thus 25 people force some month to contain at least three.",
+          "concept": "generalized pigeonhole threshold",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "pigeonhole-principle-03",
+          "kind": "number",
+          "prompt": "Nineteen objects are placed in 6 boxes. What is the largest occupancy lower bound guaranteed for some box?",
+          "answer": 4,
+          "hints": [
+            "Use the ceiling of the average occupancy.",
+            "Three objects in every box hold only eighteen."
+          ],
+          "solution": "A box has at least $\\lceil19/6\\rceil=4$ objects. The bound is sharp because occupancies 4,3,3,3,3,3 are possible.",
+          "concept": "ceiling occupancy bound",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "pigeonhole-principle-04",
+          "kind": "number",
+          "prompt": "Seventeen integers are given. How many of them are guaranteed to share one residue modulo 8, at minimum?",
+          "answer": 3,
+          "hints": [
+            "There are eight residue classes.",
+            "Apply the occupancy bound."
+          ],
+          "solution": "Among eight residue classes, one contains at least $\\lceil17/8\\rceil=3$ of the integers.",
+          "concept": "residue-class boxes",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "pigeonhole-principle-05",
+          "kind": "choice",
+          "prompt": "To show that 101 distinct integers chosen from 1 through 200 contain a pair with one dividing the other, which boxes make the pigeonhole proof work?",
+          "choices": [
+            "Group each integer by its odd part after removing all factors of 2.",
+            "Group integers by whether they are odd or even.",
+            "Group each integer by its final decimal digit.",
+            "Group each integer by its nearest multiple of 100."
+          ],
+          "answer": "Group each integer by its odd part after removing all factors of 2.",
+          "hints": [
+            "There are 100 possible odd parts in the range.",
+            "Two numbers with one odd part differ by a power-of-two factor."
+          ],
+          "solution": "There are 100 possible odd parts, the odd integers from 1 to 199. A collision among 101 selections gives $a2^r$ and $a2^s$ with $r<s$, so the first divides the second. Parity alone does not ensure divisibility.",
+          "concept": "doubling-chain partition",
+          "difficulty": "stretch",
+          "exam": false
+        },
+        {
+          "id": "pigeonhole-principle-06",
+          "kind": "number",
+          "prompt": "Thirteen people have birth months among 12 categories. What is the guaranteed minimum occupancy of some month?",
+          "answer": 2,
+          "hints": [
+            "There are more people than categories.",
+            "Compute $\\lceil13/12\\rceil$."
+          ],
+          "solution": "At least one month contains two people. All other months could contain one, so a guarantee of three would be false.",
+          "concept": "existence versus stronger guarantee",
+          "difficulty": "foundation",
+          "exam": false
+        },
+        {
+          "id": "pigeonhole-principle-07",
+          "kind": "number",
+          "prompt": "Objects have one of 4 colors. How many objects guarantee at least 5 of one color?",
+          "answer": 17,
+          "hints": [
+            "Four objects of each color avoid five.",
+            "Add one more object."
+          ],
+          "solution": "At most $4(5-1)=16$ objects can avoid a fivefold color. Therefore 17 guarantee at least five.",
+          "concept": "sharp generalized threshold",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "pigeonhole-principle-08",
+          "kind": "choice",
+          "prompt": "Why do 6 distinct selections from $\\{1,\\ldots,10\\}$ force a pair with sum 11?",
+          "choices": [
+            "The set partitions into five disjoint pairs, each summing to 11.",
+            "The six selected numbers must include both 1 and 10.",
+            "Every two selections sum to at least 11.",
+            "There are only five even numbers in the set."
+          ],
+          "answer": "The set partitions into five disjoint pairs, each summing to 11.",
+          "hints": [
+            "Pair a number $a$ with $11-a$.",
+            "Six selections cannot occupy five pair boxes singly."
+          ],
+          "solution": "The five complementary pairs form boxes. Two of the six selected distinct integers lie in one pair box, whose members sum to 11.",
+          "concept": "complementary-pair construction",
+          "difficulty": "core",
+          "exam": false
+        },
+        {
+          "id": "pigeonhole-principle-09",
+          "kind": "number",
+          "prompt": "Thirty-one tasks are assigned to five workers. What is the largest number of tasks guaranteed for some worker?",
+          "answer": 7,
+          "hints": [
+            "Six tasks per worker account for only thirty.",
+            "The ceiling of the average is attainable as a bound."
+          ],
+          "solution": "At least one worker receives $\\lceil31/5\\rceil=7$ tasks. Distribution 7,6,6,6,6 shows that no larger guarantee is possible.",
+          "concept": "optimal occupancy guarantee",
+          "difficulty": "core",
+          "exam": true
+        },
+        {
+          "id": "pigeonhole-principle-10",
+          "kind": "proof",
+          "prompt": "Order the steps proving that among 5 points in a unit square, two are at distance at most $\\sqrt2/2$. Assign any boundary point to exactly one neighboring cell.",
+          "choices": [
+            "By pigeonhole, one cell contains at least two of the five points.",
+            "Partition the square into four cells of side $1/2$, assigning boundaries consistently.",
+            "Two points in that cell are at most its diagonal apart, namely $\\sqrt{(1/2)^2+(1/2)^2}=\\sqrt2/2$."
+          ],
+          "answer": [2, 1, 3],
+          "hints": [
+            "Define the four boxes first.",
+            "Only then use the collision and the cell diameter."
+          ],
+          "solution": "First construct the four-cell partition (step 2). Five points in four cells force a shared cell (step 1). A cell's diameter is $\\sqrt2/2$, giving the distance bound (step 3).",
+          "concept": "geometric pigeonhole proof",
+          "difficulty": "stretch",
+          "exam": true
+        }
+      ]
+    }
+  ]
+}

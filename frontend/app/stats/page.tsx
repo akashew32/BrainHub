@@ -15,6 +15,7 @@ import {
 import { api } from "@/lib/api";
 import { gameMap } from "@/lib/games";
 import { roadmapMap } from "@/lib/roadmaps";
+import { LearningSummary } from "@/components/roadmaps/learning-summary";
 
 type Stats = Awaited<ReturnType<typeof api.stats>>;
 const empty: Stats = {
@@ -53,6 +54,7 @@ export default function StatsPage() {
       <p className="metric text-[#63e6be]">Performance desk</p>
       <h1 className="mt-2 text-4xl font-semibold">Statistics</h1>
       <p className="mt-2 text-[#8b97a8]">Trend the habits that compound.</p>
+      <LearningSummary />
       <section className="mt-8 grid gap-4 sm:grid-cols-4">
         {[
           ["BrainHub rating", stats.rating],

@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
+from app.api.learning import router as learning_router
 from app.api.routes import router
 from app.core.config import get_settings
 from app.db.base import Base, FermiQuestion, Game
@@ -51,3 +52,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(router)
+app.include_router(learning_router)
