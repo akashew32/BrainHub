@@ -14,6 +14,14 @@ from fastapi import HTTPException
 from app.db.base import RoadmapAssessmentSession
 from app.services.assessment_hints import assistance
 from app.services.curriculum import PASS_SCORE, grade, public_question
+from app.services.spaced_review import utc_naive
+
+
+def assessment_state(session: RoadmapAssessmentSession, *, now: datetime) -> str:
+    """One lifecycle definition for recovery, history and deadline boundaries."""
+    if session.result is not None:
+        return "completed"
+    return "expired" if utc_naive(session.expires_at) <= utc_naive(now) else "active"
 
 
 def semantic_fingerprint(question: dict[str, Any]) -> str:
@@ -102,7 +110,7 @@ def assessment_payload(
     current_bank: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
     completed = session.result is not None
-    state = "completed" if completed else "expired" if session.expires_at <= now else "active"
+    state = assessment_state(session, now=now)
     entries = frozen_entries(session)
     missing = entries is None and any(qid not in current_bank for qid in session.question_ids)
     if missing and not completed:
@@ -137,6 +145,7 @@ def assessment_payload(
         "mode": session.mode,
         "roadmap_slug": session.roadmap_slug,
         "topic_slug": session.topic_slug,
+        "stage_index": session.stage_index,
         "expires_at": session.expires_at.isoformat() + "Z",
         "state": state,
         "server_now": now.isoformat() + "Z",

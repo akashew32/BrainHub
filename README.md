@@ -107,6 +107,7 @@ Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS`
 - `GET /api/roadmaps/curriculum`
 - `GET /api/roadmaps/{roadmap_slug}/lessons/{topic_slug}`
 - `GET /api/roadmaps/{roadmap_slug}/exam-readiness`
+- `GET /api/roadmaps/assessment-sessions`
 - `POST /api/roadmaps/{roadmap_slug}/assessments`
 - `POST /api/roadmaps/assessments/{session_id}/submit`
 - `GET /api/roadmaps/assessments/{session_id}`
@@ -131,6 +132,8 @@ Fresh stage exams require at least 75% independently correct answers in each of 
 The daily review plan derives from graded answer history. Mistakes, assisted answers, and older untracked answers are due immediately. Independent correct recall starts at one day and advances through 3, 7, 14, 30, 60, and 90 days when completed on time. Early correct practice preserves the current interval and due date. The review page, review sessions, and due-concept statistics use the same scheduler. Sets contain at most eight due questions per subject; activity totals use UTC days. Viewing lessons, opening sessions, and saving drafts do not advance review schedules.
 
 The mistake notebook retains previous errors and assisted or untracked answers after correction. Historical feedback comes from the learner's own completed assessment snapshots, including archived questions; current answer keys are never substituted. Reflection notes are profile-owned, bounded to 4,000 characters, and protected by revision comparisons. A conflict preserves the local draft until the learner chooses how to resolve it. Notebook pagination is bound to a fixed history snapshot and filters. Concept performance separates independent, assisted, and untracked accuracy and includes 14 UTC days of activity; empty groups have no accuracy value.
+
+The learning dashboard at `/roadmaps/learning` brings due review, saved active sessions, independent performance, and next steps for all five foundation stages together. Concepts below 75% independent accuracy are distinguished from concepts with no independent evidence. Each data source has its own loading, failure, and retry state. The history page at `/roadmaps/sessions` filters profile-owned assessments by subject, mode, and current lifecycle state, with bounded pagination ordered by start time. Opening `/roadmaps/sessions/{id}` retrieves that exact saved attempt without allocating another one. Newer local text merges only for the selected session, preserving unrelated drafts. Archived results and closed answers remain readable; recovery does not depend on fresh-exam eligibility. History returns summaries without questions, answers, hints, or private snapshots, and both history and recovery responses disable caching.
 
 All 21 structured proof problems have private prerequisite graphs and per-step justifications. The proof composer supports selecting, removing, and reordering numbered steps with native keyboard-accessible buttons, while preserving partial work and existing raw-order drafts. A complete proof earns credit whenever its order satisfies every logical prerequisite. After submission, feedback identifies violated dependencies and displays one valid proof; it does not award partial mastery or claim that a reference sequence is the only possible mathematical argument.
 

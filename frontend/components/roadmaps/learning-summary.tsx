@@ -39,6 +39,9 @@ export function LearningSummary() {
           Mathematical practice
         </h2>
         <div className="flex flex-wrap gap-4">
+          <Link className="text-sm text-[#63e6be]" href="/roadmaps/learning">
+            Learning dashboard →
+          </Link>
           <Link className="text-sm text-[#a78bfa]" href="/roadmaps/notebook">
             Mathematics notebook →
           </Link>

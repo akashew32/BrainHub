@@ -28,6 +28,9 @@ type AssessmentProps = {
   onCompleted?: (result: AssessmentResult) => void;
   reviewAvailable?: boolean;
   examAvailable?: boolean;
+  selectedSession?: AssessmentSession;
+  selectedReceivedAt?: number;
+  selectedSessionFresh?: boolean;
 };
 type SavedDraft = {
   version: 2;
@@ -49,7 +52,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function publicSession(value: unknown): value is AssessmentSession {
+export function publicSession(value: unknown): value is AssessmentSession {
   if (!isRecord(value)) return false;
   const result = validAssessmentResult(value.result, String(value.id), String(value.mode))
     ? value.result
@@ -61,6 +64,10 @@ function publicSession(value: unknown): value is AssessmentSession {
   return (
     typeof value.id === "string" &&
     typeof value.roadmap_slug === "string" &&
+    (value.stage_index === undefined ||
+      (Number.isInteger(value.stage_index) &&
+        (value.stage_index as number) >= 0 &&
+        (value.stage_index as number) <= 9)) &&
     ["practice", "exam", "review"].includes(String(value.mode)) &&
     (value.topic_slug === null || typeof value.topic_slug === "string") &&
     typeof value.expires_at === "string" &&
@@ -87,6 +94,28 @@ function publicSession(value: unknown): value is AssessmentSession {
         Number.isFinite(value.expires_in_seconds) &&
         value.expires_in_seconds >= 0)) &&
     (value.questions_available === undefined || typeof value.questions_available === "boolean") &&
+    (value.draft === undefined ||
+      (isRecord(value.draft) &&
+        (value.draft.revision === undefined ||
+          (Number.isInteger(value.draft.revision) &&
+            (value.draft.revision as number) >= 0 &&
+            (value.draft.revision as number) <= MAX_REVISION)) &&
+        (value.draft.time_spent_seconds === undefined ||
+          (Number.isInteger(value.draft.time_spent_seconds) &&
+            (value.draft.time_spent_seconds as number) >= 0 &&
+            (value.draft.time_spent_seconds as number) <= MAX_TIME_SECONDS)) &&
+        (value.draft.answers === undefined ||
+          (Array.isArray(value.draft.answers) &&
+            value.draft.answers.length <= 60 &&
+            new Set(value.draft.answers.map((item) => (isRecord(item) ? item.question_id : null))).size ===
+              value.draft.answers.length &&
+            value.draft.answers.every(
+              (item) =>
+                isRecord(item) &&
+                typeof item.question_id === "string" &&
+                "answer" in item &&
+                (questionIds.size === 0 || questionIds.has(item.question_id)),
+            ))))) &&
     (value.hint_usage === undefined ||
       value.hint_usage === null ||
       (isRecord(value.hint_usage) &&
@@ -185,6 +214,7 @@ function sessionSnapshot(current: AssessmentSession): AssessmentSession {
     mode: current.mode,
     roadmap_slug: current.roadmap_slug,
     topic_slug: current.topic_slug,
+    stage_index: current.stage_index,
     expires_at: current.expires_at,
     pass_score: current.pass_score,
     hint_usage: current.hint_usage ?? null,
@@ -211,6 +241,41 @@ function sessionSnapshot(current: AssessmentSession): AssessmentSession {
       numeric_tolerance: question.numeric_tolerance,
     })),
   };
+}
+
+function matchingDraft(draft: SavedDraft | null, current: AssessmentSession): draft is SavedDraft {
+  return Boolean(
+    draft &&
+    draft.sessionId === current.id &&
+    draft.roadmapSlug === current.roadmap_slug &&
+    draft.mode === current.mode &&
+    draft.topicSlug === current.topic_slug &&
+    draft.stageIndex === (current.stage_index ?? 0) &&
+    draft.session.roadmap_slug === current.roadmap_slug &&
+    draft.session.mode === current.mode &&
+    draft.session.topic_slug === current.topic_slug &&
+    (draft.session.stage_index ?? 0) === (current.stage_index ?? 0),
+  );
+}
+
+/** Read only an explicitly requested cached resource; never discover a different attempt. */
+export function cachedSelectedAssessment(sessionId: string): AssessmentSession | null {
+  const matches: SavedDraft[] = [];
+  try {
+    for (let index = 0; index < localStorage.length; index += 1) {
+      const key = localStorage.key(index);
+      if (!key?.startsWith("brainhub:assessment:v2:")) continue;
+      const draft = readDraft(key);
+      if (draft && draft.sessionId === sessionId && matchingDraft(draft, draft.session)) matches.push(draft);
+    }
+  } catch {
+    return null;
+  }
+  matches.sort((left, right) => right.revision - left.revision);
+  const closed =
+    matches.find((draft) => draft.session.result) ??
+    matches.find((draft) => draft.session.state === "expired");
+  return closed?.session ?? matches[0]?.session ?? null;
 }
 
 function elapsedSeconds(origin: number) {
@@ -277,10 +342,14 @@ export function AssessmentPanel({
   onCompleted,
   reviewAvailable = true,
   examAvailable = false,
+  selectedSession,
+  selectedReceivedAt,
+  selectedSessionFresh = true,
 }: AssessmentProps) {
   const scopedTopic = mode === "practice" ? topicSlug : undefined;
-  const draftKey =
+  const legacyDraftKey =
     "brainhub:assessment:v2:" + roadmapSlug + ":" + mode + ":" + (scopedTopic ?? "stage-" + stageIndex);
+  const draftKey = selectedSession ? legacyDraftKey + ":session-" + selectedSession.id : legacyDraftKey;
   return (
     <AssessmentWorkspace
       key={draftKey}
@@ -292,6 +361,10 @@ export function AssessmentPanel({
       onCompleted={onCompleted}
       reviewAvailable={reviewAvailable}
       examAvailable={examAvailable}
+      selectedSession={selectedSession}
+      selectedReceivedAt={selectedReceivedAt}
+      selectedSessionFresh={selectedSessionFresh}
+      legacyDraftKey={legacyDraftKey}
     />
   );
 }
@@ -305,12 +378,20 @@ function AssessmentWorkspace({
   onCompleted,
   reviewAvailable,
   examAvailable,
+  selectedSession,
+  selectedReceivedAt,
+  selectedSessionFresh,
+  legacyDraftKey,
 }: Required<Pick<AssessmentProps, "roadmapSlug" | "stageIndex" | "mode">> & {
   topicSlug?: string;
   draftKey: string;
   onCompleted?: (result: AssessmentResult) => void;
   reviewAvailable: boolean;
   examAvailable: boolean;
+  selectedSession?: AssessmentSession;
+  selectedReceivedAt?: number;
+  selectedSessionFresh: boolean;
+  legacyDraftKey: string;
 }) {
   const { acceptProgress } = useRoadmapProgress();
   const [session, setSession] = useState<AssessmentSession | null>(null);
@@ -361,8 +442,10 @@ function AssessmentWorkspace({
     (candidate: AssessmentSession) =>
       candidate.roadmap_slug === roadmapSlug &&
       candidate.mode === mode &&
-      candidate.topic_slug === (topicSlug ?? null),
-    [mode, roadmapSlug, topicSlug],
+      candidate.topic_slug === (topicSlug ?? null) &&
+      (candidate.stage_index ?? 0) === stageIndex &&
+      (!selectedSession || candidate.id === selectedSession.id),
+    [mode, roadmapSlug, topicSlug, stageIndex, selectedSession],
   );
 
   const synchronizeExpiry = useCallback((candidate: AssessmentSession, fresh: boolean) => {
@@ -409,12 +492,17 @@ function AssessmentWorkspace({
       cached.current = next;
       try {
         localStorage.setItem(draftKey, JSON.stringify(next));
+        if (selectedSession) {
+          const existing = readDraft(legacyDraftKey);
+          if (localStorage.getItem(legacyDraftKey) === null || existing?.sessionId === activeSession.id)
+            localStorage.setItem(legacyDraftKey, JSON.stringify(next));
+        }
         return true;
       } catch {
         return false;
       }
     },
-    [draftKey, mode, roadmapSlug, stageIndex, topicSlug],
+    [draftKey, mode, roadmapSlug, stageIndex, topicSlug, selectedSession, legacyDraftKey],
   );
 
   const markHintPending = useCallback((questionId: string, pending: boolean) => {
@@ -472,13 +560,15 @@ function AssessmentWorkspace({
       try {
         const stored = readDraft(draftKey);
         if (stored?.sessionId === sessionId) localStorage.removeItem(draftKey);
+        if (selectedSession && readDraft(legacyDraftKey)?.sessionId === sessionId)
+          localStorage.removeItem(legacyDraftKey);
       } catch {
         // A confirmed server result remains recoverable if local removal fails.
       }
       if (cached.current?.sessionId === sessionId) cached.current = null;
       setSavedSessionId(null);
     },
-    [draftKey],
+    [draftKey, selectedSession, legacyDraftKey],
   );
 
   const showResult = useCallback(
@@ -590,10 +680,77 @@ function AssessmentWorkspace({
   useEffect(() => {
     let active = true;
     async function recover() {
+      if (selectedSession) {
+        try {
+          if (!publicSession(selectedSession) || !matchesScope(selectedSession))
+            throw new Error("The selected assessment could not be opened in this context.");
+          const drafts = [readDraft(draftKey), readDraft(legacyDraftKey)]
+            .filter((draft): draft is SavedDraft => matchingDraft(draft, selectedSession))
+            .sort((left, right) => right.revision - left.revision);
+          const local = drafts[0] ?? null;
+          if (selectedSessionFresh) {
+            const delay =
+              selectedReceivedAt === undefined
+                ? 0
+                : Math.max(0, (performance.now() - selectedReceivedAt) / 1000);
+            const remaining =
+              selectedSession.expires_in_seconds ??
+              (selectedSession.server_now
+                ? Math.max(
+                    0,
+                    (Date.parse(selectedSession.expires_at) - Date.parse(selectedSession.server_now)) / 1000,
+                  )
+                : undefined);
+            restore(
+              remaining === undefined
+                ? selectedSession
+                : { ...selectedSession, expires_in_seconds: Math.max(0, remaining - delay) },
+              local,
+            );
+          } else {
+            const values = safeAnswers(
+              Object.fromEntries(
+                (selectedSession.draft?.answers ?? []).map((item) => [
+                  item.question_id,
+                  typeof item.answer === "string" ? item.answer : JSON.stringify(item.answer),
+                ]),
+              ),
+              selectedSession,
+            );
+            keepUnavailableDraft(
+              local
+                ? { ...local, session: selectedSession }
+                : {
+                    version: 2,
+                    sessionId: selectedSession.id,
+                    roadmapSlug,
+                    topicSlug: topicSlug ?? null,
+                    stageIndex,
+                    mode,
+                    answers: values,
+                    revision: selectedSession.draft?.revision ?? 0,
+                    startedAt: Date.now() - (selectedSession.draft?.time_spent_seconds ?? 0) * 1000,
+                    session: selectedSession,
+                  },
+              new Error("The selected assessment is temporarily unavailable."),
+            );
+          }
+        } catch (problem) {
+          if (active)
+            setError(problem instanceof Error ? problem.message : "Unable to open the selected assessment.");
+        }
+        if (active) setRecovering(false);
+        return;
+      }
       const intent = readStartIntent(intentKey, draftKey);
       pendingStartRef.current = intent;
       setPendingStart(intent);
-      const local = readDraft(draftKey);
+      let local = readDraft(draftKey);
+      if (local) {
+        const selectedCopy = readDraft(draftKey + ":session-" + local.sessionId);
+        if (matchingDraft(selectedCopy, local.session) && selectedCopy.revision > local.revision)
+          local = selectedCopy;
+      }
       if (
         local &&
         local.roadmapSlug === roadmapSlug &&
@@ -633,6 +790,10 @@ function AssessmentWorkspace({
     roadmapSlug,
     stageIndex,
     topicSlug,
+    selectedSession,
+    selectedReceivedAt,
+    selectedSessionFresh,
+    legacyDraftKey,
   ]);
 
   useEffect(() => {
@@ -765,7 +926,7 @@ function AssessmentWorkspace({
   }
 
   async function start() {
-    if (submitting.current) return;
+    if (submitting.current || selectedSession) return;
     const storedIntent = pendingStartRef.current ?? readStartIntent(intentKey, draftKey);
     const reusable =
       storedIntent && !confirmedStarts.current.has(storedIntent.request_id) ? storedIntent : null;
@@ -901,7 +1062,7 @@ function AssessmentWorkspace({
           Checking for a saved assessment…
         </p>
       ) : null}
-      {!session && !recovering ? (
+      {!selectedSession && !session && !recovering ? (
         <button
           className="btn btn-primary mt-5 inline-flex items-center gap-2"
           onClick={start}
@@ -924,12 +1085,12 @@ function AssessmentWorkspace({
           until the assignment opens.
         </p>
       ) : null}
-      {mode === "review" && !reviewAvailable ? (
+      {!selectedSession && mode === "review" && !reviewAvailable ? (
         <p className="mt-4 text-sm leading-7 text-[#9ba8b9]" role="status">
           No more questions are due for this subject. Your current answers and feedback remain available.
         </p>
       ) : null}
-      {mode === "exam" && !examAvailable ? (
+      {!selectedSession && mode === "exam" && !examAvailable ? (
         <p className="mt-4 text-sm leading-7 text-[#9ba8b9]">
           New exams open after your independent practice is confirmed. You can continue and submit an exam you
           already started.
@@ -963,9 +1124,11 @@ function AssessmentWorkspace({
                 </li>
               ))}
           </ol>
-          <button className="btn btn-primary mt-5" type="button" disabled={cannotStart} onClick={start}>
-            {busy ? "Preparing…" : "Start a fresh session"}
-          </button>
+          {!selectedSession ? (
+            <button className="btn btn-primary mt-5" type="button" disabled={cannotStart} onClick={start}>
+              {busy ? "Preparing…" : "Start a fresh session"}
+            </button>
+          ) : null}
         </div>
       ) : null}
       {session && !result && !expired ? (
@@ -1192,15 +1355,17 @@ function AssessmentWorkspace({
               </details>
             ))}
           </div>
-          <button
-            className="btn mt-5 inline-flex items-center gap-2"
-            onClick={start}
-            disabled={cannotStart}
-            type="button"
-          >
-            <RotateCcw size={15} />
-            {pendingStart ? "Retry opening saved assignment" : "Start another session"}
-          </button>
+          {!selectedSession ? (
+            <button
+              className="btn mt-5 inline-flex items-center gap-2"
+              onClick={start}
+              disabled={cannotStart}
+              type="button"
+            >
+              <RotateCcw size={15} />
+              {pendingStart ? "Retry opening saved assignment" : "Start another session"}
+            </button>
+          ) : null}
         </div>
       ) : null}
       <div aria-live="assertive">

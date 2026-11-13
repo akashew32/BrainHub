@@ -305,7 +305,8 @@ def reveal_assessment_hint(
 
 
 @router.get("/assessments/{session_id}")
-def recover_assessment(session_id: str, db: Database) -> dict[str, Any]:
+def recover_assessment(session_id: str, db: Database, response: Response) -> dict[str, Any]:
+    response.headers["Cache-Control"] = "private, no-store"
     user = get_local_user(db)
     session = db.scalar(
         select(RoadmapAssessmentSession).where(
@@ -567,6 +568,7 @@ def start_assessment(
         ),
         start_request_id=request_id,
         hint_usage={},
+        started_at=now,
         expires_at=now + timedelta(hours=2),
     )
     try:

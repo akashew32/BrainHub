@@ -17,6 +17,9 @@ export default function RoadmapReviewPage() {
       >
         <ArrowLeft size={15} /> All roadmaps
       </Link>
+      <Link className="mb-7 ml-6 inline-block text-sm text-[#93a8c1]" href="/roadmaps/learning">
+        Your learning dashboard →
+      </Link>
       <section className="mb-8 max-w-3xl">
         <p className="metric flex items-center gap-2 text-[#c084fc]">
           <RotateCcw size={15} /> Daily spaced review

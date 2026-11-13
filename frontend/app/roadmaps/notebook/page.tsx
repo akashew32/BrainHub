@@ -14,6 +14,7 @@ export default function NotebookPage() {
     <div>
       <div className="mb-7 flex flex-wrap gap-5 text-sm text-[#a6b6cb]">
         <Link href="/roadmaps">← All roadmaps</Link>
+        <Link href="/roadmaps/learning">Your learning dashboard</Link>
         <Link href="/roadmaps/review">Daily review plan →</Link>
       </div>
       <section className="mb-8 max-w-3xl">

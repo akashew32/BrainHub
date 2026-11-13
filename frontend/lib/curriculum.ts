@@ -40,6 +40,7 @@ export type AssessmentSession = {
   mode: "practice" | "exam" | "review";
   roadmap_slug: string;
   topic_slug: string | null;
+  stage_index?: number;
   expires_at: string;
   pass_score: number;
   questions: MathQuestion[];
@@ -283,4 +284,36 @@ export type ExamReadiness = {
     difficulties: Record<string, number>;
     hints_allowed: false;
   };
+};
+
+export type AssessmentHistoryItem = {
+  id: string;
+  roadmap_slug: string;
+  topic_slug: string | null;
+  stage_index: number;
+  mode: "practice" | "exam" | "review";
+  state: "active" | "completed" | "expired";
+  started_at: string;
+  completed_at: string | null;
+  expires_at: string;
+  question_count: number;
+  saved_entries: number;
+  result_available: boolean;
+  result_summary: {
+    score: number;
+    independent_score: number | null;
+    correct: number;
+    total: number;
+    passed: boolean;
+    assistance: Assistance;
+  } | null;
+  questions_available: boolean;
+  open_url: string | null;
+  study_url: string | null;
+};
+
+export type AssessmentHistoryPage = {
+  generated_at: string;
+  items: AssessmentHistoryItem[];
+  next_cursor: string | null;
 };

@@ -45,6 +45,23 @@ async function assessmentRequest(path: string, init?: RequestInit) {
     : session;
 }
 export const api = {
+  assessmentSessions: (
+    query: {
+      state?: "all" | "active" | "completed" | "expired";
+      roadmap_slug?: string;
+      mode?: "practice" | "exam" | "review";
+      limit?: number;
+      cursor?: string;
+    } = {},
+  ) => {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== "") params.set(key, String(value));
+    return request<import("@/lib/curriculum").AssessmentHistoryPage>(
+      "/roadmaps/assessment-sessions?" + params,
+      { signal: AbortSignal.timeout(12_000) },
+    );
+  },
   examReadiness: (roadmapSlug: string, stageIndex = 0) =>
     request<import("@/lib/curriculum").ExamReadiness>(
       `/roadmaps/${encodeURIComponent(roadmapSlug)}/exam-readiness?stage_index=${stageIndex}`,

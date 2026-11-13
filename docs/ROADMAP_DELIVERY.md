@@ -29,7 +29,7 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 6 | Mistake notebook and concept-level performance | Complete | `744f7a3` + CI test fix `e054ca3`; 351 backend tests, 252 frontend tests, fresh/existing migrations, full build, live two-tab reflection conflict/recovery |
 | 7 | Exam readiness, blueprint, and prerequisite evidence | Complete | `3a31936`; 380 backend tests, 262 frontend tests, full build, live checklist and direct server gate; GitHub CI passed |
 | 8 | Exam integrity, retry policy, and robust session lifecycle | Complete | `0352758`; 417 backend tests, 284 frontend tests, fresh/existing migrations, full build, live stable assignment and idempotent replay; GitHub CI passed |
-| 9 | Learning dashboard and recent learning history | Pending | |
+| 9 | Learning dashboard and recent learning history | Verified; publishing | 451 backend tests, 312 frontend tests, 538 static pages plus dynamic session viewer, live dashboard/history/recovery |
 | 10 | Diagnostic placement across foundation topics | Pending | |
 | 11 | Personalized study sessions and time goals | Pending | |
 | 12 | Question variations and meaningful repeat practice | Pending | |
@@ -177,3 +177,17 @@ Cycle 8 final frontend verification: all 284 tests pass with clean ESLint, forma
 Cycle 8 remote verified at `035275888be1f7e8dd46c45f7e0c427d0b1578a4` on `main`. GitHub Actions passed for backend, frontend, and Docker configuration: https://github.com/akashew32/BrainHub/actions/runs/43350759766. Eight of twenty improvement cycles are complete; cycles 9–20 remain part of the active goal.
 
 Next proposed batch (cycle 9): a learning dashboard across all five roadmaps with due reviews, recent completed work, recoverable active sessions, independent performance, and a clear next lesson. Derive progress from saved server evidence and distinguish authored lessons from the remaining curriculum outlines. Include empty, offline, archived, and unavailable states without inventing activity or scores.
+
+### Cycle 9 batch — learning dashboard and owned session history
+
+Bring the existing review schedule, independent practice readiness, and concept performance together on a dedicated learning dashboard. Show all five subjects and explain each recommended next action. Add bounded profile-owned assessment history containing lifecycle and result summaries, with no question bodies, answers, hints, or private assignment definitions.
+
+Provide a generic assessment viewer that can reopen a selected saved session without relying on its lesson page or browser storage. Explicit session selection takes precedence over unrelated local drafts; only a draft for that same session may merge newer answer text. Keep archived results and expired answers readable, and preserve access to previously started exams independently of new-exam eligibility. History filters reflect live session state; cursor pagination does not claim to freeze state changes between requests.
+
+Cycle 9 review improvements: publish each dashboard resource as soon as it settles; retain all five subject contexts when another request fails; distinguish weak independent performance from missing evidence; query active work separately from recent history; and label history ordering and dates explicitly. Session summaries fail closed for corrupt snapshots or results, expose no question content, and use profile/filter-bound cursors. History and owned recovery responses use `Cache-Control: private, no-store`.
+
+Cycle 9 selected-session safeguards: isolate per-session drafts and mirror to a lesson draft only when absent or already the same session; retain newer matching raw text when returning to a lesson; suppress fresh allocation under a selected-session URL; reject wrong-resource and malformed draft responses; and preserve matching cached answers read-only after legacy 409/410 responses while 404 does not expose cached content. Existing exam recovery remains separate from fresh-start eligibility.
+
+Cycle 9 verification: all 451 backend tests and 312 frontend tests pass with clean formatting, lint, and type checks. The production build generates all 538 static pages and the dynamic UUID session viewer. An initial build-directory cleanup encountered a briefly locked development cache; after confirming the server had stopped, cleanup and the full production build succeeded. No source workaround was needed.
+
+Cycle 9 live evidence: the dashboard displays all five learning plans, zero due/eight scheduled reviews, two independent recalls today, and 8/8 independently correct answers. Linear algebra correctly recommends the second lesson after one of six lessons qualifies; the other subjects show their first lesson without invented scores. History lists one active, one expired, and five completed sessions. Direct links restore the active probability expression `26 * (`, the expired matrix answer `[["1/2", 2], [3, 4]]`, and the saved 100% two-question review result. After browsing, SQLite still contains 34 graded answers, seven sessions, and one reflection note. No browser console errors were observed.
