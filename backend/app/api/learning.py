@@ -39,8 +39,11 @@ from app.services.curriculum import (
 from app.services.diagnostics import build_diagnostic_summary, select_diagnostic_questions
 from app.services.exam_readiness import readiness_for_stage
 from app.services.proof_feedback import build_proof_feedback
+from app.services.recorded_time import merge_recordings, recording_seconds
 from app.services.roadmaps import serialize_progress
 from app.services.spaced_review import SESSION_LIMIT, review_plan_for_user
+from app.services.study import NOTICE as STUDY_NOTICE
+from app.services.study import study_assignment
 
 router = APIRouter(prefix="/api/roadmaps", tags=["Mathematics learning"])
 
@@ -48,10 +51,11 @@ router = APIRouter(prefix="/api/roadmaps", tags=["Mathematics learning"])
 class StartAssessment(BaseModel):
     model_config = {"extra": "forbid"}
 
-    mode: Literal["practice", "exam", "review", "diagnostic"] = "practice"
+    mode: Literal["practice", "exam", "review", "diagnostic", "study"] = "practice"
     topic_slug: str | None = Field(default=None, max_length=160)
     stage_index: int = Field(default=0, ge=0, le=9)
     request_id: UUID | None = None
+    budget_minutes: int | None = Field(default=None, ge=5, le=60, strict=True)
 
 
 class Answer(BaseModel):
@@ -92,6 +96,7 @@ class SubmitAssessment(BaseModel):
 
     answers: list[Answer] = Field(min_length=1, max_length=60)
     time_spent_seconds: int = Field(default=0, ge=0, le=7200)
+    time_recording: Any = None
 
 
 class AssessmentDraft(BaseModel):
@@ -100,6 +105,7 @@ class AssessmentDraft(BaseModel):
     answers: list[Answer] = Field(default_factory=list, max_length=60)
     time_spent_seconds: int = Field(default=0, ge=0, le=7200)
     revision: int = Field(default=0, ge=0, le=2_147_483_647)
+    time_recording: Any = None
 
 
 class RevealHint(BaseModel):
@@ -359,6 +365,16 @@ def save_assessment_draft(
     ):
         raise HTTPException(422, "Save at most one answer for each question in this session.")
     previous = session.draft or {}
+    try:
+        recording = merge_recordings(
+            previous.get("time_recording"),
+            payload.time_recording,
+            started_at=session.started_at,
+            expires_at=session.expires_at,
+            now=utc_now(),
+        )
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
     candidate = {
         "answers": sorted(
             [answer.model_dump() for answer in payload.answers],
@@ -369,6 +385,8 @@ def save_assessment_draft(
         ),
         "revision": payload.revision,
     }
+    if recording is not None:
+        candidate["time_recording"] = recording
     stored_revision = previous.get("revision", -1)
     if payload.revision < stored_revision:
         raise HTTPException(409, "A newer draft is already saved. Reload it before saving again.")
@@ -510,16 +528,31 @@ def start_assessment(
     roadmap_slug: str, payload: StartAssessment, db: Database, response: Response
 ) -> dict[str, Any]:
     now = utc_now()
+    if payload.mode != "study" and payload.budget_minutes is not None:
+        raise HTTPException(422, "A session budget applies only to study mode.")
     user = get_local_user(db)
     request_id = str(payload.request_id) if payload.request_id is not None else None
     topic_slug = payload.topic_slug if payload.mode == "practice" else None
 
     def replay(existing: RoadmapAssessmentSession) -> dict[str, Any]:
+        options = None
+        if existing.mode == "study":
+            snapshot = existing.question_snapshot
+            options = snapshot.get("study_plan") if isinstance(snapshot, dict) else None
+            if not isinstance(options, dict):
+                raise HTTPException(
+                    409, "This study session's saved request context is unavailable."
+                )
         if (
             existing.roadmap_slug != roadmap_slug
             or existing.mode != payload.mode
             or existing.stage_index != payload.stage_index
             or existing.topic_slug != topic_slug
+            or (
+                existing.mode == "study"
+                and options is not None
+                and options.get("requested_budget_minutes") != payload.budget_minutes
+            )
         ):
             raise HTTPException(
                 409, "This start request ID already belongs to a different assessment request."
@@ -539,6 +572,7 @@ def start_assessment(
     data = curriculum().get(roadmap_slug)
     if data is None or payload.stage_index != data["stage_index"]:
         raise HTTPException(404, "No authored assessment is available for this stage yet.")
+    study_metadata = None
     if payload.mode == "practice":
         lesson = lesson_for(roadmap_slug, payload.topic_slug or "")
         if lesson is None:
@@ -561,6 +595,10 @@ def start_assessment(
         ]
     elif payload.mode == "diagnostic":
         selected = select_diagnostic_questions(data)
+    elif payload.mode == "study":
+        selected, study_metadata = study_assignment(
+            db, user.id, roadmap_slug, budget_minutes=payload.budget_minutes, now=now
+        )
     else:
         plan = review_plan_for_user(db, user.id, now=now)
         selected = [
@@ -570,8 +608,13 @@ def start_assessment(
             raise HTTPException(
                 409, "No attempted questions are currently due for review in this subject."
             )
-    if payload.mode != "review":
+    if payload.mode not in {"review", "study"}:
         random.SystemRandom().shuffle(selected)
+    snapshot = freeze_questions(
+        [questions_for(roadmap_slug)[qid] for qid in selected], mode=payload.mode
+    )
+    if study_metadata is not None:
+        snapshot["study_plan"] = study_metadata
     session = RoadmapAssessmentSession(
         id=str(uuid4()),
         user_id=user.id,
@@ -580,9 +623,7 @@ def start_assessment(
         stage_index=payload.stage_index,
         mode=payload.mode,
         question_ids=selected,
-        question_snapshot=freeze_questions(
-            [questions_for(roadmap_slug)[qid] for qid in selected], mode=payload.mode
-        ),
+        question_snapshot=snapshot,
         start_request_id=request_id,
         hint_usage={},
         started_at=now,
@@ -653,6 +694,17 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
             item["expected_answer"] = [step["step"] for step in details["expected_steps"]]
         feedback.append(item)
     now = utc_now()
+    try:
+        recording = merge_recordings(
+            (session.draft or {}).get("time_recording"),
+            payload.time_recording,
+            started_at=session.started_at,
+            expires_at=session.expires_at,
+            now=now,
+        )
+    except ValueError as error:
+        raise HTTPException(422, str(error)) from error
+    recorded_seconds = recording_seconds(recording)
     for item in feedback:
         db.add(
             RoadmapQuestionAttempt(
@@ -694,11 +746,21 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
         "total": len(feedback),
         "feedback": feedback,
         "progress": None,
+        "recorded_seconds": recorded_seconds,
     }
     if session.mode == "diagnostic":
         result["diagnostic_summary"] = build_diagnostic_summary(
             session.roadmap_slug, bank, feedback
         )
+    if session.mode == "study":
+        metadata = (session.question_snapshot or {}).get("study_plan", {})
+        result["study_summary"] = {
+            "version": 1,
+            "notice": STUDY_NOTICE,
+            "correct": result["correct"],
+            "total": result["total"],
+            "reason_counts": metadata["reason_counts"],
+        }
     try:
         # Claim completion using the exact hint snapshot used for grading. A
         # concurrent reveal must never be labeled as independent work.
@@ -709,7 +771,13 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
                 RoadmapAssessmentSession.completed_at.is_(None),
                 RoadmapAssessmentSession.hint_revision == session.hint_revision,
             )
-            .values(completed_at=now)
+            .where(
+                func.coalesce(RoadmapAssessmentSession.draft["revision"].as_integer(), -1)
+                == (session.draft or {}).get("revision", -1)
+            )
+            .values(
+                completed_at=now, recorded_intervals=recording, recorded_seconds=recorded_seconds
+            )
             .execution_options(synchronize_session=False)
         )
         if not isinstance(changed, CursorResult) or changed.rowcount != 1:
@@ -722,7 +790,12 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
             )
         if session.mode == "practice" and session.topic_slug:
             progress = _persist_practice_progress(
-                db, session, score, independent_score, payload.time_spent_seconds, now
+                db,
+                session,
+                score,
+                independent_score,
+                payload.time_spent_seconds if recorded_seconds is None else recorded_seconds,
+                now,
             )
             result["progress"] = serialize_progress(progress)
         db.execute(

@@ -10,6 +10,7 @@ from app.api.learning import router as learning_router
 from app.api.learning_dashboard import router as learning_dashboard_router
 from app.api.notebook import router as notebook_router
 from app.api.routes import router
+from app.api.study import router as study_router
 from app.core.config import get_settings
 from app.db.base import Base, FermiQuestion, Game
 from app.db.session import SessionLocal, engine
@@ -80,3 +81,4 @@ app.include_router(router)
 app.include_router(learning_router)
 app.include_router(learning_dashboard_router)
 app.include_router(notebook_router)
+app.include_router(study_router)

@@ -115,9 +115,21 @@ class RoadmapAssessmentSession(Base):
     hint_usage: Mapped[dict[str, int] | None] = mapped_column(JSON, nullable=True, default=dict)
     hint_revision: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     result: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    recorded_intervals: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    recorded_seconds: Mapped[int | None] = mapped_column(Integer, nullable=True)
     started_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime)
+
+
+class StudyPreferences(Base):
+    __tablename__ = "study_preferences"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    goal_minutes: Mapped[int] = mapped_column(Integer, default=20, server_default="20")
+    session_minutes: Mapped[int] = mapped_column(Integer, default=15, server_default="15")
+    preferred_roadmap_slug: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    revision: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class RoadmapQuestionAttempt(Base):

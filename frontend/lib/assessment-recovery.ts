@@ -39,7 +39,15 @@ export function validAssessmentResult(
     value.feedback.length !== value.total
   )
     return false;
-  if (mode === "diagnostic" && value.progress !== null) return false;
+  if ((mode === "diagnostic" || mode === "study") && value.progress !== null) return false;
+  if (
+    value.recorded_seconds !== undefined &&
+    value.recorded_seconds !== null &&
+    (!Number.isInteger(value.recorded_seconds) ||
+      (value.recorded_seconds as number) < 0 ||
+      (value.recorded_seconds as number) > 7200)
+  )
+    return false;
   if (value.progress !== null) {
     const progress = value.progress;
     if (
@@ -78,7 +86,63 @@ export function validAssessmentResult(
             (item.hints_used as number) <= 64)) &&
         (item.proof_details === undefined || validProofDetails(item.proof_details)),
     );
-  return feedbackValid && (mode !== "diagnostic" || validDiagnosticSummary(value));
+  return (
+    feedbackValid &&
+    (mode !== "diagnostic" || validDiagnosticSummary(value)) &&
+    (mode !== "study" || validStudySummary(value))
+  );
+}
+
+export function validReasonCounts(value: unknown, count: number) {
+  return (
+    record(value) &&
+    [value.due, value.weak, value.next].every((item) => Number.isInteger(item) && (item as number) >= 0) &&
+    (value.due as number) + (value.weak as number) + (value.next as number) === count
+  );
+}
+
+export function validStudyPlan(value: unknown, questionCount?: number) {
+  return (
+    record(value) &&
+    value.version === 1 &&
+    Number.isInteger(value.budget_minutes) &&
+    (value.budget_minutes as number) >= 5 &&
+    (value.budget_minutes as number) <= 60 &&
+    Number.isInteger(value.preferences_revision) &&
+    (value.preferences_revision as number) >= 0 &&
+    Number.isInteger(value.estimated_seconds) &&
+    (value.estimated_seconds as number) > 0 &&
+    (value.estimated_seconds as number) <= 7200 &&
+    (value.estimated_seconds as number) <= (value.budget_minutes as number) * 60 &&
+    Number.isInteger(value.question_count) &&
+    (value.question_count as number) >= 1 &&
+    (value.question_count as number) <= 20 &&
+    (questionCount === undefined || value.question_count === questionCount) &&
+    validReasonCounts(value.reason_counts, value.question_count as number) &&
+    typeof value.notice === "string"
+  );
+}
+
+function validStudySummary(result: Record<string, unknown>) {
+  const value = result.study_summary;
+  if (
+    !record(value) ||
+    value.version !== 1 ||
+    typeof value.notice !== "string" ||
+    !value.notice.trim() ||
+    value.correct !== result.correct ||
+    value.total !== result.total ||
+    (value.total as number) > 20 ||
+    !validReasonCounts(value.reason_counts, value.total as number)
+  )
+    return false;
+  const numerator = 100 * (value.correct as number),
+    denominator = value.total as number;
+  const whole = Math.floor(numerator / denominator),
+    remainder = numerator % denominator;
+  const rounded =
+    whole + (2 * remainder > denominator || (2 * remainder === denominator && whole % 2 === 1) ? 1 : 0);
+  return result.score === rounded;
 }
 
 function validDiagnosticSummary(result: Record<string, unknown>) {

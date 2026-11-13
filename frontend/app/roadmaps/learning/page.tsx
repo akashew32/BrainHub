@@ -14,6 +14,7 @@ export default function LearningPage() {
       <nav className="mb-7 flex flex-wrap gap-5 text-sm text-[#a6b6cb]" aria-label="Learning destinations">
         <Link href="/roadmaps">All roadmaps</Link>
         <Link href="/roadmaps/review">Daily review</Link>
+        <Link href="/roadmaps/study">Study planner</Link>
         <Link href="/roadmaps/notebook">Mathematics notebook</Link>
       </nav>
       <header className="mb-8 max-w-3xl">

@@ -5,7 +5,7 @@ from typing import Literal
 
 def hints_allowed(mode: str) -> bool:
     """Only assisted practice and review may reveal question hints."""
-    return mode in {"practice", "review"}
+    return mode in {"practice", "review", "study"}
 
 
 Assistance = Literal["independent", "assisted", "untracked"]

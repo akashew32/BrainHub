@@ -194,7 +194,9 @@ export function AssessmentHistory({ compact = false }: { compact?: boolean }) {
                     ? session.topic_slug.replaceAll("-", " ")
                     : session.mode === "diagnostic"
                       ? "Foundation diagnostic · limited sample"
-                      : `Stage ${session.stage_index + 1} ${session.mode}`}
+                      : session.mode === "study"
+                        ? "Personal study set"
+                        : `Stage ${session.stage_index + 1} ${session.mode}`}
                 </h3>
                 <p className="mt-2 text-sm text-[#a6b6cb]">
                   {session.saved_entries} saved entries · {session.question_count} questions
@@ -206,7 +208,23 @@ export function AssessmentHistory({ compact = false }: { compact?: boolean }) {
                     : " · Expires " + utcDate(session.expires_at)}
                 </p>
                 {session.result_summary ? (
-                  session.mode === "diagnostic" ? (
+                  session.mode === "study" ? (
+                    <div className="mt-3 text-sm leading-7 text-[#b6c5d8]">
+                      <p>
+                        Study set {session.result_summary.score}% · {session.result_summary.correct}/
+                        {session.result_summary.total} correct
+                      </p>
+                      <p>
+                        Practice feedback from a personal study set. This result does not complete a lesson or
+                        unlock an exam.
+                      </p>
+                      <p>
+                        {session.result_summary.independent_score === null
+                          ? "Independent work untracked"
+                          : `Independent answers: ${session.result_summary.independent_score}%`}
+                      </p>
+                    </div>
+                  ) : session.mode === "diagnostic" ? (
                     <div className="mt-3 text-sm leading-7 text-[#b6c5d8]">
                       <p>
                         Sample {session.result_summary.score}% · {session.result_summary.correct}/
@@ -250,7 +268,9 @@ export function AssessmentHistory({ compact = false }: { compact?: boolean }) {
                         : session.state === "completed" && session.result_available
                           ? session.mode === "diagnostic"
                             ? "View diagnostic guidance"
-                            : "View saved result"
+                            : session.mode === "study"
+                              ? "View study feedback"
+                              : "View saved result"
                           : "View closed session"}
                     </Link>
                   ) : (

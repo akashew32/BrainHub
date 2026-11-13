@@ -135,6 +135,9 @@ export function LearningDashboard() {
   return (
     <div className="space-y-7">
       <div className="flex flex-wrap items-center justify-between gap-4">
+        <Link className="btn btn-primary" href="/roadmaps/study">
+          Plan a short study set
+        </Link>
         <p className="max-w-3xl text-sm leading-7 text-[#9baec6]">
           Use due review first, continue a saved attempt, or work on the next lesson that needs independent
           practice. These recommendations come from graded answers and saved sessions.

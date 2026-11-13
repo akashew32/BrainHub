@@ -15,6 +15,7 @@ export type MathQuestion = {
   answer_format?: "integer" | "number" | "vector" | "matrix" | "choice" | "proof";
   tolerance?: number;
   numeric_tolerance?: { absolute: number; relative: number };
+  selection_reason?: { code: "due" | "weak" | "next"; text: string; estimated_seconds: number };
 };
 
 export type AuthoredLesson = {
@@ -35,6 +36,13 @@ export type AssessmentDraft = {
   answers: Array<{ question_id: string; answer: unknown }>;
   time_spent_seconds: number;
   revision: number;
+  time_recording?: TimeRecording | null;
+};
+
+export type TimeRecording = {
+  version: 1;
+  intervals: Array<{ start_at: string; end_at: string }>;
+  truncated?: boolean;
 };
 
 export type AssessmentSession = {
@@ -54,6 +62,7 @@ export type AssessmentSession = {
   server_now?: string;
   expires_in_seconds?: number;
   questions_available?: boolean;
+  study_plan?: StudyAssignmentPlan;
 };
 
 export type Assistance = "independent" | "assisted" | "untracked";
@@ -87,6 +96,14 @@ export type AssessmentResult = {
   independent_score?: number | null;
   independent_passed?: boolean | null;
   diagnostic_summary?: DiagnosticSummary;
+  study_summary?: {
+    version: 1;
+    notice: string;
+    correct: number;
+    total: number;
+    reason_counts: StudyReasonCounts;
+  };
+  recorded_seconds?: number | null;
   feedback: Array<{
     question_id: string;
     prompt: string;
@@ -116,6 +133,48 @@ export type DiagnosticSummary = {
     study_url: string | null;
   }>;
   recommended_topics: string[];
+};
+
+export type StudyReasonCounts = { due: number; weak: number; next: number };
+export type StudyAssignmentPlan = {
+  version: 1;
+  budget_minutes: number;
+  preferences_revision: number;
+  estimated_seconds: number;
+  question_count: number;
+  reason_counts: StudyReasonCounts;
+  notice: string;
+};
+export type StudyPreferences = {
+  goal_minutes: number;
+  session_minutes: number;
+  preferred_roadmap_slug: string | null;
+  revision: number;
+  updated_at: string | null;
+};
+export type DailyStudyGoal = {
+  date: string;
+  timezone: "UTC";
+  goal_seconds: number;
+  recorded_seconds: number;
+  recorded_sessions: number;
+  unknown_duration_sessions: number;
+  partial_duration_sessions: number;
+  goal_met: boolean;
+};
+export type StudyPlan = {
+  generated_at: string;
+  preferences: StudyPreferences;
+  daily_goal: DailyStudyGoal;
+  recommendation: {
+    roadmap_slug: string;
+    budget_minutes: number;
+    estimated_seconds: number;
+    question_count: number;
+    reason_counts: StudyReasonCounts;
+    reason: string;
+  } | null;
+  subjects: Array<{ slug: string; due: number; weak: number; unseen: number }>;
 };
 
 export type MistakeQueue = {

@@ -195,7 +195,7 @@ def assessment_payload(
             question["hints"] = hints[:count]
             questions.append(question)
     draft = session.draft or {}
-    payload = {
+    payload: dict[str, Any] = {
         "id": session.id,
         "request_id": session.start_request_id,
         "mode": session.mode,
@@ -221,6 +221,30 @@ def assessment_payload(
         payload["result"] = project_result_navigation(
             session, session.result, current_bank=current_bank
         )
+    if "time_recording" in draft:
+        payload["draft"]["time_recording"] = copy.deepcopy(draft["time_recording"])
+    if session.mode == "study":
+        metadata = (session.question_snapshot or {}).get("study_plan")
+        if not isinstance(metadata, dict):
+            raise HTTPException(409, "This study session's saved selection is unavailable.")
+        payload["study_plan"] = {
+            key: copy.deepcopy(metadata[key])
+            for key in (
+                "version",
+                "budget_minutes",
+                "preferences_revision",
+                "estimated_seconds",
+                "question_count",
+                "reason_counts",
+                "notice",
+            )
+        }
+        reasons = {item["question_id"]: item for item in metadata["questions"]}
+        for question in questions:
+            reason = reasons[question["id"]]
+            question["selection_reason"] = {
+                key: reason[key] for key in ("code", "text", "estimated_seconds")
+            }
     return payload
 
 

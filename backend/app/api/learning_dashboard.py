@@ -17,7 +17,7 @@ def assessment_sessions(
     response: Response,
     state: Literal["all", "active", "completed", "expired"] = "all",
     roadmap_slug: str | None = Query(default=None, min_length=1, max_length=80),
-    mode: Literal["practice", "exam", "review", "diagnostic"] | None = None,
+    mode: Literal["practice", "exam", "review", "diagnostic", "study"] | None = None,
     limit: int = Query(default=20, ge=1, le=50),
     cursor: str | None = Query(default=None, min_length=1, max_length=1024),
 ) -> dict:

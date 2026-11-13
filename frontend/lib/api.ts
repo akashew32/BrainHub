@@ -46,6 +46,29 @@ async function assessmentRequest(path: string, init?: RequestInit) {
     : session;
 }
 export const api = {
+  studyPreferences: () =>
+    request<import("@/lib/curriculum").StudyPreferences>("/roadmaps/study-preferences", {
+      signal: AbortSignal.timeout(12_000),
+    }),
+  saveStudyPreferences: (body: {
+    goal_minutes: number;
+    session_minutes: number;
+    preferred_roadmap_slug: string | null;
+    revision: number;
+  }) =>
+    request<import("@/lib/curriculum").StudyPreferences>("/roadmaps/study-preferences", {
+      method: "PUT",
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(12_000),
+    }),
+  studyPlan: (query: { roadmap_slug?: string; budget_minutes?: number } = {}) => {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== "") params.set(key, String(value));
+    return request<import("@/lib/curriculum").StudyPlan>("/roadmaps/study-plan?" + params, {
+      signal: AbortSignal.timeout(12_000),
+    });
+  },
   assessmentSessions: (
     query: {
       state?: "all" | "active" | "completed" | "expired";
@@ -131,6 +154,7 @@ export const api = {
       topic_slug?: string;
       stage_index?: number;
       request_id?: string;
+      budget_minutes?: number;
     },
   ) =>
     assessmentRequest(`/roadmaps/${roadmapSlug}/assessments`, {
@@ -139,7 +163,11 @@ export const api = {
     }),
   submitAssessment: (
     sessionId: string,
-    body: { answers: Array<{ question_id: string; answer: unknown }>; time_spent_seconds: number },
+    body: {
+      answers: Array<{ question_id: string; answer: unknown }>;
+      time_spent_seconds: number;
+      time_recording?: import("@/lib/curriculum").TimeRecording | null;
+    },
   ) =>
     request<import("@/lib/curriculum").AssessmentResult>(`/roadmaps/assessments/${sessionId}/submit`, {
       method: "POST",

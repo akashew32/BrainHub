@@ -32,6 +32,9 @@ export function RoadmapCatalog({ roadmaps }: { roadmaps: LearningRoadmap[] }) {
           <Link className="font-semibold text-[#63e6be] hover:text-white" href="/roadmaps/learning">
             Your learning dashboard
           </Link>
+          <Link className="font-semibold text-[#63e6be] hover:text-white" href="/roadmaps/study">
+            Plan a study set
+          </Link>
           <Link className="font-semibold text-[#c084fc] hover:text-white" href="/roadmaps/notebook">
             Open mathematics notebook
           </Link>

@@ -7,6 +7,14 @@ import type { AssessmentResult, AssessmentSession, HintReveal, MathQuestion } fr
 import { MathText } from "@/components/roadmaps/math-text";
 import { MathAnswerPreview } from "@/components/roadmaps/math-answer-preview";
 import { DiagnosticFeedback } from "@/components/roadmaps/diagnostic-feedback";
+import { StudyFeedback } from "@/components/roadmaps/study-feedback";
+import {
+  mergeRecordings,
+  normalizeRecording,
+  recordedSeconds,
+  type TimeRecording,
+} from "@/lib/recorded-time";
+import { useRecordedTime } from "@/lib/use-recorded-time";
 import { ProofBuilder, parseProofOrder } from "@/components/roadmaps/proof-builder";
 import { QuestionHints } from "@/components/roadmaps/question-hints";
 import { useRoadmapProgress } from "@/components/roadmaps/roadmap-progress-provider";
@@ -22,10 +30,12 @@ import {
   storeStartIntent,
   UUID_PATTERN,
   validAssessmentResult,
+  validStudyPlan,
   type StartIntent,
 } from "@/lib/assessment-recovery";
 
 type Mode = AssessmentMode;
+export type AssessmentPhase = "recovering" | "idle" | "active" | "closed" | "completed";
 type AnswerMap = Record<string, string>;
 type AssessmentProps = {
   roadmapSlug: string;
@@ -38,6 +48,8 @@ type AssessmentProps = {
   selectedSession?: AssessmentSession;
   selectedReceivedAt?: number;
   selectedSessionFresh?: boolean;
+  budgetMinutes?: number;
+  onSessionPhaseChange?: (phase: AssessmentPhase) => void;
 };
 type SavedDraft = {
   version: 2;
@@ -50,6 +62,7 @@ type SavedDraft = {
   startedAt: number;
   revision: number;
   session: AssessmentSession;
+  time_recording?: TimeRecording | null;
 };
 
 const MAX_TIME_SECONDS = 7200;
@@ -57,6 +70,27 @@ const MAX_REVISION = 2_147_483_647;
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function studyReasonsMatch(questions: unknown[], plan: unknown) {
+  if (!questions.length) return true;
+  if (!isRecord(plan) || !isRecord(plan.reason_counts)) return false;
+  const counts = { due: 0, weak: 0, next: 0 };
+  let seconds = 0;
+  for (const question of questions) {
+    if (!isRecord(question) || !isRecord(question.selection_reason)) return false;
+    const reason = question.selection_reason;
+    if (reason.code !== "due" && reason.code !== "weak" && reason.code !== "next") return false;
+    counts[reason.code] += 1;
+    if (typeof reason.estimated_seconds !== "number") return false;
+    seconds += reason.estimated_seconds;
+  }
+  return (
+    counts.due === plan.reason_counts.due &&
+    counts.weak === plan.reason_counts.weak &&
+    counts.next === plan.reason_counts.next &&
+    seconds === plan.estimated_seconds
+  );
 }
 
 export function publicSession(value: unknown): value is AssessmentSession {
@@ -101,6 +135,10 @@ export function publicSession(value: unknown): value is AssessmentSession {
         Number.isFinite(value.expires_in_seconds) &&
         value.expires_in_seconds >= 0)) &&
     (value.questions_available === undefined || typeof value.questions_available === "boolean") &&
+    (value.mode !== "study" ||
+      (validStudyPlan(value.study_plan, value.questions.length || undefined) &&
+        value.questions.length <= 20 &&
+        studyReasonsMatch(value.questions, value.study_plan))) &&
     (value.draft === undefined ||
       (isRecord(value.draft) &&
         (value.draft.revision === undefined ||
@@ -163,6 +201,14 @@ export function publicSession(value: unknown): value is AssessmentSession {
             Number.isInteger(question.hint_count) &&
             question.hint_count >= question.hints.length &&
             question.hint_count <= 64)) &&
+        (question.selection_reason === undefined ||
+          (isRecord(question.selection_reason) &&
+            ["due", "weak", "next"].includes(String(question.selection_reason.code)) &&
+            typeof question.selection_reason.text === "string" &&
+            Number.isInteger(question.selection_reason.estimated_seconds) &&
+            (question.selection_reason.estimated_seconds as number) > 0 &&
+            (question.selection_reason.estimated_seconds as number) <= 7200)) &&
+        (value.mode !== "study" || question.selection_reason !== undefined) &&
         (question.choices === undefined ||
           (Array.isArray(question.choices) &&
             question.choices.every((choice) => typeof choice === "string"))) &&
@@ -209,7 +255,11 @@ function readDraft(key: string): SavedDraft | null {
     ) {
       return null;
     }
-    return { ...value, answers: safeAnswers(value.answers, value.session) } as SavedDraft;
+    return {
+      ...value,
+      answers: safeAnswers(value.answers, value.session),
+      time_recording: normalizeRecording(value.time_recording),
+    } as SavedDraft;
   } catch {
     return null;
   }
@@ -230,6 +280,7 @@ function sessionSnapshot(current: AssessmentSession): AssessmentSession {
     server_now: current.server_now,
     expires_in_seconds: current.expires_in_seconds,
     questions_available: current.questions_available,
+    study_plan: current.study_plan,
     ...(current.result ? { result: current.result } : {}),
     questions: current.questions.map((question) => ({
       id: question.id,
@@ -246,6 +297,7 @@ function sessionSnapshot(current: AssessmentSession): AssessmentSession {
       answer_format: question.answer_format,
       tolerance: question.tolerance,
       numeric_tolerance: question.numeric_tolerance,
+      selection_reason: question.selection_reason,
     })),
   };
 }
@@ -320,8 +372,11 @@ function questionAnswered(question: MathQuestion, value: string | undefined) {
 }
 
 function resultMessage(result: AssessmentResult, mode: Mode) {
-  if (ASSESSMENT_MODE_CONFIG[mode].sampleNotQualification)
-    return "Diagnostic complete. Use this sample to choose your next full lesson practice set.";
+  if (!ASSESSMENT_MODE_CONFIG[mode].showsPassThreshold)
+    return (
+      ASSESSMENT_MODE_CONFIG[mode].completionTitle +
+      ". Use the worked feedback to choose your next practice set."
+    );
   if (!result.passed)
     return "Review the worked feedback, then try a new session. Your mistakes are saved for targeted practice.";
   if (mode !== "practice") return "Assessment passed. Your responses have been saved.";
@@ -354,6 +409,8 @@ export function AssessmentPanel({
   selectedSession,
   selectedReceivedAt,
   selectedSessionFresh = true,
+  budgetMinutes,
+  onSessionPhaseChange,
 }: AssessmentProps) {
   const scopedTopic = mode === "practice" ? topicSlug : undefined;
   const legacyDraftKey =
@@ -374,6 +431,8 @@ export function AssessmentPanel({
       selectedReceivedAt={selectedReceivedAt}
       selectedSessionFresh={selectedSessionFresh}
       legacyDraftKey={legacyDraftKey}
+      budgetMinutes={budgetMinutes}
+      onSessionPhaseChange={onSessionPhaseChange}
     />
   );
 }
@@ -391,6 +450,8 @@ function AssessmentWorkspace({
   selectedReceivedAt,
   selectedSessionFresh,
   legacyDraftKey,
+  budgetMinutes,
+  onSessionPhaseChange,
 }: Required<Pick<AssessmentProps, "roadmapSlug" | "stageIndex" | "mode">> & {
   topicSlug?: string;
   draftKey: string;
@@ -401,6 +462,8 @@ function AssessmentWorkspace({
   selectedReceivedAt?: number;
   selectedSessionFresh: boolean;
   legacyDraftKey: string;
+  budgetMinutes?: number;
+  onSessionPhaseChange?: (phase: AssessmentPhase) => void;
 }) {
   const { acceptProgress } = useRoadmapProgress();
   const modeConfig = ASSESSMENT_MODE_CONFIG[mode];
@@ -433,13 +496,39 @@ function AssessmentWorkspace({
   const pendingStartRef = useRef<StartIntent | null>(null);
   const confirmedStarts = useRef(new Set<string>());
   const deadline = useRef<{ id: string; at: number } | null>(null);
-  const intentKey = draftKey.replace("brainhub:assessment:v2:", "brainhub:assessment-start:v1:");
+  const intentScope = draftKey + (mode === "study" ? ":budget-" + String(budgetMinutes ?? "default") : "");
+  const intentKey = intentScope.replace("brainhub:assessment:v2:", "brainhub:assessment-start:v1:");
   const notifiedResults = useRef(new Set<string>());
   const completedCallback = useRef(onCompleted);
+  const phaseCallback = useRef(onSessionPhaseChange);
+  const checkpointRef = useRef<(persistOnly?: boolean) => void>(() => {});
+  const {
+    snapshot: snapshotTime,
+    restore: restoreTime,
+    stop: stopTime,
+    resume: resumeTime,
+    merge: mergeTime,
+  } = useRecordedTime(useCallback((persistOnly?: boolean) => checkpointRef.current(persistOnly), []));
 
   useEffect(() => {
     completedCallback.current = onCompleted;
   }, [onCompleted]);
+  useEffect(() => {
+    phaseCallback.current = onSessionPhaseChange;
+  }, [onSessionPhaseChange]);
+  const phase: AssessmentPhase =
+    recovering || busy
+      ? "recovering"
+      : result
+        ? "completed"
+        : expired
+          ? "closed"
+          : session
+            ? "active"
+            : "idle";
+  useEffect(() => {
+    phaseCallback.current?.(phase);
+  }, [phase]);
 
   useEffect(() => {
     mounted.current = true;
@@ -498,6 +587,7 @@ function AssessmentWorkspace({
         startedAt: startedAt.current,
         revision: currentRevision,
         session: sessionSnapshot(activeSession),
+        time_recording: snapshotTime(),
       };
       cached.current = next;
       try {
@@ -512,8 +602,24 @@ function AssessmentWorkspace({
         return false;
       }
     },
-    [draftKey, mode, roadmapSlug, stageIndex, topicSlug, selectedSession, legacyDraftKey],
+    [draftKey, mode, roadmapSlug, stageIndex, topicSlug, selectedSession, legacyDraftKey, snapshotTime],
   );
+
+  useEffect(() => {
+    checkpointRef.current = (persistOnly) => {
+      const active = currentSession.current;
+      if (!active || finished.current || submitting.current) return;
+      const recording = snapshotTime();
+      if (
+        recording === null ||
+        JSON.stringify(recording) === JSON.stringify(cached.current?.time_recording ?? null)
+      )
+        return;
+      revision.current = Math.min(MAX_REVISION, revision.current + 1);
+      remember(active, currentAnswers.current, revision.current);
+      if (mounted.current && !persistOnly) setSaveAttempt((attempt) => attempt + 1);
+    };
+  }, [remember, snapshotTime]);
 
   const markHintPending = useCallback((questionId: string, pending: boolean) => {
     if (pending) pendingHints.current.add(questionId);
@@ -523,6 +629,7 @@ function AssessmentWorkspace({
 
   const closeCurrentAssessment = useCallback(
     (message: string) => {
+      stopTime();
       deadline.current = null;
       setExpired(true);
       setRemainingSeconds(0);
@@ -537,7 +644,7 @@ function AssessmentWorkspace({
         remember(closed, currentAnswers.current, revision.current);
       }
     },
-    [remember],
+    [remember, stopTime],
   );
 
   const acceptHints = useCallback(
@@ -584,8 +691,9 @@ function AssessmentWorkspace({
 
   const showResult = useCallback(
     (next: AssessmentResult, sessionId: string) => {
-      if (mode === "diagnostic" && !validAssessmentResult(next, sessionId, mode))
-        throw new Error("The diagnostic result could not be verified. Your answers have been preserved.");
+      if ((mode === "diagnostic" || mode === "study") && !validAssessmentResult(next, sessionId, mode))
+        throw new Error(`The ${mode} result could not be verified. Your answers have been preserved.`);
+      stopTime();
       finished.current = true;
       deadline.current = null;
       setRemainingSeconds(null);
@@ -594,24 +702,33 @@ function AssessmentWorkspace({
       setNeedsResume(false);
       setError(null);
       clearMatchingDraft(sessionId);
-      if (next.progress && !ASSESSMENT_MODE_CONFIG[mode].sampleNotQualification)
-        acceptProgress(next.progress);
+      if (next.progress && ASSESSMENT_MODE_CONFIG[mode].earnsTopicMastery) acceptProgress(next.progress);
       if (!notifiedResults.current.has(sessionId)) {
         notifiedResults.current.add(sessionId);
         completedCallback.current?.(next);
       }
     },
-    [acceptProgress, clearMatchingDraft, mode],
+    [acceptProgress, clearMatchingDraft, mode, stopTime],
   );
 
   const restore = useCallback(
-    (restored: AssessmentSession, local: SavedDraft | null) => {
+    (restored: AssessmentSession, local: SavedDraft | null, receivedAt = performance.now()) => {
       if (!publicSession(restored) || !matchesScope(restored)) {
         throw new Error("The saved assessment belongs to a different lesson or assessment mode.");
       }
       currentSession.current = restored;
       setSession(restored);
       setSavedSessionId(restored.id);
+      restoreTime(
+        restored.id,
+        [restored.draft?.time_recording, local?.sessionId === restored.id ? local.time_recording : null],
+        restored.server_now,
+        receivedAt,
+        !restored.result &&
+          restored.state !== "expired" &&
+          (restored.expires_in_seconds === undefined || restored.expires_in_seconds > 0),
+        restored.expires_at,
+      );
       if (restored.result) {
         const stored = remember(restored, {}, restored.draft?.revision ?? 0);
         showResult(restored.result, restored.id);
@@ -651,7 +768,7 @@ function AssessmentWorkspace({
       );
       return stored;
     },
-    [matchesScope, remember, showResult, synchronizeExpiry],
+    [matchesScope, remember, showResult, synchronizeExpiry, restoreTime],
   );
 
   const keepUnavailableDraft = useCallback(
@@ -663,6 +780,14 @@ function AssessmentWorkspace({
       setSession(local.session);
       currentAnswers.current = local.answers;
       setAnswers(local.answers);
+      restoreTime(
+        local.sessionId,
+        [local.time_recording, local.session.draft?.time_recording],
+        undefined,
+        performance.now(),
+        false,
+        local.session.expires_at,
+      );
       if (local.session.result) {
         showResult(local.session.result, local.sessionId);
         return;
@@ -688,7 +813,7 @@ function AssessmentWorkspace({
             : "Profile sync is unavailable. Your saved answers are still here; retry reopening the session when connected.",
       );
     },
-    [remember, showResult, synchronizeExpiry],
+    [remember, showResult, synchronizeExpiry, restoreTime],
   );
 
   useEffect(() => {
@@ -701,7 +826,12 @@ function AssessmentWorkspace({
           const drafts = [readDraft(draftKey), readDraft(legacyDraftKey)]
             .filter((draft): draft is SavedDraft => matchingDraft(draft, selectedSession))
             .sort((left, right) => right.revision - left.revision);
-          const local = drafts[0] ?? null;
+          const local = drafts[0]
+            ? {
+                ...drafts[0],
+                time_recording: mergeRecordings(...drafts.map((draft) => draft.time_recording)),
+              }
+            : null;
           if (selectedSessionFresh) {
             const delay =
               selectedReceivedAt === undefined
@@ -720,6 +850,7 @@ function AssessmentWorkspace({
                 ? selectedSession
                 : { ...selectedSession, expires_in_seconds: Math.max(0, remaining - delay) },
               local,
+              selectedReceivedAt,
             );
           } else {
             const values = safeAnswers(
@@ -756,14 +887,17 @@ function AssessmentWorkspace({
         if (active) setRecovering(false);
         return;
       }
-      const intent = readStartIntent(intentKey, draftKey);
+      const intent = readStartIntent(intentKey, intentScope);
       pendingStartRef.current = intent;
       setPendingStart(intent);
       let local = readDraft(draftKey);
       if (local) {
         const selectedCopy = readDraft(draftKey + ":session-" + local.sessionId);
-        if (matchingDraft(selectedCopy, local.session) && selectedCopy.revision > local.revision)
-          local = selectedCopy;
+        if (matchingDraft(selectedCopy, local.session))
+          local = {
+            ...(selectedCopy.revision > local.revision ? selectedCopy : local),
+            time_recording: mergeRecordings(local.time_recording, selectedCopy.time_recording),
+          };
       }
       if (
         local &&
@@ -808,6 +942,7 @@ function AssessmentWorkspace({
     selectedReceivedAt,
     selectedSessionFresh,
     legacyDraftKey,
+    intentScope,
   ]);
 
   useEffect(() => {
@@ -838,50 +973,60 @@ function AssessmentWorkspace({
     if (!session || result || expired || recovering || revision.current <= savedRevision.current) return;
     let active = true;
     const savingRevision = revision.current;
-    const timer = window.setTimeout(async () => {
-      try {
-        const saved = await api.saveAssessmentDraft(session.id, {
-          answers: Object.entries(answers).map(([question_id, answer]) => ({ question_id, answer })),
-          time_spent_seconds: elapsedSeconds(startedAt.current),
-          revision: savingRevision,
-        });
-        if (!active || finished.current || revision.current !== savingRevision) return;
-        savedRevision.current = saved.draft?.revision ?? savingRevision;
-        setNeedsResume(false);
-        setDraftStatus("Draft saved to your profile.");
-      } catch (problem) {
-        if (!active || finished.current || revision.current !== savingRevision) return;
-        if (problem instanceof ApiError && problem.status === 410) {
-          closeCurrentAssessment(
-            "This assessment expired. Your answers are preserved below. Start a fresh session when ready.",
-          );
-          return;
-        }
-        if (problem instanceof ApiError && problem.status === 409) {
-          try {
-            const latest = await api.resumeAssessment(session.id);
-            if (active && revision.current === savingRevision) restore(latest, cached.current);
+    const timer = window.setTimeout(
+      async () => {
+        try {
+          if (!active || revision.current !== savingRevision) return;
+          const recording = snapshotTime();
+          const saved = await api.saveAssessmentDraft(session.id, {
+            answers: Object.entries(currentAnswers.current).map(([question_id, answer]) => ({
+              question_id,
+              answer,
+            })),
+            time_spent_seconds: elapsedSeconds(startedAt.current),
+            ...(recording === null ? {} : { time_recording: recording }),
+            revision: savingRevision,
+          });
+          if (!active || finished.current || revision.current !== savingRevision) return;
+          savedRevision.current = saved.draft?.revision ?? savingRevision;
+          mergeTime(saved.draft?.time_recording);
+          setNeedsResume(false);
+          setDraftStatus("Draft saved to your profile.");
+        } catch (problem) {
+          if (!active || finished.current || revision.current !== savingRevision) return;
+          if (problem instanceof ApiError && problem.status === 410) {
+            closeCurrentAssessment(
+              "This assessment expired. Your answers are preserved below. Start a fresh session when ready.",
+            );
             return;
-          } catch (reopenProblem) {
-            if (
-              active &&
-              revision.current === savingRevision &&
-              cached.current &&
-              reopenProblem instanceof ApiError &&
-              [404, 409, 410].includes(reopenProblem.status)
-            ) {
-              keepUnavailableDraft(cached.current, reopenProblem);
-              return;
-            }
-            // Keep the editable device draft if the profile cannot be reopened.
           }
+          if (problem instanceof ApiError && problem.status === 409) {
+            try {
+              const latest = await api.resumeAssessment(session.id);
+              if (active && revision.current === savingRevision) restore(latest, cached.current);
+              return;
+            } catch (reopenProblem) {
+              if (
+                active &&
+                revision.current === savingRevision &&
+                cached.current &&
+                reopenProblem instanceof ApiError &&
+                [404, 409, 410].includes(reopenProblem.status)
+              ) {
+                keepUnavailableDraft(cached.current, reopenProblem);
+                return;
+              }
+              // Keep the editable device draft if the profile cannot be reopened.
+            }
+          }
+          setNeedsResume(true);
+          setDraftStatus(
+            "Profile sync is unavailable. Your answers are kept on this device when storage is available.",
+          );
         }
-        setNeedsResume(true);
-        setDraftStatus(
-          "Profile sync is unavailable. Your answers are kept on this device when storage is available.",
-        );
-      }
-    }, 700);
+      },
+      document.visibilityState === "visible" ? 700 : 0,
+    );
     return () => {
       active = false;
       window.clearTimeout(timer);
@@ -896,6 +1041,8 @@ function AssessmentWorkspace({
     result,
     saveAttempt,
     session,
+    snapshotTime,
+    mergeTime,
   ]);
 
   useEffect(() => {
@@ -941,11 +1088,18 @@ function AssessmentWorkspace({
 
   async function start() {
     if (submitting.current || selectedSession) return;
-    const storedIntent = pendingStartRef.current ?? readStartIntent(intentKey, draftKey);
+    const storedIntent =
+      pendingStartRef.current?.scope === intentScope
+        ? pendingStartRef.current
+        : readStartIntent(intentKey, intentScope);
     const reusable =
       storedIntent && !confirmedStarts.current.has(storedIntent.request_id) ? storedIntent : null;
     if (!reusable && ((mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable))) return;
-    const intent: StartIntent = reusable ?? { version: 1, scope: draftKey, request_id: crypto.randomUUID() };
+    const intent: StartIntent = reusable ?? {
+      version: 1,
+      scope: intentScope,
+      request_id: crypto.randomUUID(),
+    };
     pendingStartRef.current = intent;
     setPendingStart(intent);
     setIntentDurable(storeStartIntent(intentKey, intent));
@@ -958,11 +1112,15 @@ function AssessmentWorkspace({
         topic_slug: topicSlug,
         stage_index: stageIndex,
         request_id: intent.request_id,
+        budget_minutes: mode === "study" ? budgetMinutes : undefined,
       });
       if (!mounted.current) return;
       if (
         !publicSession(next) ||
         !matchesScope(next) ||
+        (mode === "study" &&
+          budgetMinutes !== undefined &&
+          next.study_plan?.budget_minutes !== budgetMinutes) ||
         (next.request_id != null && next.request_id !== intent.request_id)
       )
         throw new Error("The assessment could not be opened in this learning track.");
@@ -1001,13 +1159,17 @@ function AssessmentWorkspace({
     submitting.current = true;
     setBusy(true);
     setError(null);
+    stopTime();
+    remember(currentSession.current ?? session, currentAnswers.current, revision.current);
     try {
+      const recording = snapshotTime();
       const next = await api.submitAssessment(session.id, {
         answers: session.questions.map((question) => ({
           question_id: question.id,
           answer: answers[question.id],
         })),
         time_spent_seconds: elapsedSeconds(startedAt.current),
+        ...(recording === null ? {} : { time_recording: recording }),
       });
       if (mounted.current) showResult(next, session.id);
     } catch (problem) {
@@ -1036,6 +1198,7 @@ function AssessmentWorkspace({
       }
     } finally {
       if (mounted.current) {
+        if (!finished.current && currentSession.current?.state !== "expired") resumeTime();
         submitting.current = false;
         setBusy(false);
       }
@@ -1048,6 +1211,7 @@ function AssessmentWorkspace({
   const cannotStart =
     busy ||
     (!pendingStart && ((mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable)));
+  const recording = snapshotTime();
   return (
     <section
       className="panel scroll-mt-24 p-6 sm:p-8"
@@ -1138,15 +1302,34 @@ function AssessmentWorkspace({
         <div className="mt-6">
           <p className="mb-3 text-sm text-[#91a1b5]" aria-label="Assessment time remaining">
             {expiryConfirmed && remainingSeconds !== null
-              ? `Time remaining: ${Math.floor(remainingSeconds / 60)}:${String(remainingSeconds % 60).padStart(2, "0")} · confirmed by the server`
+              ? `${mode === "study" ? "Assignment expires in" : "Time remaining"}: ${Math.floor(remainingSeconds / 60)}:${String(remainingSeconds % 60).padStart(2, "0")} · confirmed by the server`
               : "Expiry time is unconfirmed while offline. Reconnect to check this assessment."}
           </p>
           <p className="mb-3 text-sm text-[#91a1b5]" aria-live="polite">
             {answered} of {session.questions.length} answered ·{" "}
-            {modeConfig.sampleNotQualification
-              ? "limited diagnostic sample"
-              : `${session.pass_score}% to pass`}
+            {modeConfig.showsPassThreshold ? `${session.pass_score}% to pass` : modeConfig.progressLabel}
           </p>
+          <p className="mb-3 text-xs leading-6 text-[#91a1b5]" aria-label="Recorded visible time">
+            {recording === null
+              ? "Recorded visible time is untracked until the profile connection is confirmed."
+              : `${recordedSeconds(recording)} seconds of visible session time recorded. Daily goals update after submission.`}
+          </p>
+          {recording?.truncated ? (
+            <p className="mb-3 text-xs leading-6 text-[#e3c18f]">
+              Some short time intervals were omitted after the recording limit. Your recorded time is a
+              partial total; your answers are preserved.
+            </p>
+          ) : null}
+          {session.study_plan ? (
+            <div className="mb-5 rounded-xl border border-[#35556e] p-4 text-sm leading-7 text-[#a6b6cb]">
+              <p>
+                {session.study_plan.question_count} questions · estimated{" "}
+                {Math.ceil(session.study_plan.estimated_seconds / 60)} minutes ·{" "}
+                {session.study_plan.budget_minutes}-minute budget
+              </p>
+              <p>{session.study_plan.notice}</p>
+            </div>
+          ) : null}
           <p className="mb-5 text-xs leading-6 text-[#91a1b5]" aria-live="polite">
             {draftStatus}
           </p>
@@ -1163,6 +1346,12 @@ function AssessmentWorkspace({
                 <p className="mb-4 leading-8">
                   <MathText>{question.prompt}</MathText>
                 </p>
+                {question.selection_reason ? (
+                  <p className="mb-4 text-xs leading-6 text-[#91a4bb]">
+                    {question.selection_reason.text} · estimated {question.selection_reason.estimated_seconds}{" "}
+                    seconds
+                  </p>
+                ) : null}
                 {question.kind === "choice" ? (
                   <div className="grid gap-2">
                     {question.choices?.map((choice, choiceIndex) => (
@@ -1249,8 +1438,10 @@ function AssessmentWorkspace({
       ) : null}
       {result ? (
         <div className="mt-6">
-          {modeConfig.sampleNotQualification ? (
+          {modeConfig.resultKind === "diagnostic" ? (
             <DiagnosticFeedback result={result} />
+          ) : modeConfig.resultKind === "study" ? (
+            <StudyFeedback result={result} />
           ) : (
             <div
               className={
@@ -1279,6 +1470,11 @@ function AssessmentWorkspace({
               ) : null}
             </div>
           )}
+          <p className="mt-3 text-xs leading-6 text-[#91a4bb]">
+            {typeof result.recorded_seconds === "number"
+              ? `Recorded visible time: ${result.recorded_seconds} seconds.`
+              : "Visible time was not tracked for this older attempt."}
+          </p>
           <div className="mt-5 space-y-4">
             {result.feedback.map((item, index) => (
               <details
