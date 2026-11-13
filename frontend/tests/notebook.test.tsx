@@ -122,6 +122,15 @@ function mockNotebook({
   vi.stubGlobal("fetch", mock);
   return mock;
 }
+async function readyEditor(name: string, value = "") {
+  return waitFor(() => {
+    const editor = screen.getByRole("textbox", { name });
+    expect(editor).toBeEnabled();
+    expect(editor).toHaveValue(value);
+    return editor;
+  });
+}
+
 beforeEach(() => localStorage.clear());
 afterEach(() => {
   cleanup();
@@ -162,7 +171,7 @@ describe("mathematics notebook", () => {
     });
     const first = render(<MistakeNotebook />);
     fireEvent.click(await screen.findByRole("button", { name: "Open Vector coefficients notebook entry" }));
-    const editor = await screen.findByRole("textbox", { name: "Reflection for Vector coefficients" });
+    const editor = await readyEditor("Reflection for Vector coefficients");
     fireEvent.change(editor, {
       target: { value: "Divide the coefficient rather than multiply.\nCheck with 2(1/2)=1." },
     });
@@ -188,9 +197,7 @@ describe("mathematics notebook", () => {
     first.unmount();
     render(<MistakeNotebook />);
     fireEvent.click(await screen.findByRole("button", { name: "Open Vector coefficients notebook entry" }));
-    await waitFor(() =>
-      expect(screen.getByRole("textbox")).toHaveValue(saved.text + "\nUnfinished local thought"),
-    );
+    await readyEditor("Reflection for Vector coefficients", saved.text + "\nUnfinished local thought");
     expect(screen.getByText("Unsaved reflection restored from this device.")).toBeInTheDocument();
   });
 
@@ -264,9 +271,15 @@ describe("mathematics notebook", () => {
     render(<MistakeNotebook />);
     fireEvent.click(await screen.findByRole("button", { name: "Open Vector coefficients notebook entry" }));
     fireEvent.click(screen.getByRole("button", { name: "Open Second question notebook entry" }));
-    expect(await screen.findByRole("textbox")).toHaveValue("Second question reflection");
+    await waitFor(() => {
+      const editor = screen.getByRole("textbox", { name: "Reflection for Second question" });
+      expect(editor).toBeEnabled();
+      expect(editor).toHaveValue("Second question reflection");
+    });
     await act(async () => resolve(response(detail(first, note("Wrong prior context", 3)))));
-    expect(screen.getByRole("textbox")).toHaveValue("Second question reflection");
+    const editor = screen.getByRole("textbox", { name: "Reflection for Second question" });
+    expect(editor).toBeEnabled();
+    expect(editor).toHaveValue("Second question reflection");
     expect(
       screen.queryByRole("region", { name: "Notebook entry: Vector coefficients" }),
     ).not.toBeInTheDocument();
@@ -287,7 +300,7 @@ describe("mathematics notebook", () => {
     });
     render(<MistakeNotebook />);
     fireEvent.click(await screen.findByRole("button", { name: "Open Vector coefficients notebook entry" }));
-    fireEvent.change(await screen.findByRole("textbox"), {
+    fireEvent.change(await readyEditor("Reflection for Vector coefficients"), {
       target: { value: "Keep the raw local reflection" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Load older attempts" }));
@@ -303,7 +316,7 @@ describe("mathematics notebook", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Open Vector coefficients notebook entry" }));
     await screen.findByText(/Archived question. Practice is unavailable/);
     expect(screen.queryByRole("link", { name: "Open lesson practice" })).not.toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeEnabled();
+    await readyEditor("Reflection for Vector coefficients");
     expect(screen.getByText(/^Attempt 11/)).toBeInTheDocument();
   });
 
@@ -336,6 +349,6 @@ describe("mathematics notebook", () => {
     expect(
       await screen.findByRole("region", { name: "Notebook entry: Probability identity" }),
     ).toBeInTheDocument();
-    expect(await screen.findByRole("textbox", { name: "Reflection for Probability identity" })).toBeEnabled();
+    await readyEditor("Reflection for Probability identity");
   });
 });
