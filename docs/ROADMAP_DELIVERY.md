@@ -28,7 +28,7 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 5 | Spaced review scheduling and daily retrieval practice | Complete | `caf3cc5`; 335 backend tests, 228 frontend tests, full build, live due-to-scheduled review flow |
 | 6 | Mistake notebook and concept-level performance | Complete | `744f7a3` + CI test fix `e054ca3`; 351 backend tests, 252 frontend tests, fresh/existing migrations, full build, live two-tab reflection conflict/recovery |
 | 7 | Exam readiness, blueprint, and prerequisite evidence | Complete | `3a31936`; 380 backend tests, 262 frontend tests, full build, live checklist and direct server gate; GitHub CI passed |
-| 8 | Exam integrity, retry policy, and robust session lifecycle | Verified; publishing | 417 backend tests, 284 frontend tests, fresh/existing migrations, full build, live stable assignment and idempotent replay |
+| 8 | Exam integrity, retry policy, and robust session lifecycle | Complete | `0352758`; 417 backend tests, 284 frontend tests, fresh/existing migrations, full build, live stable assignment and idempotent replay; GitHub CI passed |
 | 9 | Learning dashboard and recent learning history | Pending | |
 | 10 | Diagnostic placement across foundation topics | Pending | |
 | 11 | Personalized study sessions and time goals | Pending | |
@@ -173,5 +173,7 @@ Cycle 8 live evidence: a new probability practice session persisted an unfinishe
 Cycle 8 review improvements: validate completed feedback before accepting an archived empty question list; isolate pending start intents by full assessment scope and preserve another tab's newer token; keep retry identity in memory when device storage fails; subtract request latency from the server-relative countdown; use a separate precise expiry timer alongside quiet display updates; and persist known closure after an HTTP 410 so an offline refresh cannot reopen the attempt. Raw fraction, matrix, and proof text remains available for copying.
 
 Cycle 8 final frontend verification: all 284 tests pass with clean ESLint, formatting, and TypeScript checks. Tests exercise lost start responses, deliberate retries after reload, changed exam eligibility, new-session token rotation, storage failures, wrong-token and stale responses, client clock skew and clock jumps, latency, exact expiry, archived results, and preserved choice presentation. All 536 routes build for production with the final timer change included.
+
+Cycle 8 remote verified at `035275888be1f7e8dd46c45f7e0c427d0b1578a4` on `main`. GitHub Actions passed for backend, frontend, and Docker configuration: https://github.com/akashew32/BrainHub/actions/runs/43350759766. Eight of twenty improvement cycles are complete; cycles 9–20 remain part of the active goal.
 
 Next proposed batch (cycle 9): a learning dashboard across all five roadmaps with due reviews, recent completed work, recoverable active sessions, independent performance, and a clear next lesson. Derive progress from saved server evidence and distinguish authored lessons from the remaining curriculum outlines. Include empty, offline, archived, and unavailable states without inventing activity or scores.
