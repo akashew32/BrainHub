@@ -24,7 +24,7 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 1 | Assessment resume, durable answer drafts, and recovery | Complete | `64fec27`; 106 backend tests, 57 frontend tests, full build, live refresh recovery |
 | 2 | Stronger mathematical input handling and answer previews | Complete | `dff08d9`; 239 backend tests, 183 frontend tests, 107 shared input fixtures, full build, live 8/8 expression grading |
 | 3 | Structured proof builder and proof-specific feedback | Complete | `cc1f23c`; 295 backend tests, 201 frontend tests, 492 proof permutations, full build, live recovery and dependency feedback |
-| 4 | Per-question hints with assisted/independent mastery | Verified; publishing | 316 backend tests, 217 frontend tests, fresh/existing migrations, full build, live 100% overall / 75% independent |
+| 4 | Per-question hints with assisted/independent mastery | Complete | `c9f9da5`; 316 backend tests, 217 frontend tests, fresh/existing migrations, full build, live 100% overall / 75% independent |
 | 5 | Spaced review scheduling and daily retrieval practice | Pending | |
 | 6 | Mistake notebook and concept-level performance | Pending | |
 | 7 | Exam readiness, blueprint, and prerequisite evidence | Pending | |
@@ -107,3 +107,9 @@ Cycle 4 review improvements: atomic progress updates preserve best scores, attem
 Cycle 4 backend verification: all 316 backend tests pass with clean Ruff formatting/lint and mypy. Live practice returned 100% overall and 75% independently after three hints across two questions; correct unhinted answers count toward the independent score, and multiple hints on one question do not multiply the deduction. The result includes an explicit assistance label, persists progress, and produced no console errors.
 
 Cycle 4 final frontend verification: all 217 tests, formatting, lint, and type checks pass; all 535 routes build for production. Targeted tests cover sequential reveal/privacy, duplicate clicks, failed responses, delayed answer edits, autosaving, server recovery, out-of-order responses, nullable independent scores, and legacy/untracked labels.
+
+Cycle 4 remote verified at `c9f9da5fde3f4d01cc93ba6dab4a11c792ee57b6` on `main`. Four of twenty improvement cycles are complete; cycles 5–20 remain part of the active goal.
+
+Cycle 4 GitHub Actions passed: https://github.com/akashew32/BrainHub/actions/runs/43339530111.
+
+Next recommended batch (cycle 5): a daily spaced-review queue using missed, assisted, and independent responses. Bring missed and assisted questions back sooner, lengthen intervals after independent recall, show why each item is due, and cap daily sessions so review stays manageable. Page visits must not advance the review schedule.
