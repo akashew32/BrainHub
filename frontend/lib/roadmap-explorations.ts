@@ -1,8 +1,10 @@
 import { LAB_LESSONS, LAB_MODES, type LabMode } from "@/lib/linear-algebra-lab-types";
 import { COUNTING_LESSONS, COUNTING_MODES, type CountingMode } from "@/lib/counting-lab-types";
+import { FUNCTION_LESSONS, FUNCTION_MODES, type FunctionMode } from "@/lib/function-lab-types";
 
 export const LINEAR_ALGEBRA_LAB_URL = "/roadmaps/explore/linear-algebra";
 export const COUNTING_LAB_URL = "/roadmaps/explore/probability";
+export const FUNCTION_LAB_URL = "/roadmaps/explore/calculus";
 
 const EXPLORATIONS = [
   {
@@ -16,6 +18,12 @@ const EXPLORATIONS = [
     href: COUNTING_LAB_URL,
     label: "Explore counting constructions",
     topics: Object.values(COUNTING_LESSONS).map((lesson) => lesson.topic),
+  },
+  {
+    slug: "calculus",
+    href: FUNCTION_LAB_URL,
+    label: "Explore functions and sequences",
+    topics: Object.values(FUNCTION_LESSONS).map((lesson) => lesson.topic),
   },
 ];
 
@@ -32,6 +40,10 @@ export function explorationForLesson(roadmapSlug: string, topicSlug: string): st
 
 export function countingExperimentForTopic(topic: unknown): CountingMode {
   return COUNTING_MODES.find((mode) => COUNTING_LESSONS[mode].topic === topic) ?? "rules";
+}
+
+export function functionExperimentForTopic(topic: unknown): FunctionMode {
+  return FUNCTION_MODES.find((mode) => FUNCTION_LESSONS[mode].topic === topic) ?? "composition";
 }
 
 export function explorationForRoadmap(roadmapSlug: string): { href: string; label: string } | null {
