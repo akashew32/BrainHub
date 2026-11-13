@@ -30,6 +30,9 @@ export default function RoadmapReviewPage() {
           review date.
         </p>
       </section>
+      <Link className="btn mb-6 inline-block" href="/roadmaps/notebook">
+        Open your mathematics notebook
+      </Link>
       <MistakeReview />
     </div>
   );

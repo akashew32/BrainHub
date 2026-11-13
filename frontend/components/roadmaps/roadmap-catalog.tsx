@@ -28,12 +28,17 @@ export function RoadmapCatalog({ roadmaps }: { roadmaps: LearningRoadmap[] }) {
           {ready ? "Progress loaded" : "Loading saved progress…"} ·{" "}
           {syncState === "offline" ? "offline cache active" : "synced to your BrainHub profile"}
         </p>
-        <Link
-          className="flex items-center gap-2 font-semibold text-[#c084fc] hover:text-white"
-          href="/roadmaps/review"
-        >
-          <RotateCcw size={15} /> Open review queue
-        </Link>
+        <div className="flex flex-wrap gap-5">
+          <Link className="font-semibold text-[#c084fc] hover:text-white" href="/roadmaps/notebook">
+            Open mathematics notebook
+          </Link>
+          <Link
+            className="flex items-center gap-2 font-semibold text-[#c084fc] hover:text-white"
+            href="/roadmaps/review"
+          >
+            <RotateCcw size={15} /> Open review queue
+          </Link>
+        </div>
       </div>
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {roadmaps.map((roadmap, index) => {

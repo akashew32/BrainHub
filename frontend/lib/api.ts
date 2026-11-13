@@ -34,6 +34,45 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 export const api = {
+  roadmapNotebook: (
+    query: {
+      roadmap_slug?: string;
+      state?: "all" | "unresolved" | "resolved";
+      limit?: number;
+      cursor?: string;
+    } = {},
+  ) => {
+    const params = new URLSearchParams();
+    for (const [key, value] of Object.entries(query))
+      if (value !== undefined && value !== "") params.set(key, String(value));
+    return request<import("@/lib/curriculum").NotebookPage>("/roadmaps/notebook?" + params, {
+      signal: AbortSignal.timeout(12_000),
+    });
+  },
+  notebookQuestion: (roadmapSlug: string, questionId: string, cursor?: string) => {
+    const params = new URLSearchParams({ limit: "20" });
+    if (cursor) params.set("cursor", cursor);
+    return request<import("@/lib/curriculum").NotebookDetail>(
+      `/roadmaps/notebook/${encodeURIComponent(roadmapSlug)}/${encodeURIComponent(questionId)}?${params}`,
+      { signal: AbortSignal.timeout(12_000) },
+    );
+  },
+  saveQuestionReflection: (
+    roadmapSlug: string,
+    questionId: string,
+    body: { text: string; revision: number },
+  ) =>
+    request<import("@/lib/curriculum").ReflectionNote>(
+      `/roadmaps/notebook/${encodeURIComponent(roadmapSlug)}/${encodeURIComponent(questionId)}/note`,
+      { method: "PUT", body: JSON.stringify(body), signal: AbortSignal.timeout(12_000) },
+    ),
+  conceptPerformance: (roadmapSlug?: string) => {
+    const params = new URLSearchParams({ days: "14" });
+    if (roadmapSlug) params.set("roadmap_slug", roadmapSlug);
+    return request<import("@/lib/curriculum").ConceptPerformance>("/roadmaps/concept-performance?" + params, {
+      signal: AbortSignal.timeout(12_000),
+    });
+  },
   revealAssessmentHint: (sessionId: string, questionId: string, index: number) =>
     request<import("@/lib/curriculum").HintReveal>(
       "/roadmaps/assessments/" + sessionId + "/questions/" + questionId + "/hints",

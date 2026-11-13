@@ -162,3 +162,89 @@ export type LearningStats = {
     completed_at: string;
   }>;
 };
+
+export type ReflectionNote = {
+  text: string;
+  revision: number;
+  created_at: string | null;
+  updated_at: string | null;
+};
+
+export type NotebookEntry = {
+  roadmap_slug: string;
+  question_id: string;
+  topic_slug: string;
+  lesson_title: string;
+  concept: string;
+  prompt: string;
+  status: "unresolved" | "resolved";
+  latest_outcome: "mistake" | "assisted" | "untracked" | "independent";
+  first_flagged_at: string;
+  last_attempt_at: string;
+  last_attempt_id: number;
+  attempts: number;
+  incorrect_attempts: number;
+  assisted_attempts: number;
+  untracked_attempts: number;
+  independent_correct_attempts: number;
+  archived: boolean;
+  practice_url: string | null;
+  has_note: boolean;
+  note_preview: string;
+};
+
+export type NotebookPage = {
+  generated_at: string;
+  items: NotebookEntry[];
+  next_cursor: string | null;
+  snapshot_max_attempt_id: number;
+};
+
+export type NotebookAttempt = {
+  attempt_id: number;
+  session_id: string;
+  mode: string;
+  created_at: string;
+  correct: boolean;
+  hints_used: number | null;
+  assistance: Assistance;
+  prompt: string;
+  concept: string;
+  submitted_answer: unknown;
+  expected_answer: unknown;
+  solution: string;
+  proof_details?: ProofDetails;
+};
+
+export type NotebookDetail = {
+  entry: NotebookEntry;
+  note: ReflectionNote;
+  history: {
+    items: NotebookAttempt[];
+    next_cursor: string | null;
+    snapshot_max_attempt_id: number;
+  };
+};
+
+export type PerformanceBucket = { answers: number; correct: number; accuracy: number | null };
+export type ConceptMetrics = PerformanceBucket & {
+  incorrect: number;
+  questions_seen: number;
+  independent: PerformanceBucket;
+  assisted: PerformanceBucket;
+  untracked: PerformanceBucket;
+};
+export type ConceptPerformance = {
+  generated_at: string;
+  window: { days: number; start_at: string; end_at: string; timezone: "UTC" };
+  totals: ConceptMetrics;
+  concepts: Array<
+    ConceptMetrics & {
+      roadmap_slug: string;
+      topic_slug: string;
+      concept: string;
+      latest_attempt_at: string;
+    }
+  >;
+  trend: Array<ConceptMetrics & { date: string }>;
+};

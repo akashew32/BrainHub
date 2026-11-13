@@ -114,6 +114,10 @@ Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS`
 - `GET /api/roadmaps/mistakes`
 - `GET /api/roadmaps/review-plan`
 - `GET /api/roadmaps/learning-stats`
+- `GET /api/roadmaps/notebook`
+- `GET /api/roadmaps/notebook/{roadmap_slug}/{question_id}`
+- `PUT /api/roadmaps/notebook/{roadmap_slug}/{question_id}/note`
+- `GET /api/roadmaps/concept-performance`
 
 Authored lesson answer keys live only in `backend/app/roadmaps/curriculum/`. Public lesson/session responses exclude correct answers and worked assessment solutions until submission. Proof tasks use structured step construction and counterexample selection; unrestricted prose proofs are not claimed to be automatically graded. Both lesson and exam questions are original BrainHub material. The implementation and twenty-cycle improvement ledger is in `docs/ROADMAP_DELIVERY.md`.
 
@@ -122,6 +126,8 @@ In-progress assessments support partial answer drafts. Browser recovery is scope
 New assessments reveal hints one at a time through the API and record assistance independently of answer drafts. Results distinguish the total practice score from the independent score: correct answers with no revealed hints divided by the full question count. Both use the 75% passing threshold. Older attempts remain explicitly untracked and never become evidence of independent performance. Exam hints are unavailable. Repeated hint requests are idempotent; a shared revision guard prevents a hint/submission race from creating a false independent score.
 
 The daily review plan derives from graded answer history. Mistakes, assisted answers, and older untracked answers are due immediately. Independent correct recall starts at one day and advances through 3, 7, 14, 30, 60, and 90 days when completed on time. Early correct practice preserves the current interval and due date. The review page, review sessions, and due-concept statistics use the same scheduler. Sets contain at most eight due questions per subject; activity totals use UTC days. Viewing lessons, opening sessions, and saving drafts do not advance review schedules.
+
+The mistake notebook retains previous errors and assisted or untracked answers after correction. Historical feedback comes from the learner's own completed assessment snapshots, including archived questions; current answer keys are never substituted. Reflection notes are profile-owned, bounded to 4,000 characters, and protected by revision comparisons. A conflict preserves the local draft until the learner chooses how to resolve it. Notebook pagination is bound to a fixed history snapshot and filters. Concept performance separates independent, assisted, and untracked accuracy and includes 14 UTC days of activity; empty groups have no accuracy value.
 
 All 21 structured proof problems have private prerequisite graphs and per-step justifications. The proof composer supports selecting, removing, and reordering numbered steps with native keyboard-accessible buttons, while preserving partial work and existing raw-order drafts. A complete proof earns credit whenever its order satisfies every logical prerequisite. After submission, feedback identifies violated dependencies and displays one valid proof; it does not award partial mastery or claim that a reference sequence is the only possible mathematical argument.
 

@@ -38,9 +38,14 @@ export function LearningSummary() {
         <h2 className="text-xl font-semibold" id="mathematical-practice">
           Mathematical practice
         </h2>
-        <Link className="text-sm text-[#a78bfa]" href="/roadmaps/review">
-          Daily review plan →
-        </Link>
+        <div className="flex flex-wrap gap-4">
+          <Link className="text-sm text-[#a78bfa]" href="/roadmaps/notebook">
+            Mathematics notebook →
+          </Link>
+          <Link className="text-sm text-[#a78bfa]" href="/roadmaps/review">
+            Daily review plan →
+          </Link>
+        </div>
       </div>
       {failed ? (
         <p className="mt-4 text-sm text-[#e6b191]">Question history is unavailable. Reload to try again.</p>

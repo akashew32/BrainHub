@@ -25,8 +25,8 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 2 | Stronger mathematical input handling and answer previews | Complete | `dff08d9`; 239 backend tests, 183 frontend tests, 107 shared input fixtures, full build, live 8/8 expression grading |
 | 3 | Structured proof builder and proof-specific feedback | Complete | `cc1f23c`; 295 backend tests, 201 frontend tests, 492 proof permutations, full build, live recovery and dependency feedback |
 | 4 | Per-question hints with assisted/independent mastery | Complete | `c9f9da5`; 316 backend tests, 217 frontend tests, fresh/existing migrations, full build, live 100% overall / 75% independent |
-| 5 | Spaced review scheduling and daily retrieval practice | Verified; publishing | 335 backend tests, 228 frontend tests, full build, live due-to-scheduled review flow |
-| 6 | Mistake notebook and concept-level performance | Pending | |
+| 5 | Spaced review scheduling and daily retrieval practice | Complete | `caf3cc5`; 335 backend tests, 228 frontend tests, full build, live due-to-scheduled review flow |
+| 6 | Mistake notebook and concept-level performance | Verified; publishing | 351 backend tests, 252 frontend tests, fresh/existing migrations, full build, live two-tab reflection conflict/recovery |
 | 7 | Exam readiness, blueprint, and prerequisite evidence | Pending | |
 | 8 | Exam integrity, retry policy, and robust session lifecycle | Pending | |
 | 9 | Learning dashboard and recent learning history | Pending | |
@@ -123,3 +123,19 @@ Build a daily review page with all five subject totals, reasons and due dates, u
 Cycle 5 review improvements: compare due times as datetimes so fractional-second formatting cannot reverse chronological order; isolate matching question IDs across roadmaps; preserve the original due date through early practice; keep zero-due subject contexts available for draft recovery; preserve active work after a refresh failure; and retain submitted feedback when the queue refreshes to zero.
 
 Cycle 5 verification: all 335 backend tests and 228 frontend tests pass, with clean formatting, lint, and type checks; all 535 routes build for production. Live browser evidence started with two hint-assisted questions due and six scheduled. Reading the plan and opening a review session left the graded-attempt count unchanged at 32. Submitting two correct answers without hints returned 100%, refreshed the queue to zero due/eight scheduled, recorded two independent recalls for the UTC day, retained worked feedback, and disabled starting another empty set. Direct SQLite inspection confirms 34 saved answers with the two new review answers marked correct and unhinted. Final review also fixed composite React keys for identical question IDs in different subjects and added a filtering regression test.
+
+Cycle 5 remote verified at `caf3cc50b089ea1b3784b8edd495a2312cb18b43` on `main`.
+
+Cycle 5 GitHub Actions passed: https://github.com/akashew32/BrainHub/actions/runs/43342383238.
+
+### Cycle 6 batch — mistake notebook and concept performance
+
+Retain a notebook of historical mistakes, assisted answers, and assistance-untracked answers after correction. Show owned historical feedback snapshots and distinguish resolved entries from questions currently due. Keep archived questions readable without exposing current answer keys. Add persistent, revision-protected reflection notes with local recovery and explicit conflict handling. Add subject/topic/concept metrics with separate independent, assisted, and untracked accuracy and a 14-day UTC activity table; empty accuracy is unknown, not zero. Use bounded, snapshot-anchored pagination so new submissions cannot move existing pages while a learner browses.
+
+Cycle 6 migration verification: the existing local database upgrades from 0005 to 0006, and an empty database upgrades through all revisions to 0006. A local SQLite backup was saved before upgrading. Reflection notes use a separate table, preserving immutable graded attempts and review evidence.
+
+Cycle 6 live evidence: eight resolved entries remain available; the original incorrect proof attempt displays its saved answer, reference sequence, and worked justification. The concept view reports 34 answers, 32 correct, and 94% overall accuracy with separate assistance buckets. A two-tab reflection test saved revision 1, then revision 2 from one tab; the other tab's stale save preserved its text and showed the newer saved version. Explicit conflict resolution saved revision 3, which survived a full reload. SQLite confirms one 255-character note at revision 3 and the unchanged 34 graded answers. The review plan remains zero due/eight scheduled, so notes do not create mastery or move review dates.
+
+Cycle 6 review improvements: malformed cursor UTC overflow returns validation feedback; note-write contention returns a retryable conflict; current answer banks are used only to determine navigation availability; newly submitted backdated attempts cannot move a snapshot page; local recovery prefers newer in-memory text when device writes fail; and save acknowledgements clear only the matching draft, preserving another tab's newer text.
+
+Cycle 6 final verification: all 351 backend tests and 252 frontend tests pass, with clean formatting, lint, and type checks. The strict 30-lesson/300-question content verifier passes. All 536 routes, including the notebook page, build for production. A Windows permission error in generated build output was resolved by clearing only the verified workspace `.next` directory and rerunning the successful build. No source workaround was required.

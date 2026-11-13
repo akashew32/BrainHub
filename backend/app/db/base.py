@@ -1,7 +1,17 @@
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, UniqueConstraint
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    Float,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 
@@ -118,6 +128,19 @@ class RoadmapQuestionAttempt(Base):
     correct: Mapped[bool] = mapped_column(Boolean)
     hints_used: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
+
+
+class RoadmapQuestionNote(Base):
+    __tablename__ = "roadmap_question_notes"
+    __table_args__ = (UniqueConstraint("user_id", "roadmap_slug", "question_id"),)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    roadmap_slug: Mapped[str] = mapped_column(String(80))
+    question_id: Mapped[str] = mapped_column(String(220))
+    text: Mapped[str] = mapped_column(Text, default="")
+    revision: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class FermiQuestion(Base):
