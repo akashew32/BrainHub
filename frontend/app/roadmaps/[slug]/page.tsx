@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight, Check, Layers3, Network } from "lucide-react";
 import { RoadmapProgressSummary } from "@/components/roadmaps/roadmap-progress-summary";
 import { RoadmapStageList } from "@/components/roadmaps/roadmap-stage-list";
 import { learningRoadmaps, roadmapMap } from "@/lib/roadmaps";
-import { LINEAR_ALGEBRA_LAB_URL } from "@/lib/roadmap-explorations";
+import { explorationForRoadmap } from "@/lib/roadmap-explorations";
 
 export function generateStaticParams() {
   return learningRoadmaps.map((roadmap) => ({ slug: roadmap.slug }));
@@ -30,6 +30,7 @@ export default async function RoadmapDetailPage({ params }: { params: Promise<{ 
   const roadmapIndex = learningRoadmaps.findIndex((item) => item.slug === roadmap.slug);
   const previous = learningRoadmaps[(roadmapIndex - 1 + learningRoadmaps.length) % learningRoadmaps.length]!;
   const next = learningRoadmaps[(roadmapIndex + 1) % learningRoadmaps.length]!;
+  const exploration = explorationForRoadmap(slug);
 
   return (
     <div>
@@ -58,9 +59,9 @@ export default async function RoadmapDetailPage({ params }: { params: Promise<{ 
             <Link className="btn mt-5 inline-block" href={`/roadmaps/${slug}/diagnostic`}>
               Try the 12-question foundation diagnostic
             </Link>
-            {slug === "linear-algebra" ? (
-              <Link className="btn mt-3 inline-block sm:ml-3" href={LINEAR_ALGEBRA_LAB_URL}>
-                Explore vectors and transformations
+            {exploration ? (
+              <Link className="btn mt-3 inline-block sm:ml-3" href={exploration.href}>
+                {exploration.label}
               </Link>
             ) : null}
           </div>
