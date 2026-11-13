@@ -46,6 +46,16 @@ export type AssessmentSession = {
   result?: AssessmentResult | null;
 };
 
+export type ProofDetails = {
+  submitted_steps: Array<{ step: number; text: string; justification?: string }>;
+  expected_steps: Array<{ step: number; text: string; justification?: string }>;
+  first_divergence: number | null;
+  correct_prefix_length: number;
+  total_steps: number;
+  explanation: string;
+  violated_dependencies?: Array<{ step: number; requires: number }>;
+};
+
 export type AssessmentResult = {
   session_id: string;
   mode: string;
@@ -62,6 +72,7 @@ export type AssessmentResult = {
     expected_answer: unknown;
     solution: string;
     topic_slug: string;
+    proof_details?: ProofDetails;
   }>;
   progress: import("@/lib/roadmap-progress").RoadmapProgressItem | null;
 };

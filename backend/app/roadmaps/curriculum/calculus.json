@@ -101,12 +101,7 @@
         {
           "kind": "choice",
           "prompt": "What is the domain of $f(g(x))$ when $f(u)=\\sqrt u$ and $g(x)=x-4$?",
-          "choices": [
-            "$x\\ge4$",
-            "$x\\ge0$",
-            "$x>4$",
-            "All real $x$"
-          ],
+          "choices": ["$x\\ge4$", "$x\\ge0$", "$x>4$", "All real $x$"],
           "answer": "$x\\ge4$",
           "solution": "The square-root input is $x-4$; requiring $x-4\\ge0$ gives $x\\ge4$.",
           "hints": [
@@ -121,10 +116,7 @@
         {
           "kind": "vector",
           "prompt": "List the excluded real inputs of $(f\\circ g)(x)$, in increasing order, for $f(u)=1/u$ and $g(x)=(x-1)(x+2)$.",
-          "answer": [
-            -2,
-            1
-          ],
+          "answer": [-2, 1],
           "solution": "The denominator vanishes at $x=-2$ and $x=1$. Both original inputs must be excluded.",
           "hints": [
             "Set each factor of $g(x)$ equal to zero.",
@@ -200,12 +192,18 @@
             "Multiply to get $yx-3y=2x+1$, then gather the $x$ terms.",
             "Exchange input names to state $f^{-1}(x)=(3x+1)/(x-2)$, $x\\ne2$."
           ],
-          "answer": [
-            2,
-            3,
-            1,
-            4
+          "answer": [2, 3, 1, 4],
+          "proof_dependencies": [
+            [2, 3],
+            [3, 1],
+            [1, 4]
           ],
+          "proof_rationales": {
+            "1": "The collected equation can be solved for the old input only after its coefficient is isolated; excluding output two makes division by y minus two valid.",
+            "2": "Writing the original input-output equation gives the relation that the inverse must solve, retaining the original exclusion of input three.",
+            "3": "The original denominator is nonzero on the domain, so clearing it and gathering the input terms preserves the same allowed solutions.",
+            "4": "After solving for the old input, exchanging the variable names presents a function of the new input and transfers the excluded output into its domain."
+          },
           "solution": "Start with the defining equation, clear the allowed denominator, isolate the old input, then rename variables. The excluded output $2$ becomes an inverse-domain restriction.",
           "hints": [
             "Start from $y=f(x)$.",
@@ -335,10 +333,7 @@
         {
           "kind": "vector",
           "prompt": "For $R(x)=(x^2-9)/(x-3)$, give the hole coordinates $[x,y]$.",
-          "answer": [
-            3,
-            6
-          ],
+          "answer": [3, 6],
           "solution": "For $x\\ne3$, $R(x)=x+3$. The excluded input is three and the limiting height is six.",
           "hints": [
             "Factor a difference of squares.",
@@ -353,12 +348,7 @@
         {
           "kind": "choice",
           "prompt": "Which point is a vertical asymptote of $R(x)=(x+2)/((x-1)(x+2))$?",
-          "choices": [
-            "$x=1$",
-            "$x=-2$",
-            "Both $x=1$ and $x=-2$",
-            "Neither"
-          ],
+          "choices": ["$x=1$", "$x=-2$", "Both $x=1$ and $x=-2$", "Neither"],
           "answer": "$x=1$",
           "solution": "Cancelling $x+2$ leaves $1/(x-1)$ on the original domain. There is a hole at $-2$ and a pole at one.",
           "hints": [
@@ -388,11 +378,7 @@
         {
           "kind": "vector",
           "prompt": "Write $(x^2-4x+7)/(x-2)=ax+b+r/(x-2)$. Return $[a,b,r]$.",
-          "answer": [
-            1,
-            -2,
-            3
-          ],
+          "answer": [1, -2, 3],
           "solution": "$(x-2)(x-2)=x^2-4x+4$, leaving remainder three. Thus the quotient is $x-2$.",
           "hints": [
             "Divide the leading terms.",
@@ -553,12 +539,7 @@
         {
           "kind": "choice",
           "prompt": "Which is the real domain of $h(x)=\\ln(5-2x)$?",
-          "choices": [
-            "$x<5/2$",
-            "$x\\le5/2$",
-            "$x>5/2$",
-            "All real $x$"
-          ],
+          "choices": ["$x<5/2$", "$x\\le5/2$", "$x>5/2$", "All real $x$"],
           "answer": "$x<5/2$",
           "solution": "The logarithm requires $5-2x>0$, which rearranges to $x<5/2$.",
           "hints": [
@@ -611,10 +592,7 @@
           ],
           "answer": "$\\ln(a/b)=\\ln a-\\ln b$",
           "solution": "The quotient law follows by applying the logarithm to a product with $b^{-1}$. The other identities generally fail.",
-          "hints": [
-            "Recall the product law.",
-            "Use $a/b=ab^{-1}$."
-          ],
+          "hints": ["Recall the product law.", "Use $a/b=ab^{-1}$."],
           "concept": "logarithm laws",
           "id": "exponential-and-logarithmic-functions-07",
           "difficulty": "core",
@@ -794,10 +772,7 @@
         {
           "kind": "vector",
           "prompt": "List the solutions of $\\cos\\theta=0$ on $[0,2\\pi)$ as coefficients of $\\pi$, in increasing order.",
-          "answer": [
-            0.5,
-            1.5
-          ],
+          "answer": [0.5, 1.5],
           "solution": "Cosine is the horizontal coordinate and vanishes at $\\pi/2$ and $3\\pi/2$.",
           "hints": [
             "Find the top and bottom unit-circle points.",
@@ -847,12 +822,7 @@
         {
           "kind": "vector",
           "prompt": "Solve $2\\sin^2\\theta-1=0$ on $[0,2\\pi)$; return the coefficients of $\\pi$ in increasing order.",
-          "answer": [
-            0.25,
-            0.75,
-            1.25,
-            1.75
-          ],
+          "answer": [0.25, 0.75, 1.25, 1.75],
           "solution": "The equation gives $\\sin\\theta=\\pm1/\\sqrt2$. The four angles are $\\pi/4$, $3\\pi/4$, $5\\pi/4$, and $7\\pi/4$.",
           "hints": [
             "Squaring loses the sign of sine.",
@@ -867,12 +837,7 @@
         {
           "kind": "choice",
           "prompt": "Which identity correctly expresses $\\sin(x+\\pi/2)$?",
-          "choices": [
-            "$\\cos x$",
-            "$-\\cos x$",
-            "$\\sin x+1$",
-            "$-\\sin x$"
-          ],
+          "choices": ["$\\cos x$", "$-\\cos x$", "$\\sin x+1$", "$-\\sin x$"],
           "answer": "$\\cos x$",
           "solution": "The addition formula gives $\\sin x\\cos(\\pi/2)+\\cos x\\sin(\\pi/2)=0+\\cos x$.",
           "hints": [
@@ -933,10 +898,7 @@
         {
           "kind": "vector",
           "prompt": "For $x=2t-1$, $y=t^2+1$, find $[x,y]$ at $t=3$.",
-          "answer": [
-            5,
-            10
-          ],
+          "answer": [5, 10],
           "solution": "Substitution gives $x=6-1=5$ and $y=9+1=10$.",
           "hints": [
             "Use the same parameter value in both coordinates.",
@@ -951,10 +913,7 @@
         {
           "kind": "vector",
           "prompt": "Convert polar coordinates $(r,\\theta)=(2,\\pi/2)$ to $[x,y]$.",
-          "answer": [
-            0,
-            2
-          ],
+          "answer": [0, 2],
           "solution": "Use $x=2\\cos(\\pi/2)=0$ and $y=2\\sin(\\pi/2)=2$.",
           "hints": [
             "Cosine gives the horizontal component.",
@@ -1024,10 +983,7 @@
         {
           "kind": "vector",
           "prompt": "The curve $x=3\\cos t$, $y=2\\sin t$ is an ellipse. Give its horizontal and vertical semiaxes as $[a,b]$.",
-          "answer": [
-            3,
-            2
-          ],
+          "answer": [3, 2],
           "solution": "Dividing gives $(x/3)^2+(y/2)^2=1$; the semiaxis magnitudes are three and two.",
           "hints": [
             "Eliminate $t$ using $\\cos^2t+\\sin^2t=1$.",
@@ -1042,11 +998,7 @@
         {
           "kind": "vector",
           "prompt": "Convert $r=6\\cos\\theta$ to a circle and return $[center_x,center_y,radius]$.",
-          "answer": [
-            3,
-            0,
-            3
-          ],
+          "answer": [3, 0, 3],
           "solution": "Multiply by $r$ and substitute Cartesian coordinates to get $x^2+y^2=6x$. Completing the square gives $(x-3)^2+y^2=9$, with center $(3,0)$ and radius three.",
           "hints": [
             "Multiply the polar equation by $r$.",
@@ -1096,10 +1048,7 @@
         {
           "kind": "vector",
           "prompt": "A polar point has $r=-4$ and $\\theta=\\pi$. Give its Cartesian coordinates.",
-          "answer": [
-            4,
-            0
-          ],
+          "answer": [4, 0],
           "solution": "$x=(-4)(-1)=4$ and $y=(-4)(0)=0$. The signed radius reverses the angle's direction.",
           "hints": [
             "Use the conversion formulas with the signed radius.",
@@ -1162,10 +1111,7 @@
           "prompt": "For $a_n=2n^2-1$, find $a_4$.",
           "answer": 31,
           "solution": "Evaluate the explicit rule at index four: $a_4=2(4^2)-1=2\\cdot16-1=31$; the index is not the term's value.",
-          "hints": [
-            "The index is four.",
-            "Square before multiplying by two."
-          ],
+          "hints": ["The index is four.", "Square before multiplying by two."],
           "concept": "explicit terms",
           "tolerance": 0.000001,
           "id": "sequences-and-informal-limiting-behavior-01",
@@ -1220,12 +1166,7 @@
         {
           "kind": "choice",
           "prompt": "Which sequence is bounded but fails to converge?",
-          "choices": [
-            "$(-1)^n$",
-            "$1/n$",
-            "$n$",
-            "$2+1/n$"
-          ],
+          "choices": ["$(-1)^n$", "$1/n$", "$n$", "$2+1/n$"],
           "answer": "$(-1)^n$",
           "solution": "The terms stay between minus one and one but alternate between two distinct subsequential values.",
           "hints": [

@@ -216,12 +216,18 @@
             "Since every proposed $M$ fails, no upper bound exists.",
             "Choose the real number $x=M+1$."
           ],
-          "answer": [
-            2,
-            4,
-            1,
-            3
+          "answer": [2, 4, 1, 3],
+          "proof_dependencies": [
+            [2, 4],
+            [4, 1],
+            [1, 3]
           ],
+          "proof_rationales": {
+            "1": "The constructed real number exceeds the proposed bound, directly violating the definition of an upper bound for all real numbers.",
+            "2": "An arbitrary proposed upper bound must be considered first, because the later witness is allowed to depend on that proposal.",
+            "3": "The candidate was arbitrary and each candidate has a violating real number, so the failure applies to every possible upper bound.",
+            "4": "Adding one constructs a real witness strictly larger than the chosen candidate, rather than choosing a fixed witness that might not defeat every bound."
+          },
           "solution": "Choose an arbitrary candidate, construct a violating element depending on it, verify the violation, and universally conclude failure.",
           "hints": [
             "Start with an arbitrary candidate bound.",
@@ -357,12 +363,7 @@
         {
           "kind": "choice",
           "prompt": "Which input refutes '$x^2>4$ implies $x>2$' over $\\mathbb R$?",
-          "choices": [
-            "$x=-3$",
-            "$x=3$",
-            "$x=0$",
-            "$x=2$"
-          ],
+          "choices": ["$x=-3$", "$x=3$", "$x=0$", "$x=2$"],
           "answer": "$x=-3$",
           "solution": "At minus three the hypothesis $9>4$ is true and the conclusion $-3>2$ is false.",
           "hints": [
@@ -438,12 +439,18 @@
             "Divide by the nonzero coefficient three to obtain $a=b$, proving injectivity.",
             "Substitute the formula to obtain $3a-7=3b-7$."
           ],
-          "answer": [
-            2,
-            4,
-            1,
-            3
+          "answer": [2, 4, 1, 3],
+          "proof_dependencies": [
+            [2, 4],
+            [4, 1],
+            [1, 3]
           ],
+          "proof_rationales": {
+            "1": "Adding the same constant to both sides preserves equality and isolates the common nonzero coefficient multiplying the two inputs.",
+            "2": "Injectivity requires proving that any two domain inputs with equal outputs must agree, so the initial inputs must be arbitrary.",
+            "3": "The coefficient three is nonzero, so division preserves equality and yields exactly the input equality needed for injectivity.",
+            "4": "Substituting the function's formula turns the abstract output equality into an algebraic equation that can be simplified."
+          },
           "solution": "Begin with arbitrary inputs sharing an output, expand the defining formula, simplify, and derive equality of inputs.",
           "hints": [
             "Start with the definition of injectivity.",
@@ -462,11 +469,16 @@
             "Let $r$ be rational and $s$ irrational; suppose $r+s$ is rational.",
             "This contradicts the irrationality of $s$, proving $r+s$ irrational."
           ],
-          "answer": [
-            2,
-            1,
-            3
+          "answer": [2, 1, 3],
+          "proof_dependencies": [
+            [2, 1],
+            [1, 3]
           ],
+          "proof_rationales": {
+            "1": "Closure of the rational numbers under subtraction applies because both the assumed sum and the given rational summand are rational.",
+            "2": "Assuming the sum rational is the negation of the desired conclusion, while retaining the irrationality of the other summand.",
+            "3": "The irrational summand has now been forced rational, contradicting its stated property and discharging the contradictory assumption."
+          },
           "solution": "The rationals are closed under subtraction. Assuming the sum rational would force the irrational summand to be rational. In fact the nonzero restriction on $r$ is unnecessary.",
           "hints": [
             "Assume the negation of the desired conclusion.",
@@ -549,10 +561,7 @@
           "prompt": "Use the triangular-sum formula to find $1+2+\\cdots+12$.",
           "answer": 78,
           "solution": "Apply $1+\\cdots+n=n(n+1)/2$ at $n=12$: $12\\cdot13/2=78$. The product counts the paired sum before dividing by two.",
-          "hints": [
-            "Pair first and last terms.",
-            "Use $n(n+1)/2$."
-          ],
+          "hints": ["Pair first and last terms.", "Use $n(n+1)/2$."],
           "concept": "inductive sum formula",
           "tolerance": 0.000001,
           "id": "induction-and-recursive-arguments-01",
@@ -668,12 +677,18 @@
             "The next odd term is $2k+1$, so the new sum is $k^2+(2k+1)$.",
             "This matches the desired formula at $k+1$."
           ],
-          "answer": [
-            2,
-            3,
-            1,
-            4
+          "answer": [2, 3, 1, 4],
+          "proof_dependencies": [
+            [2, 3],
+            [3, 1],
+            [1, 4]
           ],
+          "proof_rationales": {
+            "1": "The previous line supplies the expression to simplify; recognizing a perfect square makes it equal to the target at the next index.",
+            "2": "The induction-step hypothesis supplies the total of the first k terms, allowing the next sum to be calculated without assuming its formula.",
+            "3": "The next odd integer is twice k plus one, so adding it to the established total constructs the sum with k plus one terms.",
+            "4": "Matching the simplified result to the claimed formula at k plus one explicitly establishes the required implication of the induction step."
+          },
           "solution": "Use the previous sum, identify the correct next term, complete a square, and match the target expression.",
           "hints": [
             "Find the $(k+1)$st odd integer.",
@@ -783,10 +798,7 @@
         {
           "kind": "vector",
           "prompt": "For $f(x)=2x+1$, list $f^{-1}(\\{3,7\\})$ in increasing order.",
-          "answer": [
-            1,
-            3
-          ],
+          "answer": [1, 3],
           "solution": "Solve $2x+1=3$ and $2x+1=7$, giving one and three.",
           "hints": [
             "Treat each target output separately.",
@@ -801,10 +813,7 @@
         {
           "kind": "vector",
           "prompt": "For $f(x)=x^2$, give the endpoints $[a,b]$ of $f([-1,2])=[a,b]$.",
-          "answer": [
-            0,
-            4
-          ],
+          "answer": [0, 4],
           "solution": "Zero is attained at the interior input zero; four is attained at two. Every intermediate output is attained.",
           "hints": [
             "Check interior as well as endpoint values.",
@@ -919,11 +928,16 @@
             "Therefore $x\\in f^{-1}(B)$ and $x\\in f^{-1}(C)$, exactly membership in their intersection; all equivalences reverse.",
             "Take any $x\\in X$: $x\\in f^{-1}(B\\cap C)$ exactly when $f(x)\\in B\\cap C$."
           ],
-          "answer": [
-            3,
-            1,
-            2
+          "answer": [3, 1, 2],
+          "proof_dependencies": [
+            [3, 1],
+            [1, 2]
           ],
+          "proof_rationales": {
+            "1": "Membership in the intersection means satisfying both codomain membership conditions, which makes two separate preimage conditions available.",
+            "2": "Translating both conditions back to the domain identifies the target intersection; reversibility establishes equality rather than only one inclusion.",
+            "3": "Starting with an arbitrary domain element reduces the set identity to equivalent membership statements for that element."
+          },
           "solution": "Translate inverse-image membership, split the intersection condition, and translate back. Reversible equivalences prove both inclusions.",
           "hints": [
             "Start with one arbitrary input.",
@@ -1003,12 +1017,7 @@
         {
           "kind": "choice",
           "prompt": "Which function is a bijection from positive integers to positive even integers?",
-          "choices": [
-            "$f(n)=2n$",
-            "$f(n)=n^2$",
-            "$f(n)=2n+1$",
-            "$f(n)=n/2$"
-          ],
+          "choices": ["$f(n)=2n$", "$f(n)=n^2$", "$f(n)=2n+1$", "$f(n)=n/2$"],
           "answer": "$f(n)=2n$",
           "solution": "It is injective because $2a=2b$ forces $a=b$, and each positive even integer $2k$ has preimage $k$.",
           "hints": [
@@ -1058,10 +1067,7 @@
         {
           "kind": "vector",
           "prompt": "Enumerate positive pairs by increasing $i+j$, then increasing $i$. What is the fifth pair $[i,j]$?",
-          "answer": [
-            2,
-            2
-          ],
+          "answer": [2, 2],
           "solution": "The sequence begins $(1,1),(1,2),(2,1),(1,3),(2,2)$.",
           "hints": [
             "The sum-four diagonal contains three pairs.",
@@ -1096,12 +1102,7 @@
         {
           "kind": "vector",
           "prompt": "The diagonal bits of four listed infinite binary rows are $[0,1,1,0]$. Give the first four bits of the diagonal complement.",
-          "answer": [
-            1,
-            0,
-            0,
-            1
-          ],
+          "answer": [1, 0, 0, 1],
           "solution": "Complement each diagonal bit using $d_n=1-s_n(n)$, giving $1,0,0,1$.",
           "hints": [
             "Flip zero to one and one to zero.",
@@ -1162,12 +1163,18 @@
             "Therefore $d$ is absent from the supposed complete list, a contradiction.",
             "Define $d_n=1-s_n(n)$ for every positive integer $n$."
           ],
-          "answer": [
-            2,
-            4,
-            1,
-            3
+          "answer": [2, 4, 1, 3],
+          "proof_dependencies": [
+            [2, 4],
+            [4, 1],
+            [1, 3]
           ],
+          "proof_rationales": {
+            "1": "The diagonal complement must already be defined before its nth coordinate can be compared with the nth listed sequence.",
+            "2": "Assuming a complete listing provides the indexed rows used in the diagonal construction and states the claim to be contradicted.",
+            "3": "The constructed binary sequence differs from every listed row, so its absence contradicts the listing's assumed completeness.",
+            "4": "Complementing the nth diagonal bit constructs a legitimate binary sequence whose definition guarantees a specific disagreement with each row."
+          },
           "solution": "Assume a complete listing, construct a valid binary sequence, identify a disagreement with each row, and contradict completeness.",
           "hints": [
             "Construct a sequence only after assuming a listing.",
@@ -1297,10 +1304,7 @@
         {
           "kind": "vector",
           "prompt": "For $S=\\{-3,2,7\\}$, return $[\\inf S,\\sup S]$.",
-          "answer": [
-            -3,
-            7
-          ],
+          "answer": [-3, 7],
           "solution": "The smallest and largest elements of this nonempty finite set are minus three and seven.",
           "hints": [
             "A finite set attains both extrema.",
@@ -1330,10 +1334,7 @@
         {
           "kind": "vector",
           "prompt": "If $\\inf S=-2$ and $\\sup S=5$, return $[\\inf(-2S),\\sup(-2S)]$.",
-          "answer": [
-            -10,
-            4
-          ],
+          "answer": [-10, 4],
           "solution": "Multiplication by minus two reverses order: the new infimum is $-2\\cdot5=-10$ and supremum is $-2\\cdot(-2)=4$.",
           "hints": [
             "A negative multiplier reverses inequalities.",
@@ -1389,12 +1390,18 @@
             "Hence no number below three is an upper bound, and three is the supremum.",
             "Let $\\epsilon>0$ be arbitrary."
           ],
-          "answer": [
-            2,
-            4,
-            1,
-            3
+          "answer": [2, 4, 1, 3],
+          "proof_dependencies": [
+            [4, 1],
+            [1, 3],
+            [2, 3]
           ],
+          "proof_rationales": {
+            "1": "After a positive tolerance is chosen, the Archimedean property provides an integer making the set element lie within that tolerance below three.",
+            "2": "Showing every term lies below three establishes the upper-bound half of the supremum definition independently of the approximation argument.",
+            "3": "The candidate is an upper bound and every smaller candidate is defeated by a near-three set element, so the two established properties prove it is the least upper bound.",
+            "4": "The tolerance must be arbitrary and positive before choosing an integer depending on it; one fixed tolerance would not establish sharpness."
+          },
           "solution": "Every $3-2/n<3$, so three is an upper bound. Given $\\epsilon>0$, the Archimedean property provides an integer $n>2/\\epsilon$, yielding $3-2/n>3-\\epsilon$. For any proposed smaller bound $v<3$, use $\\epsilon=3-v$ to obtain a set element greater than $v$. Thus three is the least upper bound.",
           "hints": [
             "The approximation argument alone does not show an upper bound.",

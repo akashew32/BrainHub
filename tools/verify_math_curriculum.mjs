@@ -32,6 +32,7 @@ let questionCount = 0;
 let examCount = 0;
 let mathCount = 0;
 let arithmeticCount = 0;
+let proofCount = 0;
 
 function assert(condition, message) {
   if (!condition) errors.push(message);
@@ -51,6 +52,63 @@ function isText(value) {
 
 function isFiniteNumber(value) {
   return typeof value === "number" && Number.isFinite(value);
+}
+
+function verifyProofGraph(question, location) {
+  proofCount++;
+  const count = question.choices?.length ?? 0;
+  const edges = question.proof_dependencies;
+  const validEdges =
+    Array.isArray(edges) &&
+    edges.length > 0 &&
+    edges.every(
+      (edge) =>
+        Array.isArray(edge) &&
+        edge.length === 2 &&
+        edge.every(
+          (step) => Number.isInteger(step) && step >= 1 && step <= count,
+        ) &&
+        edge[0] !== edge[1],
+    ) &&
+    new Set(edges.map((edge) => edge.join(":"))).size === edges.length;
+  assert(
+    validEdges,
+    location + ": proof dependencies must be unique valid prerequisite edges",
+  );
+  const rationales = question.proof_rationales;
+  assert(
+    rationales &&
+      typeof rationales === "object" &&
+      !Array.isArray(rationales) &&
+      Object.keys(rationales).length === count &&
+      Array.from({ length: count }, (_, index) => String(index + 1)).every(
+        (step) => isText(rationales[step]) && rationales[step].length >= 25,
+      ),
+    location + ": every proof step needs a substantive justification",
+  );
+  for (const order of [question.answer, ...(question.accepted_orders ?? [])]) {
+    const permutation =
+      Array.isArray(order) &&
+      order.length === count &&
+      new Set(order).size === count &&
+      order.every(
+        (step) => Number.isInteger(step) && step >= 1 && step <= count,
+      );
+    assert(
+      permutation,
+      location + ": each reference proof must use every step once",
+    );
+    if (validEdges && permutation) {
+      // A complete reference topological order also proves that the graph is acyclic.
+      assert(
+        edges.every(
+          ([before, after]) => order.indexOf(before) < order.indexOf(after),
+        ),
+        location +
+          ": reference proof contradicts a prerequisite or contains a cycle",
+      );
+    }
+  }
 }
 
 function escapedAt(text, index) {
@@ -224,6 +282,7 @@ function verifyQuestion(
         location +
           ": proof answer must be a permutation of all one-based step indices",
       );
+      verifyProofGraph(question, location);
     }
   }
 
@@ -742,6 +801,7 @@ assert(
   "Expected 30 authored lessons, found " + lessonCount,
 );
 assert(questionCount === 300, "Expected 300 questions, found " + questionCount);
+assert(proofCount === 21, "Expected 21 structured proofs, found " + proofCount);
 assert(
   examCount === 60,
   "Expected 60 reserved exam questions, found " + examCount,
@@ -776,6 +836,11 @@ if (errors.length) {
       " math fragments render with KaTeX; " +
       arithmeticCount +
       " answer keys independently recomputed.",
+  );
+  console.log(
+    "PASS: " +
+      proofCount +
+      " private proof graphs and per-step justifications validated.",
   );
   console.log(
     "Editorial review is still required for proofs and mathematical exposition.",

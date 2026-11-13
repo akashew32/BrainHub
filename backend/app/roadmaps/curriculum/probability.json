@@ -1177,6 +1177,15 @@
             "Two points in that cell are at most its diagonal apart, namely $\\sqrt{(1/2)^2+(1/2)^2}=\\sqrt2/2$."
           ],
           "answer": [2, 1, 3],
+          "proof_dependencies": [
+            [2, 1],
+            [1, 3]
+          ],
+          "proof_rationales": {
+            "1": "The pigeonhole principle applies only after the four disjoint cells have been defined; five points then force two into one cell.",
+            "2": "A genuine partition assigns each point, including boundary points, to exactly one cell, supplying the four boxes needed for counting.",
+            "3": "The diagonal bounds the separation only for points already known to share one cell; it converts the collision into the required distance estimate."
+          },
           "hints": [
             "Define the four boxes first.",
             "Only then use the collision and the cell diameter."

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from app.services.math_input import VERSION, matches_integer, parse_container, parse_number
+from app.services.proof_feedback import grade_proof
 
 ROOT = Path(__file__).resolve().parents[1] / "roadmaps" / "curriculum"
 PASS_SCORE = 75
@@ -54,7 +55,16 @@ def public_question(question: dict[str, Any], *, include_hints: bool = True) -> 
     result = {
         key: value
         for key, value in question.items()
-        if key not in {"answer", "accepted_orders", "solution", "exam", "tolerance"}
+        if key
+        not in {
+            "answer",
+            "accepted_orders",
+            "proof_dependencies",
+            "proof_rationales",
+            "solution",
+            "exam",
+            "tolerance",
+        }
     }
     if question["kind"] == "choice":
         result["choices"] = random.SystemRandom().sample(
@@ -106,23 +116,8 @@ def grade(question: dict[str, Any], submitted: Any) -> tuple[bool, str | None]:
             if not isinstance(submitted, str) or submitted not in question["choices"]:
                 raise ValueError("Choose one of the listed answers.")
             return submitted == expected, None
-        if kind == "proof" and isinstance(submitted, str):
-            if len(submitted) > 4000:
-                raise ValueError("Use a short JSON array containing the numbered proof steps.")
-            try:
-                submitted = json.loads(submitted)
-            except (ValueError, TypeError) as error:
-                raise ValueError(
-                    "Use an array such as [1, 2] or a matrix such as [[1, 2], [3, 4]]."
-                ) from error
         if kind == "proof":
-            if (
-                not isinstance(submitted, list)
-                or any(type(item) is not int for item in submitted)
-                or sorted(submitted) != list(range(1, len(question["choices"]) + 1))
-            ):
-                raise ValueError("Use every numbered proof step exactly once.")
-            return submitted == expected or submitted in question.get("accepted_orders", []), None
+            return grade_proof(question, submitted), None
         if kind == "vector":
             actual_values = parse_container(submitted, "vector")
             if len(actual_values) != len(expected):

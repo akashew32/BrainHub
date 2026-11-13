@@ -28,6 +28,7 @@ from app.services.curriculum import (
     public_question,
     questions_for,
 )
+from app.services.proof_feedback import build_proof_feedback
 from app.services.roadmaps import serialize_progress
 
 router = APIRouter(prefix="/api/roadmaps", tags=["Mathematics learning"])
@@ -412,24 +413,29 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
     if len(answers) != len(payload.answers) or set(answers) != set(session.question_ids):
         raise HTTPException(422, "Submit exactly one answer for every question in this session.")
     bank = questions_for(session.roadmap_slug)
+    if any(question_id not in bank for question_id in session.question_ids):
+        raise HTTPException(409, "This assessment's curriculum changed. Start a fresh session.")
     feedback = []
     for question_id in session.question_ids:
         question = bank[question_id]
         correct, validation_error = grade(question, answers[question_id])
         if validation_error:
             raise HTTPException(422, f"{question_id}: {validation_error}")
-        feedback.append(
-            {
-                "question_id": question_id,
-                "prompt": question["prompt"],
-                "concept": question["concept"],
-                "correct": correct,
-                "submitted_answer": answers[question_id],
-                "expected_answer": question["answer"],
-                "solution": question["solution"],
-                "topic_slug": question["topic_slug"],
-            }
-        )
+        item = {
+            "question_id": question_id,
+            "prompt": question["prompt"],
+            "concept": question["concept"],
+            "correct": correct,
+            "submitted_answer": answers[question_id],
+            "expected_answer": question["answer"],
+            "solution": question["solution"],
+            "topic_slug": question["topic_slug"],
+        }
+        if question["kind"] == "proof":
+            details = build_proof_feedback(question, answers[question_id])
+            item["proof_details"] = details
+            item["expected_answer"] = [step["step"] for step in details["expected_steps"]]
+        feedback.append(item)
     now = utc_now()
     for item in feedback:
         db.add(

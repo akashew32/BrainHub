@@ -68,7 +68,7 @@ const session: AssessmentSession = {
   ],
 };
 
-const entries = ["1/2", '["1/2", 3]', "[[1, 2], [3, 4]]", "[2, 1]", "(2, -1)"];
+const entries = ["1/2", '["1/2", 3]', "[[1, 2], [3, 4]]", "[2,1]", "(2, -1)"];
 const expectedAnswers = [
   0.5,
   [0.5, 3],
@@ -153,11 +153,13 @@ function renderAssessment(mode: "practice" | "exam" | "review" = "practice") {
 async function startAndAnswer() {
   fireEvent.click(await screen.findByRole("button", { name: "Start practice" }));
   await screen.findByRole("textbox", { name: "Answer to question 1" });
-  for (let index = 0; index < 4; index += 1) {
+  for (let index = 0; index < 3; index += 1) {
     fireEvent.change(screen.getByRole("textbox", { name: "Answer to question " + (index + 1) }), {
       target: { value: entries[index] },
     });
   }
+  fireEvent.click(screen.getByRole("button", { name: "Add step 2 to proof" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add step 1 to proof" }));
   fireEvent.click(screen.getByLabelText("(2, -1)"));
 }
 
@@ -219,7 +221,7 @@ describe("authored mathematics learning", () => {
     expect(screen.getByRole("textbox", { name: "Answer to question 3" })).toHaveAccessibleDescription(
       /Enter rows as/,
     );
-    expect(screen.getByRole("textbox", { name: "Answer to question 4" })).toHaveAccessibleDescription(
+    expect(screen.getByRole("group", { name: "Build your proof order" })).toHaveAccessibleDescription(
       /logical order/,
     );
     expect(screen.getByText("5 of 5 answered · 75% to pass")).toBeInTheDocument();
@@ -284,11 +286,13 @@ describe("authored mathematics learning", () => {
     await startAndAnswer();
     fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Grading is temporarily unavailable.");
-    for (let index = 0; index < 4; index += 1) {
+    for (let index = 0; index < 3; index += 1) {
       expect(screen.getByRole("textbox", { name: "Answer to question " + (index + 1) })).toHaveValue(
         entries[index],
       );
     }
+    expect(screen.getByText("Position 1 · Step 2")).toBeInTheDocument();
+    expect(screen.getByText("Position 2 · Step 1")).toBeInTheDocument();
     expect(screen.getByLabelText("(2, -1)")).toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
     expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
@@ -354,6 +358,7 @@ describe("authored mathematics learning", () => {
     fireEvent.change(screen.getByRole("textbox", { name: "Answer to question 2" }), {
       target: { value: '["1/2", 3]' },
     });
+    fireEvent.click(screen.getByText("Raw order editor (optional)"));
     fireEvent.change(screen.getByRole("textbox", { name: "Answer to question 4" }), {
       target: { value: "[2, 1]" },
     });
@@ -366,7 +371,9 @@ describe("authored mathematics learning", () => {
     renderAssessment();
     expect(await screen.findByRole("textbox", { name: "Answer to question 1" })).toHaveValue("1/2");
     expect(screen.getByRole("textbox", { name: "Answer to question 2" })).toHaveValue('["1/2", 3]');
-    expect(screen.getByRole("textbox", { name: "Answer to question 4" })).toHaveValue("[2, 1]");
+    expect(screen.getByText("Position 1 · Step 2")).toBeInTheDocument();
+    expect(screen.getByText("Position 2 · Step 1")).toBeInTheDocument();
+    expect(JSON.parse(localStorage.getItem(draftKey)!).answers["proof-answer"]).toBe("[2, 1]");
     expect(mock.mock.calls.filter(([input]) => String(input).endsWith("/assessments"))).toHaveLength(1);
   });
 

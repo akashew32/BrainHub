@@ -221,6 +221,15 @@
             "Begin with the given fact p."
           ],
           "answer": [3, 1, 2],
+          "proof_dependencies": [
+            [3, 1],
+            [1, 2]
+          ],
+          "proof_rationales": {
+            "1": "Modus ponens needs the established fact p and the given implication to obtain q; it cannot infer the conclusion from the implication alone.",
+            "2": "The second implication can produce r only after q has been obtained, completing the chain from the original premise.",
+            "3": "Beginning with the given fact supplies a true antecedent from which the two conditional statements can actually yield conclusions."
+          },
           "hints": [
             "Start with an established premise.",
             "Each implication can be applied only once its antecedent is available."
@@ -433,6 +442,15 @@
             "Use $p\\lor\\neg p\\equiv\\mathrm{true}$ to simplify the inner expression to $p\\lor q$."
           ],
           "answer": [2, 3, 1],
+          "proof_dependencies": [
+            [2, 3],
+            [3, 1]
+          ],
+          "proof_rationales": {
+            "1": "De Morgan's law yields the target only once the expression under the outer negation has become the disjunction of p and q.",
+            "2": "Distribution exposes the tautological factor while preserving equivalence, making the following simplification legitimate.",
+            "3": "The factor p or not p is true under every assignment, so removing it leaves exactly the disjunction needed for the final negation."
+          },
           "hints": [
             "Simplify what lies under the outer negation first.",
             "Use De Morgan after reducing the inner expression."
@@ -825,6 +843,15 @@
             "Expand $n^2=(2k+1)^2=4k^2+4k+1$."
           ],
           "answer": [2, 3, 1],
+          "proof_dependencies": [
+            [2, 3],
+            [3, 1]
+          ],
+          "proof_rationales": {
+            "1": "Factoring the expanded square as twice an integer plus one establishes oddness by its definition rather than by examples.",
+            "2": "Writing an arbitrary odd integer in its defining form makes the argument apply to every odd integer and establishes the integer parameter k.",
+            "3": "Expanding the square of the established expression produces the terms that can be grouped into an even part and a remainder of one."
+          },
           "hints": [
             "Use the definition of odd first.",
             "Conclude parity only after expansion and factoring."
@@ -886,6 +913,19 @@
             "Write $a=2k$ for an integer k."
           ],
           "answer": [3, 1, 5, 2, 4],
+          "proof_dependencies": [
+            [3, 1],
+            [1, 5],
+            [5, 2],
+            [2, 4]
+          ],
+          "proof_rationales": {
+            "1": "Squaring the hypothetical rational representation connects the numerator's parity to twice a square; the odd-square parity lemma then forces a to be even.",
+            "2": "Substituting the established even form of a transfers the parity constraint to b, showing that the denominator is even as well.",
+            "3": "A lowest-terms representation is the precise contradictory assumption: its numerator and denominator cannot share a factor greater than one.",
+            "4": "Once both numerator and denominator have been shown even, their common factor two contradicts the original lowest-terms condition.",
+            "5": "The conclusion that a is even supplies an integer k with a equal to twice k, which is required before substitution into the squared equation."
+          },
           "hints": [
             "The lowest-terms assumption must precede the contradiction.",
             "Substitute the even numerator before inferring the denominator is even."
@@ -1042,11 +1082,22 @@
             "Add the next term: $\\sum_{i=1}^{k+1}i=k(k+1)/2+(k+1)$.",
             "Verify n=1, where both sides equal 1.",
             "Assume the identity at an arbitrary integer k at least 1.",
-            "Simplify to $(k+1)(k+2)/2$ and conclude the induction step."
+            "Simplify to $(k+1)(k+2)/2$; together with the established base case, conclude the formula for every positive integer."
           ],
           "answer": [2, 3, 1, 4],
+          "proof_dependencies": [
+            [3, 1],
+            [1, 4],
+            [2, 4]
+          ],
+          "proof_rationales": {
+            "1": "Separating the next term lets the established sum through k be replaced by the induction hypothesis, rather than assuming the formula at k plus one.",
+            "2": "The base case supplies the starting instance needed for induction; it is independent of the step's algebra but must be available before the final universal conclusion.",
+            "3": "The induction hypothesis licenses replacing the first k terms by the claimed expression for an arbitrary fixed positive k.",
+            "4": "The algebra establishes the induction step, and the separately established base case then allows induction to conclude every positive instance."
+          },
           "hints": [
-            "Establish the base before entering the induction step.",
+            "The proof needs a base case and an induction step; their calculations may be presented in either order.",
             "Use the hypothesis before simplifying the next case."
           ],
           "solution": "Check the base (2), state the induction hypothesis (3), use it after separating the last term (1), then simplify to the formula at k+1 (4).",
@@ -1090,6 +1141,17 @@
             "If n is prime, its one-factor expression already proves the claim; otherwise enter the composite case."
           ],
           "answer": [2, 4, 1, 3],
+          "proof_dependencies": [
+            [4, 1],
+            [1, 3],
+            [2, 3]
+          ],
+          "proof_rationales": {
+            "1": "The composite branch supplies two nontrivial factors smaller than n, so each factor lies in the induction hypothesis's range.",
+            "2": "The prime base starts the argument, and the strong hypothesis makes prime factorizations available for every smaller integer at least two.",
+            "3": "After the smaller factors are constructed, the hypothesis factors each one; multiplying those factorizations represents n as a product of primes.",
+            "4": "Separating the prime case finishes it immediately and identifies the composite case as the only branch still needing a factor construction."
+          },
           "hints": [
             "Set up the smaller-case hypothesis before using it.",
             "Both factors in the composite case must lie inside that hypothesis's range."
@@ -1315,6 +1377,18 @@
           ],
           "answer": [2, 3, 1, 4],
           "accepted_orders": [[2, 1, 3, 4]],
+          "proof_dependencies": [
+            [2, 1],
+            [2, 3],
+            [1, 4],
+            [3, 4]
+          ],
+          "proof_rationales": {
+            "1": "An infinite run would permit choosing more than M moves; this supplies the move count that will violate the nonnegative lower bound.",
+            "2": "Naming the initial potential establishes the finite reference value M used by both the move-count choice and the cumulative decrease estimate.",
+            "3": "Summing at least one unit of decrease per move bounds the potential by M minus t; this estimate can be established before or after assuming an infinite run.",
+            "4": "The selected count exceeds M and the decrease estimate makes the potential negative, directly contradicting its required nonnegativity."
+          },
           "hints": [
             "Name the initial bound before deriving a later bound.",
             "The contradiction needs both too many moves and nonnegativity."

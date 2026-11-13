@@ -6,6 +6,7 @@ import { api, ApiError } from "@/lib/api";
 import type { AssessmentResult, AssessmentSession, MathQuestion } from "@/lib/curriculum";
 import { MathText } from "@/components/roadmaps/math-text";
 import { MathAnswerPreview } from "@/components/roadmaps/math-answer-preview";
+import { ProofBuilder, parseProofOrder } from "@/components/roadmaps/proof-builder";
 import { useRoadmapProgress } from "@/components/roadmaps/roadmap-progress-provider";
 
 type Mode = "practice" | "exam" | "review";
@@ -181,6 +182,13 @@ function answerHelp(question: MathQuestion) {
   return (
     "Enter a number or expression such as 3/4, sqrt(2), pi/3, or 2^5. Use * for multiplication. " + precision
   );
+}
+
+function questionAnswered(question: MathQuestion, value: string | undefined) {
+  if (!value?.trim()) return false;
+  if (question.kind !== "proof") return true;
+  const parsed = parseProofOrder(value, question.choices?.length ?? 0);
+  return parsed.issue === null && parsed.order.length === question.choices?.length;
 }
 
 export function AssessmentPanel({
@@ -539,9 +547,13 @@ function AssessmentWorkspace({
 
   async function submit() {
     if (!session || expired || submitting.current) return;
-    const missing = session.questions.find((question) => !answers[question.id]?.trim());
+    const missing = session.questions.find((question) => !questionAnswered(question, answers[question.id]));
     if (missing) {
-      setError("Answer every question before submitting. Your entries are kept while you complete the set.");
+      setError(
+        missing.kind === "proof"
+          ? "Select every proof step exactly once before submitting. Your order and other answers are kept."
+          : "Answer every question before submitting. Your entries are kept while you complete the set.",
+      );
       document.getElementById("question-" + missing.id)?.focus();
       return;
     }
@@ -590,7 +602,8 @@ function AssessmentWorkspace({
     }
   }
 
-  const answered = session?.questions.filter((question) => Boolean(answers[question.id]?.trim())).length ?? 0;
+  const answered =
+    session?.questions.filter((question) => questionAnswered(question, answers[question.id])).length ?? 0;
   const title =
     mode === "exam"
       ? "Stage " + (stageIndex + 1) + " examination"
@@ -704,18 +717,23 @@ function AssessmentWorkspace({
                       </label>
                     ))}
                   </div>
+                ) : question.kind === "proof" ? (
+                  <>
+                    <ProofBuilder
+                      id={"question-" + question.id}
+                      choices={question.choices ?? []}
+                      value={answers[question.id] ?? ""}
+                      onChange={(value) => updateAnswer(question.id, value)}
+                      disabled={busy}
+                      label={"Answer to question " + (index + 1)}
+                      describedBy={"help-" + question.id}
+                    />
+                    <p className="mt-2 text-xs leading-6 text-[#8396ad]" id={"help-" + question.id}>
+                      {answerHelp(question)}
+                    </p>
+                  </>
                 ) : (
                   <>
-                    {question.kind === "proof" ? (
-                      <ol className="mb-4 space-y-2">
-                        {question.choices?.map((step, stepIndex) => (
-                          <li className="rounded-lg bg-[#111b28] p-3 text-sm leading-7" key={step}>
-                            <span className="mr-2 font-mono text-[#a78bfa]">{stepIndex + 1}.</span>
-                            <MathText>{step}</MathText>
-                          </li>
-                        ))}
-                      </ol>
-                    ) : null}
                     <label className="block text-sm text-[#b3c1d3]" htmlFor={"question-" + question.id}>
                       Answer to question {index + 1}
                     </label>
@@ -793,17 +811,72 @@ function AssessmentWorkspace({
                 <p className="mt-3 leading-8">
                   <MathText>{item.prompt}</MathText>
                 </p>
-                <p className="mt-3 text-sm text-[#94a5ba]">
-                  Your answer:{" "}
-                  <code className="break-all">
-                    {typeof item.submitted_answer === "string"
-                      ? item.submitted_answer
-                      : JSON.stringify(item.submitted_answer)}
-                  </code>
-                </p>
-                <p className="mt-2 text-sm text-[#63e6be]">
-                  Expected: <code className="break-all">{JSON.stringify(item.expected_answer)}</code>
-                </p>
+                {item.proof_details ? (
+                  <section className="mt-4 space-y-4" aria-label="Proof order feedback">
+                    <div className="grid gap-4 lg:grid-cols-2">
+                      <section>
+                        <h3 className="font-semibold text-[#b9c8dc]">Your submitted argument</h3>
+                        <ol className="mt-3 list-decimal space-y-3 pl-5 text-sm leading-7 text-[#a8bcd3]">
+                          {item.proof_details.submitted_steps.map((step) => (
+                            <li key={step.step}>
+                              <span className="mr-2 font-mono text-xs text-[#a78bfa]">Step {step.step}</span>
+                              <MathText>{step.text}</MathText>
+                            </li>
+                          ))}
+                        </ol>
+                      </section>
+                      <section>
+                        <h3 className="font-semibold text-[#63e6be]">One valid proof</h3>
+                        <ol className="mt-3 list-decimal space-y-3 pl-5 text-sm leading-7 text-[#b6d5c9]">
+                          {item.proof_details.expected_steps.map((step) => (
+                            <li key={step.step}>
+                              <span className="mr-2 font-mono text-xs text-[#9cd8bc]">Step {step.step}</span>
+                              <MathText>{step.text}</MathText>
+                              {step.justification ? (
+                                <p className="mt-2 text-xs leading-7 text-[#91b5a5]">
+                                  <MathText>{step.justification}</MathText>
+                                </p>
+                              ) : null}
+                            </li>
+                          ))}
+                        </ol>
+                      </section>
+                    </div>
+                    <p className="text-sm leading-7 text-[#a8bbd1]">
+                      Correct initial steps: {item.proof_details.correct_prefix_length} of{" "}
+                      {item.proof_details.total_steps}.
+                      {item.proof_details.first_divergence === null
+                        ? ""
+                        : " The first difference is at position " + item.proof_details.first_divergence + "."}
+                    </p>
+                    {item.proof_details.violated_dependencies?.length ? (
+                      <ul className="list-disc space-y-2 pl-5 text-sm leading-7 text-[#f8cf93]">
+                        {item.proof_details.violated_dependencies.map((dependency) => (
+                          <li key={dependency.step + ":" + dependency.requires}>
+                            Step {dependency.step} requires step {dependency.requires} to appear earlier.
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                    <p className="leading-8 text-[#b9c9dc]">
+                      <MathText>{item.proof_details.explanation}</MathText>
+                    </p>
+                  </section>
+                ) : (
+                  <>
+                    <p className="mt-3 text-sm text-[#94a5ba]">
+                      Your answer:{" "}
+                      <code className="break-all">
+                        {typeof item.submitted_answer === "string"
+                          ? item.submitted_answer
+                          : JSON.stringify(item.submitted_answer)}
+                      </code>
+                    </p>
+                    <p className="mt-2 text-sm text-[#63e6be]">
+                      Expected: <code className="break-all">{JSON.stringify(item.expected_answer)}</code>
+                    </p>
+                  </>
+                )}
                 <p className="mt-4 leading-8 text-[#becada]">
                   <MathText>{item.solution}</MathText>
                 </p>

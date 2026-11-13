@@ -62,8 +62,11 @@
           "id": "vector-arithmetic-and-linear-combinations-01",
           "kind": "vector",
           "prompt": "For $u=(2,-1,3)$ and $v=(-1,4,2)$, compute $3u-2v$. Enter the three coordinates.",
-          "answer": [8,-11,5],
-          "hints": ["Scale $u$ and $v$ before subtracting.", "The second coordinate is $3(-1)-2(4)$."],
+          "answer": [8, -11, 5],
+          "hints": [
+            "Scale $u$ and $v$ before subtracting.",
+            "The second coordinate is $3(-1)-2(4)$."
+          ],
           "solution": "$3u=(6,-3,9)$ and $2v=(-2,8,4)$, so $3u-2v=(6-(-2),-3-8,9-4)=(8,-11,5)$.",
           "concept": "Coordinatewise vector arithmetic",
           "difficulty": "foundation",
@@ -73,8 +76,11 @@
           "id": "vector-arithmetic-and-linear-combinations-02",
           "kind": "vector",
           "prompt": "Find $(a,b)$ such that $a(2,1)+b(-1,1)=(1,5)$.",
-          "answer": [2,3],
-          "hints": ["Equate both coordinates: $2a-b=1$ and $a+b=5$.", "Add the two equations to eliminate $b$."],
+          "answer": [2, 3],
+          "hints": [
+            "Equate both coordinates: $2a-b=1$ and $a+b=5$.",
+            "Add the two equations to eliminate $b$."
+          ],
           "solution": "Adding $2a-b=1$ and $a+b=5$ gives $3a=6$, so $a=2$. Then $b=5-a=3$. Substitution gives $(4-3,2+3)=(1,5)$.",
           "concept": "Coefficients of a linear combination",
           "difficulty": "core",
@@ -84,9 +90,12 @@
           "id": "vector-arithmetic-and-linear-combinations-03",
           "kind": "choice",
           "prompt": "Which vector is outside $\\operatorname{span}\\{(1,2,3),(2,4,6)\\}$?",
-          "choices": ["$(3,6,9)$","$(-1,-2,-3)$","$(0,0,0)$","$(1,2,4)$"],
+          "choices": ["$(3,6,9)$", "$(-1,-2,-3)$", "$(0,0,0)$", "$(1,2,4)$"],
           "answer": "$(1,2,4)$",
-          "hints": ["The second generating vector is twice the first.", "Every reachable vector has third coordinate three times its first."],
+          "hints": [
+            "The second generating vector is twice the first.",
+            "Every reachable vector has third coordinate three times its first."
+          ],
           "solution": "The span is the line $(t,2t,3t)$. The first three options have that form, but $(1,2,4)$ would require both $t=1$ and $3t=4$, which is impossible.",
           "concept": "Membership in a span",
           "difficulty": "core",
@@ -97,7 +106,10 @@
           "kind": "number",
           "prompt": "For which real number $t$ does $(4,t)$ belong to the span of $(2,3)$?",
           "answer": 6,
-          "hints": ["Write $(4,t)=c(2,3)$.", "The first coordinate fixes $c=2$."],
+          "hints": [
+            "Write $(4,t)=c(2,3)$.",
+            "The first coordinate fixes $c=2$."
+          ],
           "solution": "The equation $2c=4$ gives $c=2$. The second coordinate must then be $t=3c=6$.",
           "concept": "Coordinate constraints on a line",
           "difficulty": "foundation",
@@ -107,8 +119,11 @@
           "id": "vector-arithmetic-and-linear-combinations-05",
           "kind": "vector",
           "prompt": "Express $(-2,7,1)$ in the standard coordinate vectors $e_1,e_2,e_3$. Enter the coefficients in that order.",
-          "answer": [-2,7,1],
-          "hints": ["$e_1=(1,0,0)$, $e_2=(0,1,0)$, and $e_3=(0,0,1)$.", "Each standard vector changes only one coordinate."],
+          "answer": [-2, 7, 1],
+          "hints": [
+            "$e_1=(1,0,0)$, $e_2=(0,1,0)$, and $e_3=(0,0,1)$.",
+            "Each standard vector changes only one coordinate."
+          ],
           "solution": "$-2e_1+7e_2+e_3=(-2,0,0)+(0,7,0)+(0,0,1)=(-2,7,1)$. The coefficients are $(-2,7,1)$.",
           "concept": "Standard coordinate representation",
           "difficulty": "foundation",
@@ -118,9 +133,17 @@
           "id": "vector-arithmetic-and-linear-combinations-06",
           "kind": "choice",
           "prompt": "How many pairs $(a,b)$ solve $a(1,2)+b(2,4)=(3,6)$?",
-          "choices": ["No pairs","Exactly one pair","Exactly two pairs","Infinitely many pairs"],
+          "choices": [
+            "No pairs",
+            "Exactly one pair",
+            "Exactly two pairs",
+            "Infinitely many pairs"
+          ],
           "answer": "Infinitely many pairs",
-          "hints": ["The second coordinate equation is twice the first.", "Choose $b$ freely and solve $a+2b=3$."],
+          "hints": [
+            "The second coordinate equation is twice the first.",
+            "Choose $b$ freely and solve $a+2b=3$."
+          ],
           "solution": "Both coordinates reduce to $a+2b=3$. Every real $b$ gives the solution $a=3-2b$, so infinitely many coefficient pairs represent the target.",
           "concept": "Dependence and nonunique coefficients",
           "difficulty": "core",
@@ -136,8 +159,22 @@
             "Therefore $a_i=b_i$ for every $i$, so the representations agree.",
             "Subtract the representations to obtain $\\sum_i(a_i-b_i)v_i=0$."
           ],
-          "answer": [2,4,1,3],
-          "hints": ["Begin by assuming two representations of one target.", "Subtract before invoking the definition of independence."],
+          "answer": [2, 4, 1, 3],
+          "hints": [
+            "Begin by assuming two representations of one target.",
+            "Subtract before invoking the definition of independence."
+          ],
+          "proof_dependencies": [
+            [2, 4],
+            [4, 1],
+            [1, 3]
+          ],
+          "proof_rationales": {
+            "1": "Independence applies to a combination equaling zero, so the subtracted representations must first supply that homogeneous relation.",
+            "2": "Assuming two representations of the same target sets up exactly what uniqueness must compare, without assuming their coefficients already agree.",
+            "3": "Each coefficient difference is zero by independence, which is equivalent to equality of the corresponding coefficients in the two representations.",
+            "4": "Subtracting the common target removes it and produces a zero combination with coefficient differences, the form required by independence."
+          },
           "solution": "Assume two representations, subtract them, invoke independence on the resulting zero combination, and conclude equality of every coefficient. The order is $2,4,1,3$.",
           "concept": "Proof of uniqueness from independence",
           "difficulty": "stretch",
@@ -147,8 +184,11 @@
           "id": "vector-arithmetic-and-linear-combinations-08",
           "kind": "vector",
           "prompt": "Let $v=(3,-1,2)$ and $u=(-2,4,1)$. Solve $x+2v=u$ for the vector $x$.",
-          "answer": [-8,6,-3],
-          "hints": ["Subtract $2v$ from both sides.", "Compute $u-2v$ coordinate by coordinate."],
+          "answer": [-8, 6, -3],
+          "hints": [
+            "Subtract $2v$ from both sides.",
+            "Compute $u-2v$ coordinate by coordinate."
+          ],
           "solution": "$x=u-2v=(-2,4,1)-(6,-2,4)=(-8,6,-3)$. Adding $2v$ recovers $u$.",
           "concept": "Solving a vector equation",
           "difficulty": "foundation",
@@ -158,8 +198,11 @@
           "id": "vector-arithmetic-and-linear-combinations-09",
           "kind": "vector",
           "prompt": "Find $(a,b)$ such that $a(1,2)+b(3,-1)=(7,0)$.",
-          "answer": [1,2],
-          "hints": ["Use $a+3b=7$ and $2a-b=0$.", "The second equation gives $b=2a$."],
+          "answer": [1, 2],
+          "hints": [
+            "Use $a+3b=7$ and $2a-b=0$.",
+            "The second equation gives $b=2a$."
+          ],
           "solution": "Substitute $b=2a$ into $a+3b=7$ to get $7a=7$. Thus $a=1$ and $b=2$, and $(1,2)+2(3,-1)=(7,0)$.",
           "concept": "Solving for independent generators",
           "difficulty": "core",
@@ -169,9 +212,12 @@
           "id": "vector-arithmetic-and-linear-combinations-10",
           "kind": "choice",
           "prompt": "A student claims every vector in $\\mathbb{R}^2$ is a combination of $(2,-1)$ and $(-4,2)$. Which target disproves this?",
-          "choices": ["$(6,-3)$","$(-2,1)$","$(1,0)$","$(0,0)$"],
+          "choices": ["$(6,-3)$", "$(-2,1)$", "$(1,0)$", "$(0,0)$"],
           "answer": "$(1,0)$",
-          "hints": ["The second generator is $-2$ times the first.", "The span satisfies $y=-x/2$."],
+          "hints": [
+            "The second generator is $-2$ times the first.",
+            "The span satisfies $y=-x/2$."
+          ],
           "solution": "Any combination is $(2a-4b,-a+2b)$ and satisfies $y=-x/2$. The target $(1,0)$ violates that relation. The other three targets lie on the line.",
           "concept": "Counterexample to a spanning claim",
           "difficulty": "stretch",
@@ -229,7 +275,10 @@
           "kind": "number",
           "prompt": "Compute $(2,-3,1)\\cdot(4,2,-5)$.",
           "answer": -3,
-          "hints": ["Multiply matching coordinates and add.", "There are three terms: $8$, $-6$, and $-5$."],
+          "hints": [
+            "Multiply matching coordinates and add.",
+            "There are three terms: $8$, $-6$, and $-5$."
+          ],
           "solution": "The dot product is $2(4)+(-3)(2)+1(-5)=8-6-5=-3$.",
           "concept": "Euclidean dot product",
           "difficulty": "foundation",
@@ -240,7 +289,10 @@
           "kind": "number",
           "prompt": "Find the Euclidean norm of $(2,-3,6)$.",
           "answer": 7,
-          "hints": ["Square the coordinates before summing.", "The squared norm is $4+9+36$."],
+          "hints": [
+            "Square the coordinates before summing.",
+            "The squared norm is $4+9+36$."
+          ],
           "solution": "$\\|(2,-3,6)\\|=\\sqrt{4+9+36}=\\sqrt{49}=7$.",
           "concept": "Euclidean norm",
           "difficulty": "foundation",
@@ -251,7 +303,10 @@
           "kind": "number",
           "prompt": "Find the distance between $(1,-2)$ and $(4,2)$.",
           "answer": 5,
-          "hints": ["Subtract the points.", "The difference vector is $(3,4)$."],
+          "hints": [
+            "Subtract the points.",
+            "The difference vector is $(3,4)$."
+          ],
           "solution": "The distance is $\\|(4,2)-(1,-2)\\|=\\|(3,4)\\|=\\sqrt{9+16}=5$.",
           "concept": "Distance between vectors",
           "difficulty": "foundation",
@@ -262,7 +317,10 @@
           "kind": "number",
           "prompt": "Choose $k$ so that $(1,k,2)$ and $(3,2,-1)$ are perpendicular.",
           "answer": -0.5,
-          "hints": ["Perpendicularity requires zero dot product.", "Solve $3+2k-2=0$."],
+          "hints": [
+            "Perpendicularity requires zero dot product.",
+            "Solve $3+2k-2=0$."
+          ],
           "solution": "The dot product is $1+2k$. Setting it to zero gives $k=-1/2$.",
           "concept": "Solving an orthogonality constraint",
           "difficulty": "core",
@@ -273,7 +331,10 @@
           "kind": "number",
           "prompt": "What is the angle, in degrees, between $(1,0)$ and $(1,\\sqrt{3})$?",
           "answer": 60,
-          "hints": ["The dot product is $1$ and the norms are $1$ and $2$.", "Use $\\cos\\theta=1/2$ for $0\\leq\\theta\\leq180$ degrees."],
+          "hints": [
+            "The dot product is $1$ and the norms are $1$ and $2$.",
+            "Use $\\cos\\theta=1/2$ for $0\\leq\\theta\\leq180$ degrees."
+          ],
           "solution": "$\\cos\\theta=1/(1\\cdot2)=1/2$, so the angle is $60$ degrees.",
           "concept": "Angle from a dot product",
           "difficulty": "core",
@@ -283,8 +344,11 @@
           "id": "dot-products-norms-and-angles-06",
           "kind": "vector",
           "prompt": "Project $(2,3)$ onto the line spanned by $(1,1)$. Enter the projected vector.",
-          "answer": [2.5,2.5],
-          "hints": ["Compute $(v\\cdot a)/(a\\cdot a)$.", "The numerator is $5$ and denominator is $2$."],
+          "answer": [2.5, 2.5],
+          "hints": [
+            "Compute $(v\\cdot a)/(a\\cdot a)$.",
+            "The numerator is $5$ and denominator is $2$."
+          ],
           "solution": "The projection coefficient is $5/2$, so $p=(5/2)(1,1)=(2.5,2.5)$. The residual $(-0.5,0.5)$ is perpendicular to $(1,1)$.",
           "concept": "Projection onto a line",
           "difficulty": "core",
@@ -301,7 +365,10 @@
             "Its angle with every vector is ninety degrees by the cosine formula."
           ],
           "answer": "It is orthogonal to every vector, but its angle with a nonzero vector is undefined.",
-          "hints": ["The dot product with zero is always zero.", "The angle formula would divide by a zero norm."],
+          "hints": [
+            "The dot product with zero is always zero.",
+            "The angle formula would divide by a zero norm."
+          ],
           "solution": "Algebraic orthogonality means zero dot product, so zero is orthogonal to every vector. The angle formula requires both norms to be nonzero, so it cannot assign a direction or angle to zero.",
           "concept": "Zero-vector exception in angle formulas",
           "difficulty": "core",
@@ -317,8 +384,22 @@
             "Impose perpendicular residual: $(v-ca)\\cdot a=0$.",
             "Expand to obtain $v\\cdot a-c(a\\cdot a)=0$."
           ],
-          "answer": [2,3,4,1],
-          "hints": ["First parameterize a vector on the line.", "Expand the perpendicularity condition before dividing."],
+          "answer": [2, 3, 4, 1],
+          "hints": [
+            "First parameterize a vector on the line.",
+            "Expand the perpendicularity condition before dividing."
+          ],
+          "proof_dependencies": [
+            [2, 3],
+            [3, 4],
+            [4, 1]
+          ],
+          "proof_rationales": {
+            "1": "The expanded residual equation determines c, and the nonzero generator makes its squared norm positive so division is allowed.",
+            "2": "A vector on the target line has the form c times a, reducing the unknown projection to one scalar coefficient.",
+            "3": "The projection's defining perpendicular residual must be imposed on that parameterized point before solving for the coefficient.",
+            "4": "Expanding the dot product isolates the scalar c in an ordinary linear equation, preparing a justified division by the squared norm."
+          },
           "solution": "Write $p=ca$, require $v-p$ to be perpendicular to $a$, expand the dot product, and divide by the positive number $a\\cdot a$. The sequence is $2,3,4,1$.",
           "concept": "Deriving the projection formula",
           "difficulty": "stretch",
@@ -328,9 +409,12 @@
           "id": "dot-products-norms-and-angles-09",
           "kind": "vector",
           "prompt": "Let $p$ be the projection of $v=(4,1)$ onto the span of $a=(2,-1)$. Compute the residual $v-p$.",
-          "answer": [1.2,2.4],
+          "answer": [1.2, 2.4],
           "tolerance": 0.000001,
-          "hints": ["The projection coefficient is $(8-1)/(4+1)=7/5$.", "Subtract $(14/5,-7/5)$ from $(4,1)$."],
+          "hints": [
+            "The projection coefficient is $(8-1)/(4+1)=7/5$.",
+            "Subtract $(14/5,-7/5)$ from $(4,1)$."
+          ],
           "solution": "$p=(7/5)(2,-1)=(14/5,-7/5)$. Thus $v-p=(6/5,12/5)=(1.2,2.4)$; its dot product with $a$ is $12/5-12/5=0$.",
           "concept": "Perpendicular residual of a projection",
           "difficulty": "core",
@@ -347,7 +431,10 @@
             "$u=(2,1),\\ v=(1,2)$"
           ],
           "answer": "$u=(1,2),\\ v=(-3,-6)$",
-          "hints": ["Equality requires linearly dependent vectors.", "A negative scalar multiple still gives equality because the dot product is inside absolute values."],
+          "hints": [
+            "Equality requires linearly dependent vectors.",
+            "A negative scalar multiple still gives equality because the dot product is inside absolute values."
+          ],
           "solution": "Here $v=-3u$, so $|u\\cdot v|=15$ and $\\|u\\|\\|v\\|=\\sqrt5(3\\sqrt5)=15$. None of the other pairs is proportional.",
           "concept": "Equality case of Cauchy–Schwarz",
           "difficulty": "stretch",
@@ -405,9 +492,17 @@
           "id": "matrix-arithmetic-01",
           "kind": "choice",
           "prompt": "$A$ is $3\\times2$ and $B$ is $2\\times4$. What is the shape of $AB$?",
-          "choices": ["$2\\times2$","$3\\times4$","$4\\times3$","The product is undefined."],
+          "choices": [
+            "$2\\times2$",
+            "$3\\times4$",
+            "$4\\times3$",
+            "The product is undefined."
+          ],
           "answer": "$3\\times4$",
-          "hints": ["The inner dimensions match.", "The outer dimensions give rows and columns of the result."],
+          "hints": [
+            "The inner dimensions match.",
+            "The outer dimensions give rows and columns of the result."
+          ],
           "solution": "The shared dimension is $2$. Each of the $3$ rows of $A$ pairs with each of the $4$ columns of $B$, giving a $3\\times4$ product.",
           "concept": "Dimensions of a product",
           "difficulty": "foundation",
@@ -417,8 +512,14 @@
           "id": "matrix-arithmetic-02",
           "kind": "matrix",
           "prompt": "Compute $2A-B$ for $A=\\begin{pmatrix}1&-2\\\\3&0\\end{pmatrix}$ and $B=\\begin{pmatrix}4&1\\\\-1&2\\end{pmatrix}$.",
-          "answer": [[-2,-5],[7,-2]],
-          "hints": ["Scale every entry of $A$ by $2$.", "Subtract the corresponding entries of $B$."],
+          "answer": [
+            [-2, -5],
+            [7, -2]
+          ],
+          "hints": [
+            "Scale every entry of $A$ by $2$.",
+            "Subtract the corresponding entries of $B$."
+          ],
           "solution": "$2A=\\begin{pmatrix}2&-4\\\\6&0\\end{pmatrix}$. Entrywise subtraction gives $\\begin{pmatrix}2-4&-4-1\\\\6-(-1)&0-2\\end{pmatrix}=\\begin{pmatrix}-2&-5\\\\7&-2\\end{pmatrix}$.",
           "concept": "Entrywise addition and scalar multiplication",
           "difficulty": "foundation",
@@ -428,8 +529,14 @@
           "id": "matrix-arithmetic-03",
           "kind": "matrix",
           "prompt": "Compute $AB$ for $A=\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}$ and $B=\\begin{pmatrix}2&-1\\\\0&3\\end{pmatrix}$.",
-          "answer": [[2,5],[6,9]],
-          "hints": ["Each product entry is a row-column dot product.", "The upper-right entry is $1(-1)+2(3)$."],
+          "answer": [
+            [2, 5],
+            [6, 9]
+          ],
+          "hints": [
+            "Each product entry is a row-column dot product.",
+            "The upper-right entry is $1(-1)+2(3)$."
+          ],
           "solution": "The four entries are $2+0=2$, $-1+6=5$, $6+0=6$, and $-3+12=9$. Hence $AB=\\begin{pmatrix}2&5\\\\6&9\\end{pmatrix}$.",
           "concept": "Matrix multiplication",
           "difficulty": "core",
@@ -439,8 +546,11 @@
           "id": "matrix-arithmetic-04",
           "kind": "vector",
           "prompt": "Compute $Ax$ for $A=\\begin{pmatrix}1&-2&3\\\\0&4&-1\\end{pmatrix}$ and $x=(2,1,-1)$.",
-          "answer": [-3,5],
-          "hints": ["The $2\\times3$ matrix maps a three-coordinate vector to two coordinates.", "The first row gives $2-2-3$."],
+          "answer": [-3, 5],
+          "hints": [
+            "The $2\\times3$ matrix maps a three-coordinate vector to two coordinates.",
+            "The first row gives $2-2-3$."
+          ],
           "solution": "The first coordinate is $1(2)-2(1)+3(-1)=-3$ and the second is $0(2)+4(1)-1(-1)=5$. Thus $Ax=(-3,5)$.",
           "concept": "Matrix-vector multiplication",
           "difficulty": "foundation",
@@ -450,8 +560,15 @@
           "id": "matrix-arithmetic-05",
           "kind": "matrix",
           "prompt": "Transpose $A=\\begin{pmatrix}1&2&3\\\\-1&0&4\\end{pmatrix}$.",
-          "answer": [[1,-1],[2,0],[3,4]],
-          "hints": ["Rows become columns.", "The result has three rows and two columns."],
+          "answer": [
+            [1, -1],
+            [2, 0],
+            [3, 4]
+          ],
+          "hints": [
+            "Rows become columns.",
+            "The result has three rows and two columns."
+          ],
           "solution": "The first row $(1,2,3)$ becomes the first column, and the second row $(-1,0,4)$ becomes the second column. Thus $A^T=\\begin{pmatrix}1&-1\\\\2&0\\\\3&4\\end{pmatrix}$.",
           "concept": "Transpose of a rectangular matrix",
           "difficulty": "foundation",
@@ -461,9 +578,17 @@
           "id": "matrix-arithmetic-06",
           "kind": "choice",
           "prompt": "For compatible real matrices $A,B$, which identity is always valid?",
-          "choices": ["$(AB)^T=A^TB^T$","$AB=BA$","$(AB)^T=B^TA^T$","$A^2=0$ implies $A=0$."],
+          "choices": [
+            "$(AB)^T=A^TB^T$",
+            "$AB=BA$",
+            "$(AB)^T=B^TA^T$",
+            "$A^2=0$ implies $A=0$."
+          ],
           "answer": "$(AB)^T=B^TA^T$",
-          "hints": ["Transposition reverses the order of a product.", "A nonzero strictly upper-triangular $2\\times2$ matrix can square to zero."],
+          "hints": [
+            "Transposition reverses the order of a product.",
+            "A nonzero strictly upper-triangular $2\\times2$ matrix can square to zero."
+          ],
           "solution": "The row-column definition gives $(AB)^T=B^TA^T$. Commutativity fails in general, and $\\begin{pmatrix}0&1\\\\0&0\\end{pmatrix}$ is nonzero but has square zero.",
           "concept": "Transpose product identity",
           "difficulty": "core",
@@ -474,7 +599,10 @@
           "kind": "number",
           "prompt": "Let $A=\\begin{pmatrix}2&1&-1\\\\0&3&4\\end{pmatrix}$ and $B=\\begin{pmatrix}1&2\\\\-2&0\\\\3&1\\end{pmatrix}$. Find entry $(1,2)$ of $AB$ (indices start at $1$).",
           "answer": 3,
-          "hints": ["Use row $1$ of $A$ and column $2$ of $B$.", "The relevant dot product is $(2,1,-1)\\cdot(2,0,1)$."],
+          "hints": [
+            "Use row $1$ of $A$ and column $2$ of $B$.",
+            "The relevant dot product is $(2,1,-1)\\cdot(2,0,1)$."
+          ],
           "solution": "$(AB)_{12}=2(2)+1(0)+(-1)(1)=4-1=3$.",
           "concept": "Indexing a row-column product",
           "difficulty": "core",
@@ -491,7 +619,10 @@
             "Neither product exists because $A$ and $B$ have different shapes."
           ],
           "answer": "$AB$ exists, while $BA$ is undefined.",
-          "hints": ["Check inner dimensions separately for each order.", "$BA$ would require $4=2$."],
+          "hints": [
+            "Check inner dimensions separately for each order.",
+            "$BA$ would require $4=2$."
+          ],
           "solution": "$AB$ has matching inner dimension $3$ and shape $2\\times4$. For $BA$, the inner dimensions are $4$ and $2$, so the product is undefined.",
           "concept": "Order-dependent dimensional compatibility",
           "difficulty": "core",
@@ -501,8 +632,14 @@
           "id": "matrix-arithmetic-09",
           "kind": "matrix",
           "prompt": "For $A=\\begin{pmatrix}1&1\\\\0&1\\end{pmatrix}$ and $B=\\begin{pmatrix}1&0\\\\2&1\\end{pmatrix}$, compute $AB-BA$.",
-          "answer": [[2,0],[0,-2]],
-          "hints": ["Compute the two products separately.", "$AB=\\begin{pmatrix}3&1\\\\2&1\\end{pmatrix}$."],
+          "answer": [
+            [2, 0],
+            [0, -2]
+          ],
+          "hints": [
+            "Compute the two products separately.",
+            "$AB=\\begin{pmatrix}3&1\\\\2&1\\end{pmatrix}$."
+          ],
           "solution": "$AB=\\begin{pmatrix}3&1\\\\2&1\\end{pmatrix}$ and $BA=\\begin{pmatrix}1&1\\\\2&3\\end{pmatrix}$. Subtracting yields $\\begin{pmatrix}2&0\\\\0&-2\\end{pmatrix}$.",
           "concept": "Explicit failure of commutativity",
           "difficulty": "stretch",
@@ -512,8 +649,14 @@
           "id": "matrix-arithmetic-10",
           "kind": "matrix",
           "prompt": "Let $A=\\begin{pmatrix}1&2\\\\0&-1\\end{pmatrix}$ and $B=\\begin{pmatrix}3&0\\\\1&2\\end{pmatrix}$. Compute $(AB)^T$.",
-          "answer": [[5,-1],[4,-2]],
-          "hints": ["First obtain $AB=\\begin{pmatrix}5&4\\\\-1&-2\\end{pmatrix}$.", "Interchange rows and columns, or use $B^TA^T$."],
+          "answer": [
+            [5, -1],
+            [4, -2]
+          ],
+          "hints": [
+            "First obtain $AB=\\begin{pmatrix}5&4\\\\-1&-2\\end{pmatrix}$.",
+            "Interchange rows and columns, or use $B^TA^T$."
+          ],
           "solution": "Multiplication gives $AB=\\begin{pmatrix}5&4\\\\-1&-2\\end{pmatrix}$. Its transpose is $\\begin{pmatrix}5&-1\\\\4&-2\\end{pmatrix}$, also obtained from $B^TA^T$.",
           "concept": "Combining multiplication and transpose",
           "difficulty": "core",
@@ -571,8 +714,14 @@
           "id": "linear-transformations-in-coordinates-01",
           "kind": "matrix",
           "prompt": "A linear map has $T(e_1)=(1,3)$ and $T(e_2)=(-2,4)$. Give its standard matrix.",
-          "answer": [[1,-2],[3,4]],
-          "hints": ["Basis-vector images become columns.", "The first column is $(1,3)$."],
+          "answer": [
+            [1, -2],
+            [3, 4]
+          ],
+          "hints": [
+            "Basis-vector images become columns.",
+            "The first column is $(1,3)$."
+          ],
           "solution": "$A=[T(e_1)\\ T(e_2)]=\\begin{pmatrix}1&-2\\\\3&4\\end{pmatrix}$.",
           "concept": "Constructing a matrix from basis images",
           "difficulty": "foundation",
@@ -582,8 +731,11 @@
           "id": "linear-transformations-in-coordinates-02",
           "kind": "vector",
           "prompt": "For a linear map with $T(e_1)=(1,3)$ and $T(e_2)=(-2,4)$, compute $T(3,-2)$.",
-          "answer": [7,1],
-          "hints": ["Use $T(3e_1-2e_2)=3T(e_1)-2T(e_2)$.", "Compute $(3,9)-(-4,8)$."],
+          "answer": [7, 1],
+          "hints": [
+            "Use $T(3e_1-2e_2)=3T(e_1)-2T(e_2)$.",
+            "Compute $(3,9)-(-4,8)$."
+          ],
           "solution": "$T(3,-2)=3(1,3)-2(-2,4)=(3,9)+(4,-8)=(7,1)$.",
           "concept": "Linearity on coordinate combinations",
           "difficulty": "foundation",
@@ -600,7 +752,10 @@
             "$T(x,y)=(xy,y)$"
           ],
           "answer": "$T(x,y)=(x-2y,3x)$",
-          "hints": ["A matrix times $(x,y)$ gives linear coordinate expressions with no constant term.", "A product or square of input coordinates generally violates additivity."],
+          "hints": [
+            "A matrix times $(x,y)$ gives linear coordinate expressions with no constant term.",
+            "A product or square of input coordinates generally violates additivity."
+          ],
           "solution": "The selected map is multiplication by $\\begin{pmatrix}1&-2\\\\3&0\\end{pmatrix}$, hence linear. The translation fails at zero, the square fails homogeneity, and the product term fails additivity.",
           "concept": "Recognizing linear coordinate formulas",
           "difficulty": "core",
@@ -610,7 +765,7 @@
           "id": "linear-transformations-in-coordinates-04",
           "kind": "vector",
           "prompt": "Let $S(x,y)=(x+y,y)$ and $T(x,y)=(2x,3y)$. Compute $(T\\circ S)(1,2)$.",
-          "answer": [6,6],
+          "answer": [6, 6],
           "hints": ["Apply $S$ before $T$.", "$S(1,2)=(3,2)$."],
           "solution": "First $S(1,2)=(3,2)$. Then $T(3,2)=(6,6)$. Reversing the maps would instead give $(8,6)$.",
           "concept": "Order of composition",
@@ -622,7 +777,10 @@
           "kind": "number",
           "prompt": "The map $T(x,y)=(x+2y,2x+4y)$ sends $(k,3)$ to zero. Find $k$.",
           "answer": -6,
-          "hints": ["Both output coordinates vanish when $x+2y=0$.", "Substitute $y=3$."],
+          "hints": [
+            "Both output coordinates vanish when $x+2y=0$.",
+            "Substitute $y=3$."
+          ],
           "solution": "$k+2(3)=0$ gives $k=-6$. The second coordinate is then $2(-6)+4(3)=0$ too.",
           "concept": "Kernel constraint",
           "difficulty": "foundation",
@@ -639,7 +797,10 @@
             "Only the zero vector"
           ],
           "answer": "The line $\\{(t,2t):t\\in\\mathbb{R}\\}$",
-          "hints": ["The second output coordinate is twice the first.", "Every real first coordinate is reachable by choosing $y=0$."],
+          "hints": [
+            "The second output coordinate is twice the first.",
+            "Every real first coordinate is reachable by choosing $y=0$."
+          ],
           "solution": "Set $t=x+2y$. Then $T(x,y)=(t,2t)$. Conversely, choosing $(x,y)=(t,0)$ reaches every point of that line.",
           "concept": "Image as a column span",
           "difficulty": "core",
@@ -655,8 +816,22 @@
             "Linearity gives $T(x)=\\sum_i x_iT(e_i)$.",
             "Conclude that this matrix represents $T$ on every input."
           ],
-          "answer": [2,3,1,4],
-          "hints": ["Expand the input before applying $T$.", "Identify a column combination only after invoking linearity."],
+          "answer": [2, 3, 1, 4],
+          "hints": [
+            "Expand the input before applying $T$.",
+            "Identify a column combination only after invoking linearity."
+          ],
+          "proof_dependencies": [
+            [2, 3],
+            [3, 1],
+            [1, 4]
+          ],
+          "proof_rationales": {
+            "1": "Matrix multiplication combines columns with the input coordinates; recognizing the established image sum identifies which vectors those columns must be.",
+            "2": "The standard-basis expansion represents an arbitrary input using its coordinates, so the argument can cover every vector in the domain.",
+            "3": "Linearity carries the basis expansion through T and expresses the output using the images of the individual basis vectors.",
+            "4": "Since the matrix product and T agree for the arbitrary input just considered, the identified matrix represents the whole map."
+          },
           "solution": "Write the basis expansion, apply linearity, recognize the column combination as matrix multiplication, and conclude equality on all inputs. The sequence is $2,3,1,4$.",
           "concept": "Proof of the basis-image matrix rule",
           "difficulty": "stretch",
@@ -673,7 +848,10 @@
             "Its outputs have two coordinates."
           ],
           "answer": "$F(2,0)=(4,0)$ but $2F(1,0)=(2,0)$.",
-          "hints": ["Find a specific failure of homogeneity.", "Compare scaling before and after applying the map."],
+          "hints": [
+            "Find a specific failure of homogeneity.",
+            "Compare scaling before and after applying the map."
+          ],
           "solution": "Homogeneity would require $F(2(1,0))=2F(1,0)$. The two sides are $(4,0)$ and $(2,0)$, so $F$ is nonlinear despite preserving zero.",
           "concept": "Counterexample to a false linearity test",
           "difficulty": "core",
@@ -683,8 +861,14 @@
           "id": "linear-transformations-in-coordinates-09",
           "kind": "matrix",
           "prompt": "$S(x,y)=(x+2y,y)$ and $T(x,y)=(-y,x)$. Find the matrix for $T\\circ S$.",
-          "answer": [[0,-1],[1,2]],
-          "hints": ["Direct substitution gives $T(S(x,y))=(-y,x+2y)$.", "Alternatively multiply the matrix of $T$ on the left of the matrix of $S$."],
+          "answer": [
+            [0, -1],
+            [1, 2]
+          ],
+          "hints": [
+            "Direct substitution gives $T(S(x,y))=(-y,x+2y)$.",
+            "Alternatively multiply the matrix of $T$ on the left of the matrix of $S$."
+          ],
           "solution": "$(T\\circ S)(x,y)=(-y,x+2y)$, so the coefficients form $\\begin{pmatrix}0&-1\\\\1&2\\end{pmatrix}$.",
           "concept": "Matrix of a composite map",
           "difficulty": "core",
@@ -694,8 +878,11 @@
           "id": "linear-transformations-in-coordinates-10",
           "kind": "vector",
           "prompt": "A linear map satisfies $T(1,1)=(3,1)$ and $T(1,-1)=(1,5)$. Find $T(3,1)$.",
-          "answer": [7,7],
-          "hints": ["Express $(3,1)$ as $a(1,1)+b(1,-1)$.", "The coefficient equations give $a=2$ and $b=1$."],
+          "answer": [7, 7],
+          "hints": [
+            "Express $(3,1)$ as $a(1,1)+b(1,-1)$.",
+            "The coefficient equations give $a=2$ and $b=1$."
+          ],
           "solution": "$(3,1)=2(1,1)+(1,-1)$. Therefore $T(3,1)=2(3,1)+(1,5)=(7,7)$.",
           "concept": "Linearity with a nonstandard input basis",
           "difficulty": "stretch",
@@ -753,8 +940,11 @@
           "id": "rotations-reflections-projections-and-shears-01",
           "kind": "vector",
           "prompt": "Rotate $(3,-2)$ counterclockwise by $90$ degrees.",
-          "answer": [2,3],
-          "hints": ["For this rotation, $(x,y)$ becomes $(-y,x)$.", "Preserve the original length as a check."],
+          "answer": [2, 3],
+          "hints": [
+            "For this rotation, $(x,y)$ becomes $(-y,x)$.",
+            "Preserve the original length as a check."
+          ],
           "solution": "$R_{90}(3,-2)=(-(-2),3)=(2,3)$. Both vectors have squared length $13$.",
           "concept": "Counterclockwise quarter-turn",
           "difficulty": "foundation",
@@ -764,8 +954,11 @@
           "id": "rotations-reflections-projections-and-shears-02",
           "kind": "vector",
           "prompt": "Reflect $(-4,7)$ across the line $y=x$.",
-          "answer": [7,-4],
-          "hints": ["Reflection in $y=x$ swaps coordinates.", "It does not negate either coordinate."],
+          "answer": [7, -4],
+          "hints": [
+            "Reflection in $y=x$ swaps coordinates.",
+            "It does not negate either coordinate."
+          ],
           "solution": "The reflection matrix is $\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$, so the output is $(7,-4)$.",
           "concept": "Reflection across a diagonal line",
           "difficulty": "foundation",
@@ -775,8 +968,11 @@
           "id": "rotations-reflections-projections-and-shears-03",
           "kind": "vector",
           "prompt": "Project $(4,-3)$ orthogonally onto the $x$-axis.",
-          "answer": [4,0],
-          "hints": ["The target line has second coordinate zero.", "An orthogonal projection keeps the parallel component."],
+          "answer": [4, 0],
+          "hints": [
+            "The target line has second coordinate zero.",
+            "An orthogonal projection keeps the parallel component."
+          ],
           "solution": "Projection onto the $x$-axis has matrix $\\begin{pmatrix}1&0\\\\0&0\\end{pmatrix}$, giving $(4,0)$. The residual $(0,-3)$ is perpendicular to the axis.",
           "concept": "Axis projection",
           "difficulty": "foundation",
@@ -786,8 +982,11 @@
           "id": "rotations-reflections-projections-and-shears-04",
           "kind": "vector",
           "prompt": "Apply the horizontal shear $H_3(x,y)=(x+3y,y)$ to $(-1,2)$.",
-          "answer": [5,2],
-          "hints": ["The vertical coordinate stays unchanged.", "Add three times the vertical coordinate to the horizontal one."],
+          "answer": [5, 2],
+          "hints": [
+            "The vertical coordinate stays unchanged.",
+            "Add three times the vertical coordinate to the horizontal one."
+          ],
           "solution": "A horizontal shear leaves the second coordinate unchanged and adds three times that coordinate to the first. Thus $H_3(-1,2)=(-1+3(2),2)=(5,2)$. The vertical height remains $2$ while the point moves six units to the right.",
           "concept": "Horizontal shear",
           "difficulty": "foundation",
@@ -797,8 +996,14 @@
           "id": "rotations-reflections-projections-and-shears-05",
           "kind": "matrix",
           "prompt": "Give the inverse matrix of $H_2=\\begin{pmatrix}1&2\\\\0&1\\end{pmatrix}$.",
-          "answer": [[1,-2],[0,1]],
-          "hints": ["Undo $x\\mapsto x+2y$ by subtracting $2y$.", "The vertical coordinate still stays fixed."],
+          "answer": [
+            [1, -2],
+            [0, 1]
+          ],
+          "hints": [
+            "Undo $x\\mapsto x+2y$ by subtracting $2y$.",
+            "The vertical coordinate still stays fixed."
+          ],
           "solution": "$H_2^{-1}=H_{-2}=\\begin{pmatrix}1&-2\\\\0&1\\end{pmatrix}$. Multiplication in either order cancels the upper-right entry and produces the identity.",
           "concept": "Inverse of a shear",
           "difficulty": "core",
@@ -808,8 +1013,14 @@
           "id": "rotations-reflections-projections-and-shears-06",
           "kind": "matrix",
           "prompt": "Find the orthogonal projection matrix onto the line $y=x$.",
-          "answer": [[0.5,0.5],[0.5,0.5]],
-          "hints": ["Use the direction vector $a=(1,1)$.", "Compute $aa^T/(a^Ta)$."],
+          "answer": [
+            [0.5, 0.5],
+            [0.5, 0.5]
+          ],
+          "hints": [
+            "Use the direction vector $a=(1,1)$.",
+            "Compute $aa^T/(a^Ta)$."
+          ],
           "solution": "$aa^T=\\begin{pmatrix}1&1\\\\1&1\\end{pmatrix}$ and $a^Ta=2$, so $P=\\frac12\\begin{pmatrix}1&1\\\\1&1\\end{pmatrix}$.",
           "concept": "Projection matrix from a direction vector",
           "difficulty": "core",
@@ -826,7 +1037,10 @@
             "It can change a vector's Euclidean length."
           ],
           "answer": "It can change a vector's Euclidean length.",
-          "hints": ["Both maps are invertible linear maps with determinant one.", "Compare the norm of $(0,1)$ before and after shearing."],
+          "hints": [
+            "Both maps are invertible linear maps with determinant one.",
+            "Compare the norm of $(0,1)$ before and after shearing."
+          ],
           "solution": "For $k\\ne0$, $H_k(0,1)=(k,1)$ has length $\\sqrt{k^2+1}>1$. Rotations preserve all lengths. The other listed properties hold for both.",
           "concept": "Length preservation versus area preservation",
           "difficulty": "core",
@@ -842,9 +1056,26 @@
             "Associativity gives $aa^Taa^T=a(a^Ta)a^T$.",
             "Since $a\\ne0$, $a^Ta>0$, so the cancellation is valid."
           ],
-          "answer": [2,3,4,1],
-          "accepted_orders": [[4,2,3,1],[2,4,3,1]],
-          "hints": ["Expand the square before grouping the middle factors.", "Check the denominator is nonzero before canceling."],
+          "answer": [2, 3, 4, 1],
+          "accepted_orders": [
+            [4, 2, 3, 1],
+            [2, 4, 3, 1]
+          ],
+          "hints": [
+            "Expand the square before grouping the middle factors.",
+            "Check the denominator is nonzero before canceling."
+          ],
+          "proof_dependencies": [
+            [2, 3],
+            [3, 1],
+            [4, 1]
+          ],
+          "proof_rationales": {
+            "1": "After regrouping exposes a common scalar factor and its nonzero value is established, cancellation yields exactly P and proves idempotence.",
+            "2": "Substituting the known formula for each copy of P exposes the matrix factors whose product must simplify.",
+            "3": "Associativity groups the middle row-column product into the scalar a transpose a, which is the factor needed for cancellation.",
+            "4": "The nonzero generator has positive squared norm, establishing that the denominator can be canceled; this check is independent of the preceding algebra."
+          },
           "solution": "Substitute the formula, regroup the middle $a^Ta$ as a scalar, establish positivity, then cancel one copy. One valid order is $2,3,4,1$. Positivity may also be established before substitution or before regrouping; these valid orderings are accepted too.",
           "concept": "Idempotence of an orthogonal projection",
           "difficulty": "stretch",
@@ -854,8 +1085,11 @@
           "id": "rotations-reflections-projections-and-shears-09",
           "kind": "vector",
           "prompt": "First apply $H_2(x,y)=(x+2y,y)$ to $(1,3)$, then rotate counterclockwise by $90$ degrees. Give the final vector.",
-          "answer": [-3,7],
-          "hints": ["The shear produces $(7,3)$.", "A counterclockwise quarter-turn maps $(x,y)$ to $(-y,x)$."],
+          "answer": [-3, 7],
+          "hints": [
+            "The shear produces $(7,3)$.",
+            "A counterclockwise quarter-turn maps $(x,y)$ to $(-y,x)$."
+          ],
           "solution": "$H_2(1,3)=(7,3)$ and $R_{90}(7,3)=(-3,7)$. In the reversed order the output would be $( -1,1)$, so order matters.",
           "concept": "Composition of shear and rotation",
           "difficulty": "core",
@@ -865,9 +1099,12 @@
           "id": "rotations-reflections-projections-and-shears-10",
           "kind": "choice",
           "prompt": "Let $P$ be orthogonal projection onto the line spanned by $(1,2)$. Which nonzero input is sent to zero?",
-          "choices": ["$(1,2)$","$(2,1)$","$(2,-1)$","$(0,1)$"],
+          "choices": ["$(1,2)$", "$(2,1)$", "$(2,-1)$", "$(0,1)$"],
           "answer": "$(2,-1)$",
-          "hints": ["Projection kills vectors perpendicular to its target line.", "Find the option whose dot product with $(1,2)$ is zero."],
+          "hints": [
+            "Projection kills vectors perpendicular to its target line.",
+            "Find the option whose dot product with $(1,2)$ is zero."
+          ],
           "solution": "$(2,-1)\\cdot(1,2)=2-2=0$, so its projection coefficient is zero. The other listed vectors have nonzero dot products with the target direction.",
           "concept": "Kernel of an orthogonal projection",
           "difficulty": "stretch",
@@ -932,7 +1169,10 @@
             "$F(x,y)=(xy,0)$"
           ],
           "answer": "$F(x,y)=(x+3,y-1)$",
-          "hints": ["An affine coordinate formula has constant plus linear terms.", "A nonzero constant vector prevents linearity."],
+          "hints": [
+            "An affine coordinate formula has constant plus linear terms.",
+            "A nonzero constant vector prevents linearity."
+          ],
           "solution": "The selected map is $Ix+(3,-1)$, so it is affine and moves zero. The first option is linear; the other two contain nonlinear input products.",
           "concept": "Classifying affine and nonlinear maps",
           "difficulty": "foundation",
@@ -942,8 +1182,11 @@
           "id": "affine-versus-linear-maps-02",
           "kind": "vector",
           "prompt": "For $F(x,y)=(2x-y+4,3y-2)$, find the translation vector $b$.",
-          "answer": [4,-2],
-          "hints": ["The translation is $F(0,0)$.", "Set every input coordinate to zero."],
+          "answer": [4, -2],
+          "hints": [
+            "The translation is $F(0,0)$.",
+            "Set every input coordinate to zero."
+          ],
           "solution": "$F(0,0)=(4,-2)$, so $b=(4,-2)$ and $A=\\begin{pmatrix}2&-1\\\\0&3\\end{pmatrix}$.",
           "concept": "Extracting the translation vector",
           "difficulty": "foundation",
@@ -953,8 +1196,11 @@
           "id": "affine-versus-linear-maps-03",
           "kind": "vector",
           "prompt": "For $F(x,y)=(2x+1,y-3)$, compute $F(4,2)$.",
-          "answer": [9,-1],
-          "hints": ["Apply the linear part before adding constants.", "The two output coordinates are $2(4)+1$ and $2-3$."],
+          "answer": [9, -1],
+          "hints": [
+            "Apply the linear part before adding constants.",
+            "The two output coordinates are $2(4)+1$ and $2-3$."
+          ],
           "solution": "Direct substitution gives $F(4,2)=(8+1,2-3)=(9,-1)$.",
           "concept": "Evaluating an affine map",
           "difficulty": "foundation",
@@ -965,7 +1211,10 @@
           "kind": "number",
           "prompt": "For what value of $k$ is $F(x,y)=(x+ky,2y+k)$ linear?",
           "answer": 0,
-          "hints": ["Evaluate $F$ at the origin.", "The term $ky$ is linear for every fixed $k$; the constant $k$ in the second coordinate is the issue."],
+          "hints": [
+            "Evaluate $F$ at the origin.",
+            "The term $ky$ is linear for every fixed $k$; the constant $k$ in the second coordinate is the issue."
+          ],
           "solution": "$F(0,0)=(0,k)$, so linearity requires $k=0$. For this value the map is $(x,2y)$, which is linear.",
           "concept": "Parameter condition for linearity",
           "difficulty": "core",
@@ -975,8 +1224,11 @@
           "id": "affine-versus-linear-maps-05",
           "kind": "vector",
           "prompt": "$F(x,y)=(2x-y+3,x+y-2)$. Compute $F(3,4)-F(1,1)$.",
-          "answer": [1,5],
-          "hints": ["The translation cancels in the difference.", "Apply the linear part to $(3,4)-(1,1)=(2,3)$."],
+          "answer": [1, 5],
+          "hints": [
+            "The translation cancels in the difference.",
+            "Apply the linear part to $(3,4)-(1,1)=(2,3)$."
+          ],
           "solution": "$F(3,4)=(5,5)$ and $F(1,1)=(4,0)$, so their difference is $(1,5)$. Equivalently, $A(2,3)=(4-3,2+3)=(1,5)$.",
           "concept": "Affine maps act linearly on displacements",
           "difficulty": "core",
@@ -986,8 +1238,11 @@
           "id": "affine-versus-linear-maps-06",
           "kind": "vector",
           "prompt": "Find the preimage of $(11,5)$ under $F(x,y)=(2x+3,y-4)$.",
-          "answer": [4,9],
-          "hints": ["Solve the two output equations separately.", "Undo translation before scaling."],
+          "answer": [4, 9],
+          "hints": [
+            "Solve the two output equations separately.",
+            "Undo translation before scaling."
+          ],
           "solution": "$2x+3=11$ gives $x=4$, and $y-4=5$ gives $y=9$. Thus $F^{-1}(11,5)=(4,9)$.",
           "concept": "Inverting an affine map",
           "difficulty": "core",
@@ -1003,8 +1258,22 @@
             "Conclude the expression equals $(F(u)+F(v))/2$.",
             "Use matrix linearity to obtain $(Au+Av)/2+b$."
           ],
-          "answer": [2,4,1,3],
-          "hints": ["Start by evaluating $F$ at the midpoint.", "Split the one translation into two halves only after expanding $A$."],
+          "answer": [2, 4, 1, 3],
+          "hints": [
+            "Start by evaluating $F$ at the midpoint.",
+            "Split the one translation into two halves only after expanding $A$."
+          ],
+          "proof_dependencies": [
+            [2, 4],
+            [4, 1],
+            [1, 3]
+          ],
+          "proof_rationales": {
+            "1": "Writing the one translation as two half-translations puts the expression into a numerator that can be recognized as two affine outputs.",
+            "2": "Evaluating F at the actual midpoint gives the expression whose equality with the average output is to be established.",
+            "3": "Each numerator term now has the defining form of an affine output, so recognizing F(u) and F(v) completes midpoint preservation.",
+            "4": "The matrix part is linear even when the affine map has a translation, permitting the midpoint's matrix image to split into two terms."
+          },
           "solution": "Evaluate at the midpoint, distribute the linear part, combine $b$ into the numerator as two copies, then recognize $F(u)$ and $F(v)$. The order is $2,4,1,3$.",
           "concept": "Proof of midpoint preservation",
           "difficulty": "stretch",
@@ -1014,8 +1283,15 @@
           "id": "affine-versus-linear-maps-08",
           "kind": "matrix",
           "prompt": "Give the $3\\times3$ homogeneous-coordinate matrix for $F(x,y)=(2x+y+3,-y+4)$ acting on $(x,y,1)$.",
-          "answer": [[2,1,3],[0,-1,4],[0,0,1]],
-          "hints": ["Put the $2\\times2$ linear part in the upper-left block.", "The final column is the translation followed by a final $1$."],
+          "answer": [
+            [2, 1, 3],
+            [0, -1, 4],
+            [0, 0, 1]
+          ],
+          "hints": [
+            "Put the $2\\times2$ linear part in the upper-left block.",
+            "The final column is the translation followed by a final $1$."
+          ],
           "solution": "The required matrix is $\\begin{pmatrix}2&1&3\\\\0&-1&4\\\\0&0&1\\end{pmatrix}$. Multiplying $(x,y,1)$ produces $(2x+y+3,-y+4,1)$.",
           "concept": "Homogeneous-coordinate representation",
           "difficulty": "core",
@@ -1025,8 +1301,11 @@
           "id": "affine-versus-linear-maps-09",
           "kind": "vector",
           "prompt": "Let $F(x,y)=(x+1,2y-3)$ and $G(x,y)=(3x,y+4)$. Find $(G\\circ F)(2,5)$.",
-          "answer": [9,11],
-          "hints": ["Apply $F$ first to obtain $(3,7)$.", "Then apply $G$ to that output."],
+          "answer": [9, 11],
+          "hints": [
+            "Apply $F$ first to obtain $(3,7)$.",
+            "Then apply $G$ to that output."
+          ],
           "solution": "$F(2,5)=(3,7)$ and $G(3,7)=(9,11)$. The composite formula is $(3x+3,2y+1)$.",
           "concept": "Composition with transformed translations",
           "difficulty": "core",
@@ -1043,7 +1322,10 @@
             "$\\alpha=\\beta$, with no restriction on their common value"
           ],
           "answer": "$\\alpha+\\beta=1$",
-          "hints": ["Expand both sides and compare the coefficient of $b$.", "The left side contains exactly one copy of the translation."],
+          "hints": [
+            "Expand both sides and compare the coefficient of $b$.",
+            "The left side contains exactly one copy of the translation."
+          ],
           "solution": "The right side is $A(\\alpha u+\\beta v)+(\\alpha+\\beta)b$, whereas the left side contains $+b$. Since $b\\ne0$, equality for every input holds exactly when $\\alpha+\\beta=1$.",
           "concept": "Affine combinations and weights summing to one",
           "difficulty": "stretch",

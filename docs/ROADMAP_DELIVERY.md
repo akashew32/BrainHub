@@ -22,8 +22,8 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | Cycle | Planned focus | State | Pushed commit and verification |
 | --- | --- | --- | --- |
 | 1 | Assessment resume, durable answer drafts, and recovery | Complete | `64fec27`; 106 backend tests, 57 frontend tests, full build, live refresh recovery |
-| 2 | Stronger mathematical input handling and answer previews | Verified; publishing | 239 backend tests, 183 frontend tests, 107 shared input fixtures, full build, live 8/8 expression grading |
-| 3 | Structured proof builder and proof-specific feedback | Pending | |
+| 2 | Stronger mathematical input handling and answer previews | Complete | `dff08d9`; 239 backend tests, 183 frontend tests, 107 shared input fixtures, full build, live 8/8 expression grading |
+| 3 | Structured proof builder and proof-specific feedback | Verified; publishing | 295 backend tests, 201 frontend tests, 492 proof permutations, full build, live recovery and dependency feedback |
 | 4 | Per-question hints with assisted/independent mastery | Pending | |
 | 5 | Spaced review scheduling and daily retrieval practice | Pending | |
 | 6 | Mistake notebook and concept-level performance | Pending | |
@@ -75,3 +75,17 @@ Review improvements: rational bit-size checks run before expensive operations; i
 Live cycle 2 evidence: a browser practice set submitted natural vector expressions, powers, fractions, and exact square roots. The preview interpreted five mathematical answers correctly and the API returned 100% (8/8), saving the result. The clean verification tab reported no console errors.
 
 Cycle 2 final verification: 239 backend tests and 183 frontend tests pass; lint, formatting, type checks, the strict 30-lesson/300-question curriculum verifier, and the 535-route production build pass. All 107 shared parser fixtures conform, including explicit browser precision-warning cases. Independent final review found no remaining contradictions. Nonfinite draft input now returns a safe validation response without changing the saved draft.
+
+Cycle 2 remote verified at `dff08d91065391f8dfc6a83d56b785b25fd8ba37` on `main`.
+
+Cycle 2 GitHub Actions passed: https://github.com/akashew32/BrainHub/actions/runs/43335711697.
+
+### Cycle 3 batch — proof construction and reasoning
+
+Replace manual ordering with an accessible proof composer that saves partial selections and supports adding, removing, and moving steps. Author private prerequisite graphs and per-step justifications for all 21 proof problems. Grade every valid topological order; after submission, explain violated prerequisites and show one valid proof. Keep partial work separate from mastery and keep dependencies and justifications private until submission.
+
+The content review found a concrete grading gap: the supremum proof's upper-bound argument can be established independently of its epsilon witness. A prerequisite graph accepts those valid alternatives without treating an arbitrary displayed sequence as the only mathematical proof.
+
+Cycle 3 review improvements: permit independent base-case placement in induction, make its final conclusion explicit, validate graph references and acyclicity, preserve the learner's valid prefix in the reference continuation, and display step justifications after grading. Correct alternative proofs receive matching expected-order feedback. Changed curriculum now rejects an open submission atomically rather than failing partway through grading. Keyboard actions announce their outcome and retain useful focus; the optional raw-order editor preserves malformed legacy drafts without silently repairing them.
+
+Cycle 3 verification: all 295 backend tests and 201 frontend tests pass, with clean formatting, lint, and type checks. Independent exhaustive checks cover all 492 permutations of the 21 proofs: exactly 30 valid chains are accepted, correction chains remain valid, and valid prefixes are retained. The strict content verifier validates every graph and all 79 justifications. All 535 routes pass the production build. Live browser checks confirm keyboard addition/reordering, partial draft recovery after refresh, incomplete-proof completion counts, and accurate missing-prerequisite feedback with per-step explanations. No browser console errors were observed. Final review also aligned strict integer step labels in browser and server parsing so decimal/exponent tokens cannot silently become integer identifiers.
