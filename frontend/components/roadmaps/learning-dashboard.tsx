@@ -280,6 +280,10 @@ export function LearningDashboard() {
         <h2 className="mb-4 text-2xl font-semibold" id="dashboard-subjects-heading">
           Your next step in each subject
         </h2>
+        <p className="mb-4 text-sm leading-7 text-[#91a4bb]">
+          A 12-question diagnostic can suggest a foundation starting point. Full eight-question lesson
+          practice confirms independent readiness.
+        </p>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {learningRoadmaps.map((roadmap) => {
             const resource = resources[roadmap.slug]!;
@@ -359,6 +363,12 @@ export function LearningDashboard() {
                       ? "Loading independent evidence…"
                       : "Recent independent evidence unavailable"}
                 </p>
+                <Link
+                  className="mt-3 block text-sm font-semibold text-[#c4a5ff]"
+                  href={`/roadmaps/${roadmap.slug}/diagnostic`}
+                >
+                  Try a 12-question diagnostic
+                </Link>
                 <Link className="mt-3 inline-block text-sm text-[#8dc8ff]" href={`/roadmaps/${roadmap.slug}`}>
                   Open full curriculum →
                 </Link>

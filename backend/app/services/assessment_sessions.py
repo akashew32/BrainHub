@@ -8,12 +8,13 @@ import json
 import random
 from datetime import datetime
 from typing import Any
+from urllib.parse import quote
 
 from fastapi import HTTPException
 
 from app.db.base import RoadmapAssessmentSession
-from app.services.assessment_hints import assistance
-from app.services.curriculum import PASS_SCORE, grade, public_question
+from app.services.assessment_hints import assistance, hints_allowed
+from app.services.curriculum import PASS_SCORE, grade, lesson_for, public_question
 from app.services.spaced_review import utc_naive
 
 
@@ -55,7 +56,7 @@ def freeze_questions(questions: list[dict[str, Any]], *, mode: str) -> dict[str,
             {
                 "definition": copy.deepcopy(question),
                 "presentation": copy.deepcopy(
-                    public_question(question, include_hints=mode != "exam")
+                    public_question(question, include_hints=hints_allowed(mode))
                 ),
                 "fingerprint": semantic_fingerprint(question),
             }
@@ -103,6 +104,61 @@ def assigned_questions(
     return {question_id: current_bank[question_id] for question_id in session.question_ids}
 
 
+def diagnostic_study_url(
+    roadmap_slug: str,
+    topic_slug: str,
+    assigned: list[dict[str, Any]],
+    current_bank: dict[str, dict[str, Any]],
+) -> str | None:
+    """Offer current navigation only when it still teaches the sampled mathematics."""
+    compatible = (
+        len(assigned) == 2
+        and lesson_for(roadmap_slug, topic_slug) is not None
+        and all(
+            question["id"] in current_bank
+            and current_bank[question["id"]]["topic_slug"] == topic_slug
+            and semantic_fingerprint(current_bank[question["id"]]) == semantic_fingerprint(question)
+            for question in assigned
+        )
+    )
+    return (
+        f"/roadmaps/{quote(roadmap_slug, safe='')}/{quote(topic_slug, safe='')}"
+        if compatible
+        else None
+    )
+
+
+def project_result_navigation(
+    session: RoadmapAssessmentSession,
+    result: dict[str, Any],
+    *,
+    current_bank: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    """Refresh diagnostic links without rewriting immutable graded feedback."""
+    if session.mode != "diagnostic":
+        return result
+    projected = copy.deepcopy(result)
+    summary = projected.get("diagnostic_summary")
+    if not isinstance(summary, dict) or not isinstance(summary.get("topics"), list):
+        return projected
+    entries = frozen_entries(session)
+    definitions = [item["definition"] for item in entries.values()] if entries else []
+    for topic in summary["topics"]:
+        if not isinstance(topic, dict) or not isinstance(topic.get("topic_slug"), str):
+            continue
+        samples = [
+            question
+            for question in definitions
+            if question.get("topic_slug") == topic["topic_slug"]
+        ]
+        if (
+            diagnostic_study_url(session.roadmap_slug, topic["topic_slug"], samples, current_bank)
+            is None
+        ):
+            topic["study_url"] = None
+    return projected
+
+
 def assessment_payload(
     session: RoadmapAssessmentSession,
     *,
@@ -126,14 +182,14 @@ def assessment_payload(
                 definition = entry["definition"]
             else:
                 definition = current_bank[question_id]
-                question = public_question(definition, include_hints=session.mode != "exam")
+                question = public_question(definition, include_hints=hints_allowed(session.mode))
                 if definition["kind"] == "choice":
                     # Legacy rows have no stored presentation. Keep their fallback
                     # stable across reloads without changing proof step numbering.
                     choices = list(definition["choices"])
                     random.Random(f"{session.id}:{question_id}").shuffle(choices)
                     question["choices"] = choices
-            hints = definition.get("hints", []) if session.mode != "exam" else []
+            hints = definition.get("hints", []) if hints_allowed(session.mode) else []
             count = (session.hint_usage or {}).get(question_id, 0)
             question["hint_count"] = len(hints)
             question["hints"] = hints[:count]
@@ -161,8 +217,10 @@ def assessment_payload(
             "revision": draft.get("revision", 0),
         },
     }
-    if completed:
-        payload["result"] = session.result
+    if session.result is not None:
+        payload["result"] = project_result_navigation(
+            session, session.result, current_bank=current_bank
+        )
     return payload
 
 

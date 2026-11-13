@@ -1,3 +1,5 @@
+import type { AssessmentMode } from "@/lib/assessment-modes";
+
 export type MathQuestion = {
   id: string;
   kind: "number" | "vector" | "matrix" | "choice" | "proof";
@@ -37,7 +39,7 @@ export type AssessmentDraft = {
 
 export type AssessmentSession = {
   id: string;
-  mode: "practice" | "exam" | "review";
+  mode: AssessmentMode;
   roadmap_slug: string;
   topic_slug: string | null;
   stage_index?: number;
@@ -76,7 +78,7 @@ export type ProofDetails = {
 
 export type AssessmentResult = {
   session_id: string;
-  mode: string;
+  mode: AssessmentMode;
   score: number;
   passed: boolean;
   correct: number;
@@ -84,6 +86,7 @@ export type AssessmentResult = {
   assistance?: Assistance;
   independent_score?: number | null;
   independent_passed?: boolean | null;
+  diagnostic_summary?: DiagnosticSummary;
   feedback: Array<{
     question_id: string;
     prompt: string;
@@ -98,6 +101,21 @@ export type AssessmentResult = {
     assistance?: Assistance;
   }>;
   progress: import("@/lib/roadmap-progress").RoadmapProgressItem | null;
+};
+
+export type DiagnosticSummary = {
+  version: 1;
+  notice: string;
+  topics: Array<{
+    topic_slug: string;
+    title: string;
+    correct: number;
+    total: 2;
+    priority: "start_here" | "review" | "verify";
+    guidance: string;
+    study_url: string | null;
+  }>;
+  recommended_topics: string[];
 };
 
 export type MistakeQueue = {
@@ -209,7 +227,7 @@ export type NotebookPage = {
 export type NotebookAttempt = {
   attempt_id: number;
   session_id: string;
-  mode: string;
+  mode: AssessmentMode;
   created_at: string;
   correct: boolean;
   hints_used: number | null;
@@ -291,7 +309,7 @@ export type AssessmentHistoryItem = {
   roadmap_slug: string;
   topic_slug: string | null;
   stage_index: number;
-  mode: "practice" | "exam" | "review";
+  mode: AssessmentMode;
   state: "active" | "completed" | "expired";
   started_at: string;
   completed_at: string | null;

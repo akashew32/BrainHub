@@ -1,5 +1,6 @@
 import type { Attempt, Difficulty } from "@/types/games";
 import type { ChallengeLanguage, ChallengeResult } from "@/lib/challenges";
+import type { AssessmentMode } from "@/lib/assessment-modes";
 import type {
   RoadmapProgressItem,
   RoadmapProgressResponse,
@@ -49,7 +50,7 @@ export const api = {
     query: {
       state?: "all" | "active" | "completed" | "expired";
       roadmap_slug?: string;
-      mode?: "practice" | "exam" | "review";
+      mode?: AssessmentMode;
       limit?: number;
       cursor?: string;
     } = {},
@@ -126,7 +127,7 @@ export const api = {
   startAssessment: (
     roadmapSlug: string,
     body: {
-      mode: "practice" | "exam" | "review";
+      mode: AssessmentMode;
       topic_slug?: string;
       stage_index?: number;
       request_id?: string;

@@ -1,4 +1,5 @@
 import type { AssessmentResult } from "@/lib/curriculum";
+import { DIAGNOSTIC_SAMPLE } from "@/lib/assessment-modes";
 
 function record(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
@@ -38,6 +39,7 @@ export function validAssessmentResult(
     value.feedback.length !== value.total
   )
     return false;
+  if (mode === "diagnostic" && value.progress !== null) return false;
   if (value.progress !== null) {
     const progress = value.progress;
     if (
@@ -53,7 +55,7 @@ export function validAssessmentResult(
     )
       return false;
   }
-  return (
+  const feedbackValid =
     new Set(value.feedback.map((item) => (record(item) ? item.question_id : null))).size ===
       value.feedback.length &&
     value.feedback.every(
@@ -75,7 +77,62 @@ export function validAssessmentResult(
             (item.hints_used as number) >= 0 &&
             (item.hints_used as number) <= 64)) &&
         (item.proof_details === undefined || validProofDetails(item.proof_details)),
+    );
+  return feedbackValid && (mode !== "diagnostic" || validDiagnosticSummary(value));
+}
+
+function validDiagnosticSummary(result: Record<string, unknown>) {
+  const value = result.diagnostic_summary;
+  if (
+    !record(value) ||
+    value.version !== 1 ||
+    typeof value.notice !== "string" ||
+    !value.notice.trim() ||
+    !Array.isArray(value.topics) ||
+    value.topics.length !== DIAGNOSTIC_SAMPLE.lessons ||
+    !Array.isArray(value.recommended_topics) ||
+    value.recommended_topics.length !== DIAGNOSTIC_SAMPLE.lessons ||
+    !value.recommended_topics.every((topic) => typeof topic === "string") ||
+    new Set(value.recommended_topics).size !== DIAGNOSTIC_SAMPLE.lessons ||
+    result.total !== DIAGNOSTIC_SAMPLE.questions ||
+    !Array.isArray(result.feedback)
+  )
+    return false;
+  const feedback = result.feedback;
+  let correct = 0;
+  const slugs = new Set<string>();
+  for (const topic of value.topics) {
+    if (
+      !record(topic) ||
+      typeof topic.topic_slug !== "string" ||
+      !topic.topic_slug ||
+      slugs.has(topic.topic_slug) ||
+      typeof topic.title !== "string" ||
+      !topic.title.trim() ||
+      topic.total !== DIAGNOSTIC_SAMPLE.perLesson ||
+      !Number.isInteger(topic.correct) ||
+      (topic.correct as number) < 0 ||
+      (topic.correct as number) > DIAGNOSTIC_SAMPLE.perLesson ||
+      topic.priority !== ["start_here", "review", "verify"][topic.correct as number] ||
+      typeof topic.guidance !== "string" ||
+      !topic.guidance.trim() ||
+      (topic.study_url !== null &&
+        (typeof topic.study_url !== "string" || !topic.study_url.startsWith("/roadmaps/")))
     )
+      return false;
+    const rows = feedback.filter((row) => record(row) && row.topic_slug === topic.topic_slug);
+    if (
+      rows.length !== DIAGNOSTIC_SAMPLE.perLesson ||
+      rows.filter((row) => record(row) && row.correct === true).length !== topic.correct
+    )
+      return false;
+    slugs.add(topic.topic_slug);
+    correct += topic.correct as number;
+  }
+  return (
+    correct === result.correct &&
+    result.score === Math.round((100 * correct) / DIAGNOSTIC_SAMPLE.questions) &&
+    value.recommended_topics.every((topic) => slugs.has(topic))
   );
 }
 

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import type { AssessmentHistoryPage } from "@/lib/curriculum";
 import { learningRoadmaps, roadmapMap } from "@/lib/roadmaps";
+import { ASSESSMENT_MODES, type AssessmentMode } from "@/lib/assessment-modes";
 
 function utcDate(value: string) {
   const date = new Date(/(?:Z|[+-]\d{2}:?\d{2})$/i.test(value) ? value : value + "Z");
@@ -24,7 +25,7 @@ function utcDate(value: string) {
 export function AssessmentHistory({ compact = false }: { compact?: boolean }) {
   const [subject, setSubject] = useState("all");
   const [state, setState] = useState<"all" | "active" | "completed" | "expired">("all");
-  const [mode, setMode] = useState<"all" | "practice" | "exam" | "review">("all");
+  const [mode, setMode] = useState<"all" | AssessmentMode>("all");
   const [cursors, setCursors] = useState<Array<string | undefined>>([undefined]);
   const [pageIndex, setPageIndex] = useState(0);
   const [page, setPage] = useState<{ scope: string; data: AssessmentHistoryPage } | null>(null);
@@ -135,7 +136,7 @@ export function AssessmentHistory({ compact = false }: { compact?: boolean }) {
               resetPage();
             }}
           >
-            {["all", "practice", "exam", "review"].map((value) => (
+            {["all", ...ASSESSMENT_MODES].map((value) => (
               <option key={value} value={value}>
                 {value === "all" ? "All modes" : value[0]!.toUpperCase() + value.slice(1)}
               </option>
@@ -191,7 +192,9 @@ export function AssessmentHistory({ compact = false }: { compact?: boolean }) {
                 <h3 className="mt-2 font-semibold">
                   {session.topic_slug
                     ? session.topic_slug.replaceAll("-", " ")
-                    : `Stage ${session.stage_index + 1} ${session.mode}`}
+                    : session.mode === "diagnostic"
+                      ? "Foundation diagnostic · limited sample"
+                      : `Stage ${session.stage_index + 1} ${session.mode}`}
                 </h3>
                 <p className="mt-2 text-sm text-[#a6b6cb]">
                   {session.saved_entries} saved entries · {session.question_count} questions
@@ -203,24 +206,37 @@ export function AssessmentHistory({ compact = false }: { compact?: boolean }) {
                     : " · Expires " + utcDate(session.expires_at)}
                 </p>
                 {session.result_summary ? (
-                  <div className="mt-3 text-sm leading-7 text-[#b6c5d8]">
-                    <p>
-                      Overall {session.result_summary.score}% · {session.result_summary.correct}/
-                      {session.result_summary.total} correct ·{" "}
-                      {session.result_summary.passed ? "Passed" : "Review needed"}
-                    </p>
-                    <p>
-                      {session.result_summary.independent_score === null
-                        ? "Independent score untracked"
-                        : `Independent ${session.result_summary.independent_score}%`}
-                      {" · "}
-                      {session.result_summary.assistance === "independent"
-                        ? "Completed without hints"
-                        : session.result_summary.assistance === "assisted"
-                          ? "Hints used"
-                          : "Hint usage untracked"}
-                    </p>
-                  </div>
+                  session.mode === "diagnostic" ? (
+                    <div className="mt-3 text-sm leading-7 text-[#b6c5d8]">
+                      <p>
+                        Sample {session.result_summary.score}% · {session.result_summary.correct}/
+                        {session.result_summary.total} correct
+                      </p>
+                      <p>
+                        Limited diagnostic sample. Verify with full lesson practice; this result does not
+                        qualify a lesson or stage exam.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="mt-3 text-sm leading-7 text-[#b6c5d8]">
+                      <p>
+                        Overall {session.result_summary.score}% · {session.result_summary.correct}/
+                        {session.result_summary.total} correct ·{" "}
+                        {session.result_summary.passed ? "Passed" : "Review needed"}
+                      </p>
+                      <p>
+                        {session.result_summary.independent_score === null
+                          ? "Independent score untracked"
+                          : `Independent ${session.result_summary.independent_score}%`}
+                        {" · "}
+                        {session.result_summary.assistance === "independent"
+                          ? "Completed without hints"
+                          : session.result_summary.assistance === "assisted"
+                            ? "Hints used"
+                            : "Hint usage untracked"}
+                      </p>
+                    </div>
+                  )
                 ) : session.state === "completed" ? (
                   <p className="mt-3 text-sm text-[#91a4bb]">
                     A result summary is unavailable for this older attempt.
@@ -232,7 +248,9 @@ export function AssessmentHistory({ compact = false }: { compact?: boolean }) {
                       {session.state === "active"
                         ? "Resume saved session"
                         : session.state === "completed" && session.result_available
-                          ? "View saved result"
+                          ? session.mode === "diagnostic"
+                            ? "View diagnostic guidance"
+                            : "View saved result"
                           : "View closed session"}
                     </Link>
                   ) : (

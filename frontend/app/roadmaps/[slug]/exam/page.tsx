@@ -31,6 +31,9 @@ export default async function StageExamPage({ params }: { params: Promise<{ slug
           Earn at least 75% independent practice in every lesson to start a new exam. There are no hints, and
           solutions are revealed after submission. Existing exams can still be resumed.
         </p>
+        <Link className="mt-4 inline-block text-sm text-[#c4a5ff]" href={`/roadmaps/${slug}/diagnostic`}>
+          Need a starting point? Try the foundation diagnostic sample →
+        </Link>
       </header>
       <ExamReadiness roadmapSlug={slug} />
     </div>

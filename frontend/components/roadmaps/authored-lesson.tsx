@@ -118,6 +118,9 @@ export function AuthoredLesson({
           <Link className="btn" href={`/roadmaps/${roadmapSlug}/exam`}>
             Check exam readiness
           </Link>
+          <Link className="btn" href={`/roadmaps/${roadmapSlug}/diagnostic`}>
+            Foundation diagnostic
+          </Link>
           <Link className="btn" href="/roadmaps/review">
             Review mistakes
           </Link>

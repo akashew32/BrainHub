@@ -218,8 +218,18 @@ describe("learning roadmaps", () => {
     expect(screen.getByRole("heading", { name: "Disjoint alternatives" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Submit mastery check" })).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Start practice" }));
-    fireEvent.change(await screen.findByRole("textbox", { name: "Answer to question 1" }), {
+    const start = await waitFor(() => {
+      const button = screen.getByRole("button", { name: "Start practice" });
+      expect(button).toBeEnabled();
+      return button;
+    });
+    fireEvent.click(start);
+    const answer = await waitFor(() => {
+      const input = screen.getByRole("textbox", { name: "Answer to question 1" });
+      expect(input).toBeEnabled();
+      return input;
+    });
+    fireEvent.change(answer, {
       target: { value: "6" },
     });
     fireEvent.click(screen.getByLabelText("Add the counts."));

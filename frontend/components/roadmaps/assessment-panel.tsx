@@ -6,9 +6,16 @@ import { api, ApiError } from "@/lib/api";
 import type { AssessmentResult, AssessmentSession, HintReveal, MathQuestion } from "@/lib/curriculum";
 import { MathText } from "@/components/roadmaps/math-text";
 import { MathAnswerPreview } from "@/components/roadmaps/math-answer-preview";
+import { DiagnosticFeedback } from "@/components/roadmaps/diagnostic-feedback";
 import { ProofBuilder, parseProofOrder } from "@/components/roadmaps/proof-builder";
 import { QuestionHints } from "@/components/roadmaps/question-hints";
 import { useRoadmapProgress } from "@/components/roadmaps/roadmap-progress-provider";
+import {
+  ASSESSMENT_MODE_CONFIG,
+  assessmentTitle,
+  isAssessmentMode,
+  type AssessmentMode,
+} from "@/lib/assessment-modes";
 import {
   clearStartIntent,
   readStartIntent,
@@ -18,7 +25,7 @@ import {
   type StartIntent,
 } from "@/lib/assessment-recovery";
 
-type Mode = "practice" | "exam" | "review";
+type Mode = AssessmentMode;
 type AnswerMap = Record<string, string>;
 type AssessmentProps = {
   roadmapSlug: string;
@@ -68,7 +75,7 @@ export function publicSession(value: unknown): value is AssessmentSession {
       (Number.isInteger(value.stage_index) &&
         (value.stage_index as number) >= 0 &&
         (value.stage_index as number) <= 9)) &&
-    ["practice", "exam", "review"].includes(String(value.mode)) &&
+    isAssessmentMode(value.mode) &&
     (value.topic_slug === null || typeof value.topic_slug === "string") &&
     typeof value.expires_at === "string" &&
     Number.isFinite(Date.parse(value.expires_at)) &&
@@ -189,7 +196,7 @@ function readDraft(key: string): SavedDraft | null {
       typeof value.sessionId !== "string" ||
       typeof value.roadmapSlug !== "string" ||
       (value.topicSlug !== null && typeof value.topicSlug !== "string") ||
-      !["practice", "exam", "review"].includes(String(value.mode)) ||
+      !isAssessmentMode(value.mode) ||
       !Number.isInteger(value.stageIndex) ||
       typeof value.startedAt !== "number" ||
       !Number.isFinite(value.startedAt) ||
@@ -313,6 +320,8 @@ function questionAnswered(question: MathQuestion, value: string | undefined) {
 }
 
 function resultMessage(result: AssessmentResult, mode: Mode) {
+  if (ASSESSMENT_MODE_CONFIG[mode].sampleNotQualification)
+    return "Diagnostic complete. Use this sample to choose your next full lesson practice set.";
   if (!result.passed)
     return "Review the worked feedback, then try a new session. Your mistakes are saved for targeted practice.";
   if (mode !== "practice") return "Assessment passed. Your responses have been saved.";
@@ -394,6 +403,7 @@ function AssessmentWorkspace({
   legacyDraftKey: string;
 }) {
   const { acceptProgress } = useRoadmapProgress();
+  const modeConfig = ASSESSMENT_MODE_CONFIG[mode];
   const [session, setSession] = useState<AssessmentSession | null>(null);
   const [answers, setAnswers] = useState<AnswerMap>({});
   const [result, setResult] = useState<AssessmentResult | null>(null);
@@ -532,6 +542,7 @@ function AssessmentWorkspace({
 
   const acceptHints = useCallback(
     (sessionId: string, response: HintReveal) => {
+      if (!ASSESSMENT_MODE_CONFIG[mode].supportsHints) return;
       const active = currentSession.current;
       if (!mounted.current || finished.current || active?.id !== sessionId || active.hint_usage == null)
         return;
@@ -552,7 +563,7 @@ function AssessmentWorkspace({
       setSession(next);
       remember(next, currentAnswers.current, revision.current);
     },
-    [remember],
+    [remember, mode],
   );
 
   const clearMatchingDraft = useCallback(
@@ -573,6 +584,8 @@ function AssessmentWorkspace({
 
   const showResult = useCallback(
     (next: AssessmentResult, sessionId: string) => {
+      if (mode === "diagnostic" && !validAssessmentResult(next, sessionId, mode))
+        throw new Error("The diagnostic result could not be verified. Your answers have been preserved.");
       finished.current = true;
       deadline.current = null;
       setRemainingSeconds(null);
@@ -581,13 +594,14 @@ function AssessmentWorkspace({
       setNeedsResume(false);
       setError(null);
       clearMatchingDraft(sessionId);
-      if (next.progress) acceptProgress(next.progress);
+      if (next.progress && !ASSESSMENT_MODE_CONFIG[mode].sampleNotQualification)
+        acceptProgress(next.progress);
       if (!notifiedResults.current.has(sessionId)) {
         notifiedResults.current.add(sessionId);
         completedCallback.current?.(next);
       }
     },
-    [acceptProgress, clearMatchingDraft],
+    [acceptProgress, clearMatchingDraft, mode],
   );
 
   const restore = useCallback(
@@ -1030,12 +1044,7 @@ function AssessmentWorkspace({
 
   const answered =
     session?.questions.filter((question) => questionAnswered(question, answers[question.id])).length ?? 0;
-  const title =
-    mode === "exam"
-      ? "Stage " + (stageIndex + 1) + " examination"
-      : mode === "review"
-        ? "Targeted retrieval practice"
-        : "Practice and mastery";
+  const title = assessmentTitle(mode, stageIndex);
   const cannotStart =
     busy ||
     (!pendingStart && ((mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable)));
@@ -1050,13 +1059,7 @@ function AssessmentWorkspace({
       <h2 className="mt-2 text-2xl font-semibold" id={"assessment-" + mode}>
         {title}
       </h2>
-      <p className="mt-3 leading-7 text-[#9ba8b9]">
-        {mode === "exam"
-          ? "Twelve reserved questions cover all six lessons. Earn at least 75% independent practice in each lesson before starting a new exam. The exam has no hints; a score of 75% passes."
-          : mode === "review"
-            ? "Revisit questions selected from your recent mistakes and due recall practice."
-            : "Solve eight questions to check the lesson. A score of 75% completes it. Worked feedback appears after you submit."}
-      </p>
+      <p className="mt-3 leading-7 text-[#9ba8b9]">{modeConfig.intro}</p>
       {recovering ? (
         <p className="mt-5 text-sm text-[#94a8c0]" role="status">
           Checking for a saved assessment…
@@ -1139,7 +1142,10 @@ function AssessmentWorkspace({
               : "Expiry time is unconfirmed while offline. Reconnect to check this assessment."}
           </p>
           <p className="mb-3 text-sm text-[#91a1b5]" aria-live="polite">
-            {answered} of {session.questions.length} answered · {session.pass_score}% to pass
+            {answered} of {session.questions.length} answered ·{" "}
+            {modeConfig.sampleNotQualification
+              ? "limited diagnostic sample"
+              : `${session.pass_score}% to pass`}
           </p>
           <p className="mb-5 text-xs leading-6 text-[#91a1b5]" aria-live="polite">
             {draftStatus}
@@ -1216,7 +1222,7 @@ function AssessmentWorkspace({
                     />
                   </>
                 )}
-                {mode !== "exam" ? (
+                {modeConfig.supportsHints ? (
                   <QuestionHints
                     key={session.id + ":" + question.id}
                     sessionId={session.id}
@@ -1243,32 +1249,36 @@ function AssessmentWorkspace({
       ) : null}
       {result ? (
         <div className="mt-6">
-          <div
-            className={
-              "rounded-xl border p-5 " +
-              (result.passed ? "border-[#28654c] bg-[#10251c]" : "border-[#705332] bg-[#281e10]")
-            }
-            role="status"
-          >
-            <p className="flex items-center gap-2 text-xl font-semibold">
-              {result.passed ? <CheckCircle2 size={21} /> : <CircleAlert size={21} />}
-              {result.score}% · {result.correct}/{result.total} correct
-            </p>
-            <p className="mt-2 leading-7">{resultMessage(result, mode)}</p>
-            <p className="mt-2 text-sm leading-7 text-[#a9c0d7]">
-              {typeof result.independent_score === "number"
-                ? "Independent score: " + result.independent_score + "%"
-                : "Hint usage was not recorded for this older attempt."}
-            </p>
-            {typeof result.independent_score === "number" ? (
-              <p className="mt-2 text-xs leading-6 text-[#8fa9c2]">
-                Only correct answers completed without hints count toward the independent score.
+          {modeConfig.sampleNotQualification ? (
+            <DiagnosticFeedback result={result} />
+          ) : (
+            <div
+              className={
+                "rounded-xl border p-5 " +
+                (result.passed ? "border-[#28654c] bg-[#10251c]" : "border-[#705332] bg-[#281e10]")
+              }
+              role="status"
+            >
+              <p className="flex items-center gap-2 text-xl font-semibold">
+                {result.passed ? <CheckCircle2 size={21} /> : <CircleAlert size={21} />}
+                {result.score}% · {result.correct}/{result.total} correct
               </p>
-            ) : null}
-            {result.assistance === "assisted" ? (
-              <p className="mt-2 text-xs text-[#f5d67d]">This session included hint assistance.</p>
-            ) : null}
-          </div>
+              <p className="mt-2 leading-7">{resultMessage(result, mode)}</p>
+              <p className="mt-2 text-sm leading-7 text-[#a9c0d7]">
+                {typeof result.independent_score === "number"
+                  ? "Independent score: " + result.independent_score + "%"
+                  : "Hint usage was not recorded for this older attempt."}
+              </p>
+              {typeof result.independent_score === "number" ? (
+                <p className="mt-2 text-xs leading-6 text-[#8fa9c2]">
+                  Only correct answers completed without hints count toward the independent score.
+                </p>
+              ) : null}
+              {result.assistance === "assisted" ? (
+                <p className="mt-2 text-xs text-[#f5d67d]">This session included hint assistance.</p>
+              ) : null}
+            </div>
+          )}
           <div className="mt-5 space-y-4">
             {result.feedback.map((item, index) => (
               <details

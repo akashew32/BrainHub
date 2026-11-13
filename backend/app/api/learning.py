@@ -19,13 +19,14 @@ from app.db.base import (
     RoadmapTopicProgress,
     utc_now,
 )
-from app.services.assessment_hints import assistance, hints_used
+from app.services.assessment_hints import assistance, hints_allowed, hints_used
 from app.services.assessment_sessions import (
     assessment_payload as serialize_assessment,
 )
 from app.services.assessment_sessions import (
     assigned_questions,
     freeze_questions,
+    project_result_navigation,
 )
 from app.services.curriculum import (
     PASS_SCORE,
@@ -35,6 +36,7 @@ from app.services.curriculum import (
     public_lesson,
     questions_for,
 )
+from app.services.diagnostics import build_diagnostic_summary, select_diagnostic_questions
 from app.services.exam_readiness import readiness_for_stage
 from app.services.proof_feedback import build_proof_feedback
 from app.services.roadmaps import serialize_progress
@@ -46,7 +48,7 @@ router = APIRouter(prefix="/api/roadmaps", tags=["Mathematics learning"])
 class StartAssessment(BaseModel):
     model_config = {"extra": "forbid"}
 
-    mode: Literal["practice", "exam", "review"] = "practice"
+    mode: Literal["practice", "exam", "review", "diagnostic"] = "practice"
     topic_slug: str | None = Field(default=None, max_length=160)
     stage_index: int = Field(default=0, ge=0, le=9)
     request_id: UUID | None = None
@@ -229,6 +231,14 @@ def assessment_payload(session: RoadmapAssessmentSession) -> dict[str, Any]:
     )
 
 
+def assessment_result(session: RoadmapAssessmentSession) -> dict[str, Any]:
+    if session.result is None:
+        raise HTTPException(409, "This assessment does not have a saved result.")
+    return project_result_navigation(
+        session, session.result, current_bank=questions_for(session.roadmap_slug)
+    )
+
+
 @router.post("/assessments/{session_id}/questions/{question_id}/hints")
 def reveal_assessment_hint(
     session_id: str, question_id: str, payload: RevealHint, db: Database
@@ -246,8 +256,13 @@ def reveal_assessment_hint(
         )
         if session is None:
             raise HTTPException(404, "Unknown assessment session")
-        if session.mode == "exam":
-            raise HTTPException(409, "Stage exams do not provide hints.")
+        if not hints_allowed(session.mode):
+            raise HTTPException(
+                409,
+                "Diagnostics do not provide hints."
+                if session.mode == "diagnostic"
+                else "Stage exams do not provide hints.",
+            )
         if session.completed_at is not None:
             raise HTTPException(409, "This assessment is complete. Start a new practice session.")
         if session.expires_at <= utc_now():
@@ -544,6 +559,8 @@ def start_assessment(
             for question in lesson["questions"]
             if question["exam"]
         ]
+    elif payload.mode == "diagnostic":
+        selected = select_diagnostic_questions(data)
     else:
         plan = review_plan_for_user(db, user.id, now=now)
         selected = [
@@ -605,7 +622,7 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
     if session is None:
         raise HTTPException(404, "Unknown assessment session")
     if session.result is not None:
-        return session.result
+        return assessment_result(session)
     if session.expires_at <= utc_now():
         raise HTTPException(410, "This assessment has expired. Start a fresh session.")
     answers = {answer.question_id: answer.answer for answer in payload.answers}
@@ -678,6 +695,10 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
         "feedback": feedback,
         "progress": None,
     }
+    if session.mode == "diagnostic":
+        result["diagnostic_summary"] = build_diagnostic_summary(
+            session.roadmap_slug, bank, feedback
+        )
     try:
         # Claim completion using the exact hint snapshot used for grading. A
         # concurrent reveal must never be labeled as independent work.
@@ -695,7 +716,7 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
             db.rollback()
             winner = db.get(RoadmapAssessmentSession, session_id)
             if winner is not None and winner.result is not None:
-                return winner.result
+                return assessment_result(winner)
             raise HTTPException(
                 409, "Hint usage changed while submitting. Retry with your saved answers."
             )
@@ -717,7 +738,7 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
         db.rollback()
         winner = db.get(RoadmapAssessmentSession, session_id)
         if winner is not None and winner.result is not None:
-            return winner.result
+            return assessment_result(winner)
         raise HTTPException(
             409, "The assessment changed while saving. Retry your submission."
         ) from error
@@ -726,4 +747,6 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
         raise HTTPException(
             409, "The saved session is busy. Retry with your saved answers."
         ) from error
-    return result
+    return project_result_navigation(
+        session, result, current_bank=questions_for(session.roadmap_slug)
+    )

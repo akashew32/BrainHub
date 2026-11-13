@@ -54,6 +54,9 @@ export default async function RoadmapDetailPage({ params }: { params: Promise<{ 
             <p className="mt-4 max-w-3xl text-sm leading-7 text-[#a5afbd] sm:text-base">
               {roadmap.description}
             </p>
+            <Link className="btn mt-5 inline-block" href={`/roadmaps/${slug}/diagnostic`}>
+              Try the 12-question foundation diagnostic
+            </Link>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <SummaryMetric icon={Layers3} value={roadmap.stages.length} label="Stages" />

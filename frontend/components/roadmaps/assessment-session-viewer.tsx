@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { api, ApiError } from "@/lib/api";
 import type { AssessmentSession } from "@/lib/curriculum";
 import { UUID_PATTERN } from "@/lib/assessment-recovery";
+import { assessmentTitle } from "@/lib/assessment-modes";
 import {
   AssessmentPanel,
   cachedSelectedAssessment,
@@ -79,12 +80,10 @@ function SelectedSession({ sessionId }: { sessionId: string }) {
 
   const session = opened?.session;
   const title =
-    session?.mode === "exam"
-      ? `Stage ${(session.stage_index ?? 0) + 1} examination`
-      : session?.mode === "review"
-        ? "Targeted retrieval practice"
-        : (session?.questions.find((question) => question.lesson_title)?.lesson_title ??
-          (session?.topic_slug ? session.topic_slug.replaceAll("-", " ") : "Saved practice assessment"));
+    session && session.mode !== "practice"
+      ? assessmentTitle(session.mode, session.stage_index ?? 0)
+      : (session?.questions.find((question) => question.lesson_title)?.lesson_title ??
+        (session?.topic_slug ? session.topic_slug.replaceAll("-", " ") : "Saved practice assessment"));
   return (
     <div className="mx-auto max-w-4xl space-y-6">
       <Link className="inline-block text-sm text-[#93a8c1]" href="/roadmaps/sessions">

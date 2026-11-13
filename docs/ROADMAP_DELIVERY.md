@@ -30,7 +30,7 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 7 | Exam readiness, blueprint, and prerequisite evidence | Complete | `3a31936`; 380 backend tests, 262 frontend tests, full build, live checklist and direct server gate; GitHub CI passed |
 | 8 | Exam integrity, retry policy, and robust session lifecycle | Complete | `0352758`; 417 backend tests, 284 frontend tests, fresh/existing migrations, full build, live stable assignment and idempotent replay; GitHub CI passed |
 | 9 | Learning dashboard and recent learning history | Complete | `4ffb8f0`; 451 backend tests, 312 frontend tests, 538 static pages plus dynamic session viewer, live dashboard/history/recovery; GitHub CI passed |
-| 10 | Diagnostic placement across foundation topics | Pending | |
+| 10 | Diagnostic placement across foundation topics | Verified; publishing | 480 backend tests, 335 frontend tests, 543 static pages plus dynamic viewer, live perfect sample without mastery credit |
 | 11 | Personalized study sessions and time goals | Pending | |
 | 12 | Question variations and meaningful repeat practice | Pending | |
 | 13 | Interactive vector and transformation exploration | Pending | |
@@ -195,3 +195,15 @@ Cycle 9 live evidence: the dashboard displays all five learning plans, zero due/
 Cycle 9 remote verified at `4ffb8f0c7c7ac4d430dcb84524b34a7a24ce73f2` on `main`. GitHub Actions passed for backend, frontend, and Docker configuration: https://github.com/akashew32/BrainHub/actions/runs/43353669254. Nine of twenty improvement cycles are complete; cycles 10–20 remain part of the active goal.
 
 Next proposed batch (cycle 10): a twelve-question foundation diagnostic for each subject, using one foundation and one core practice question from each of its six authored lessons. Exclude reserved exam questions and disable hints. Reuse frozen assignments, recovery, and history. Show per-topic counts out of two and limited-sample study guidance; diagnostic results must not grant lesson completion or exam eligibility. Preserve graded answers for the notebook, concept performance, and later question-level review.
+
+### Cycle 10 batch — foundation diagnostics
+
+Offer a diagnostic entry for each of the five authored foundation stages. Assign exactly one foundation and one core practice question from each lesson, shuffle the twelve-question set, and freeze it using the existing assignment and retry lifecycle. Reserved exam questions are excluded. Disable hints in every presentation, recovery, and reveal path.
+
+After grading, show six topic samples with counts out of two, a clear limitation statement, and guidance toward the full eight-question lesson practice. Diagnostic answers contribute to question-level review and performance history, but never create topic progress, unlock an exam, or substitute for a complete independent practice set. Reuse the dashboard, session history, archived feedback, raw draft recovery, and expiry safeguards for the new mode.
+
+Cycle 10 review improvements: centralize the four assessment modes and hint policy; remove qualification language from active and completed diagnostic views; validate topic counts, percentages, priorities, and null progress before accepting diagnostic results; and keep history labels explicit about samples. Recovery and repeated submissions project current study-link availability without rewriting immutable saved grades, titles, feedback, or guidance. Archiving or changing sampled mathematics removes its study link; editorial-only changes preserve it.
+
+Cycle 10 live evidence: a calculus diagnostic assigned twelve questions across the six lessons, with no hint controls. Unfinished fraction and vector entries survived a refresh. Completing the sample returned 100% and six 2/2 topic rows recommending full practice. The profile moved from 34 to 46 graded answers and retained twelve correct, unhinted diagnostic answers, while calculus still had zero progress rows and zero qualifying lessons. A direct fresh calculus exam request returned 409, and the exam count remained zero. Filtered history and the UUID viewer recovered the same saved sample and all six guidance rows. No browser console errors were observed.
+
+Cycle 10 verification: all 480 backend tests and 335 frontend tests pass, with clean formatting, lint, and type checks. Tests cover all five balanced samples, exclusion of reserved items, no-hint enforcement, no mastery/exam credit, question-level review, frozen/archive navigation, retries, expiry, history, and existing modes. The production build generates all 543 static pages plus the dynamic session viewer. The full frontend run exposed an older test that clicked before assessment recovery enabled its controls; the test now waits for enabled start and answer controls while retaining its grading assertions. No product or JSDOM workaround was needed.
