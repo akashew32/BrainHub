@@ -64,6 +64,12 @@ export default async function RoadmapDetailPage({ params }: { params: Promise<{ 
                 {exploration.label}
               </Link>
             ) : null}
+            <Link
+              className="mt-4 flex min-h-11 items-center text-sm text-[#a8cffa] underline underline-offset-4"
+              href={`/roadmaps/library?subject=${encodeURIComponent(slug)}`}
+            >
+              Search this curriculum and saved topics
+            </Link>
           </div>
           <div className="grid grid-cols-2 gap-3">
             <SummaryMetric icon={Layers3} value={roadmap.stages.length} label="Stages" />

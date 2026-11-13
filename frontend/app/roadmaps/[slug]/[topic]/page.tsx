@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 import { AuthoredLesson } from "@/components/roadmaps/authored-lesson";
+import { BookmarkButton } from "@/components/roadmaps/bookmark-button";
 import {
   getAdjacentLessons,
   getRoadmapLesson,
@@ -67,6 +68,15 @@ export default async function RoadmapLessonPage({
           {lesson.title}
         </span>
       </nav>
+      <div className="mb-6 flex flex-wrap items-start justify-between gap-3">
+        <Link
+          className="inline-flex min-h-11 items-center text-sm text-[#a8cffa] underline underline-offset-4"
+          href={`/roadmaps/library?subject=${encodeURIComponent(slug)}`}
+        >
+          Search this curriculum
+        </Link>
+        <BookmarkButton roadmapSlug={slug} topicSlug={topic} title={`${lesson.title} — ${roadmap.title}`} />
+      </div>
       {lesson.stageIndex === 0 ? (
         <AuthoredLesson
           key={slug + ":" + topic}

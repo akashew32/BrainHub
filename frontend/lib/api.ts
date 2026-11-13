@@ -46,6 +46,25 @@ async function assessmentRequest(path: string, init?: RequestInit) {
     : session;
 }
 export const api = {
+  curriculumIndex: () =>
+    request<import("@/lib/bookmarks").CurriculumIndex>("/roadmaps/curriculum", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(12_000),
+    }),
+  topicBookmarks: () =>
+    request<import("@/lib/bookmarks").TopicBookmarksResponse>("/roadmaps/bookmarks", {
+      cache: "no-store",
+      signal: AbortSignal.timeout(12_000),
+    }),
+  saveTopicBookmark: (
+    roadmapSlug: string,
+    topicSlug: string,
+    body: import("@/lib/bookmarks").TopicBookmarkUpdate,
+  ) =>
+    request<import("@/lib/bookmarks").TopicBookmark>(
+      `/roadmaps/bookmarks/${encodeURIComponent(roadmapSlug)}/${encodeURIComponent(topicSlug)}`,
+      { method: "PUT", body: JSON.stringify(body), cache: "no-store", signal: AbortSignal.timeout(12_000) },
+    ),
   studyPreferences: () =>
     request<import("@/lib/curriculum").StudyPreferences>("/roadmaps/study-preferences", {
       signal: AbortSignal.timeout(12_000),

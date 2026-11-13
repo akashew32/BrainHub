@@ -35,6 +35,9 @@ export default function RoadmapsPage() {
           <Link className="btn btn-primary mt-5 inline-block" href="/roadmaps/learning">
             Open your learning dashboard
           </Link>
+          <Link className="btn ml-0 mt-3 inline-block sm:ml-3 sm:mt-5" href="/roadmaps/library">
+            Search topics and bookmarks
+          </Link>
         </div>
 
         <div className="panel grid grid-cols-2 gap-px overflow-hidden bg-[#202937]">

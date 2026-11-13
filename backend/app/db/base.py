@@ -12,6 +12,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    false,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -95,6 +96,22 @@ class RoadmapTopicProgress(Base):
     time_spent_seconds: Mapped[int] = mapped_column(Integer, default=0)
     last_viewed_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+
+
+class RoadmapBookmark(Base):
+    __tablename__ = "roadmap_bookmarks"
+    __table_args__ = (
+        UniqueConstraint(
+            "user_id", "roadmap_slug", "topic_slug", name="uq_roadmap_bookmark_owner_topic"
+        ),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    roadmap_slug: Mapped[str] = mapped_column(String(80))
+    topic_slug: Mapped[str] = mapped_column(String(160))
+    bookmarked: Mapped[bool] = mapped_column(Boolean, default=False, server_default=false())
+    revision: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
 
 
 class RoadmapAssessmentSession(Base):

@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import select
 
+from app.api.bookmarks import router as bookmarks_router
 from app.api.learning import router as learning_router
 from app.api.learning_dashboard import router as learning_dashboard_router
 from app.api.notebook import router as notebook_router
@@ -82,3 +83,4 @@ app.include_router(learning_router)
 app.include_router(learning_dashboard_router)
 app.include_router(notebook_router)
 app.include_router(study_router)
+app.include_router(bookmarks_router)
