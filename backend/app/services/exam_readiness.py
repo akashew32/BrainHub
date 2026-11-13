@@ -19,6 +19,7 @@ from sqlalchemy.orm import Session
 from app.db.base import RoadmapAssessmentSession, RoadmapQuestionAttempt
 from app.services.assessment_sessions import compatible_practice_content
 from app.services.curriculum import PASS_SCORE, curriculum
+from app.services.question_forms import add_practice_forms, family_id
 from app.services.spaced_review import utc_naive
 
 
@@ -27,21 +28,24 @@ def _current_set(
     attempts: list[RoadmapQuestionAttempt],
     questions: dict[str, dict[str, Any]],
     topic_slug: str,
+    expected_families: set[str],
 ) -> tuple[int, int | None] | None:
     ids = session.question_ids
-    expected = set(questions)
     if (
         not isinstance(ids, list)
-        or len(ids) != len(expected)
+        or len(ids) != len(expected_families)
         or any(type(question_id) is not str for question_id in ids)
         or len(set(ids)) != len(ids)
-        or set(ids) != expected
-        or len(attempts) != len(expected)
+        or any(qid not in questions for qid in ids)
+        or {family_id(questions[qid]) for qid in ids} != expected_families
+        or len(attempts) != len(ids)
         or len({item.question_id for item in attempts}) != len(attempts)
-        or {item.question_id for item in attempts} != expected
+        or {item.question_id for item in attempts} != set(ids)
         or any(item.topic_slug != topic_slug for item in attempts)
     ):
         return None
+    questions = {qid: questions[qid] for qid in ids}
+    expected = set(ids)
     if not compatible_practice_content(session, questions, attempts):
         return None
     score = round(100 * sum(item.correct for item in attempts) / len(attempts))
@@ -81,6 +85,21 @@ def readiness_for_stage(
     if data is None or stage_index != data["stage_index"]:
         raise HTTPException(404, "No authored stage exam is available for this roadmap stage.")
     reference = utc_naive(now)
+    originals = {
+        question["id"]: {
+            **question,
+            "topic_slug": lesson["topic_slug"],
+            "lesson_title": lesson["title"],
+        }
+        for lesson in data["lessons"]
+        for question in lesson["questions"]
+    }
+    try:
+        bank = add_practice_forms(roadmap_slug, originals)
+    except (ValueError, OSError, TypeError, KeyError) as error:
+        raise HTTPException(
+            503, "The current practice forms are unavailable. Please try again later."
+        ) from error
     sessions = list(
         db.scalars(
             select(RoadmapAssessmentSession).where(
@@ -108,13 +127,20 @@ def readiness_for_stage(
     lessons = []
     for lesson in data["lessons"]:
         practice = {
-            question["id"]: question for question in lesson["questions"] if not question["exam"]
+            qid: question
+            for qid, question in bank.items()
+            if question["topic_slug"] == lesson["topic_slug"] and not question["exam"]
+        }
+        expected_families = {
+            question["id"] for question in lesson["questions"] if not question["exam"]
         }
         candidates = [item for item in sessions if item.topic_slug == lesson["topic_slug"]]
         verified = []
         outdated = 0
         for session in candidates:
-            scores = _current_set(session, by_session[session.id], practice, lesson["topic_slug"])
+            scores = _current_set(
+                session, by_session[session.id], practice, lesson["topic_slug"], expected_families
+            )
             if scores is None:
                 outdated += 1
             else:
@@ -150,7 +176,7 @@ def readiness_for_stage(
             {
                 "topic_slug": lesson["topic_slug"],
                 "title": lesson["title"],
-                "practice_count": len(practice),
+                "practice_count": len(expected_families),
                 "exam_count": sum(question["exam"] for question in lesson["questions"]),
                 "best_score": best,
                 "best_independent_score": best_independent,

@@ -15,6 +15,7 @@ from fastapi import HTTPException
 from app.db.base import RoadmapAssessmentSession
 from app.services.assessment_hints import assistance, hints_allowed
 from app.services.curriculum import PASS_SCORE, grade, lesson_for, public_question
+from app.services.question_forms import family_id
 from app.services.spaced_review import utc_naive
 
 
@@ -39,6 +40,7 @@ def semantic_fingerprint(question: dict[str, Any]) -> str:
         "hints",
     )
     semantic = {key: copy.deepcopy(question.get(key)) for key in fields}
+    semantic["family_id"] = family_id(question)
     if question.get("kind") == "choice":
         semantic["choices"] = sorted(question["choices"])
     for key in ("accepted_orders", "proof_dependencies"):

@@ -48,6 +48,8 @@ const authoredLesson: AuthoredLesson = {
   sources: [{ title: "MIT OpenCourseWare", url: "https://ocw.mit.edu/" }],
   practice_count: 8,
   question_count: 10,
+  practice_form_count: 12,
+  alternate_form_count: 4,
   pass_score: 75,
 };
 
@@ -215,6 +217,8 @@ describe("learning roadmaps", () => {
     renderWithProgress(page);
     expect(await screen.findByRole("heading", { name: lesson.title, level: 1 })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Worked examples" })).toBeInTheDocument();
+    expect(screen.getByText(/10 core questions \+ 4 alternate forms/)).toBeInTheDocument();
+    expect(screen.getByText(/Each practice set covers 8 distinct skills/)).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Disjoint alternatives" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Submit mastery check" })).not.toBeInTheDocument();
 

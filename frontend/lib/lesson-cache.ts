@@ -37,6 +37,12 @@ function validLesson(value: unknown, roadmapSlug: string, topicSlug: string): va
     ) &&
     typeof value.question_count === "number" &&
     typeof value.practice_count === "number" &&
+    (value.alternate_form_count === undefined ||
+      (Number.isInteger(value.alternate_form_count) &&
+        typeof value.alternate_form_count === "number" &&
+        value.alternate_form_count >= 0 &&
+        typeof value.practice_form_count === "number" &&
+        value.practice_form_count === value.practice_count + value.alternate_form_count)) &&
     typeof value.pass_score === "number"
   );
 }

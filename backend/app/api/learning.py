@@ -17,6 +17,7 @@ from app.db.base import (
     RoadmapAssessmentSession,
     RoadmapQuestionAttempt,
     RoadmapTopicProgress,
+    User,
     utc_now,
 )
 from app.services.assessment_hints import assistance, hints_allowed, hints_used
@@ -26,6 +27,7 @@ from app.services.assessment_sessions import (
 from app.services.assessment_sessions import (
     assigned_questions,
     freeze_questions,
+    frozen_entries,
     project_result_navigation,
 )
 from app.services.curriculum import (
@@ -38,7 +40,9 @@ from app.services.curriculum import (
 )
 from app.services.diagnostics import build_diagnostic_summary, select_diagnostic_questions
 from app.services.exam_readiness import readiness_for_stage
+from app.services.practice_selection import choose_practice_forms
 from app.services.proof_feedback import build_proof_feedback
+from app.services.question_forms import family_id, unique_families
 from app.services.recorded_time import merge_recordings, recording_seconds
 from app.services.roadmaps import serialize_progress
 from app.services.spaced_review import SESSION_LIMIT, review_plan_for_user
@@ -230,10 +234,20 @@ def _persist_practice_progress(
     return progress
 
 
+def current_bank_for_session(session: RoadmapAssessmentSession) -> dict[str, dict[str, Any]]:
+    """A temporarily invalid current bank cannot strand a valid frozen assignment."""
+    try:
+        return questions_for(session.roadmap_slug)
+    except HTTPException as error:
+        if error.status_code == 503 and frozen_entries(session) is not None:
+            return {}
+        raise
+
+
 def assessment_payload(session: RoadmapAssessmentSession) -> dict[str, Any]:
     """Serialize the public session without exposing unsubmitted answer keys."""
     return serialize_assessment(
-        session, now=utc_now(), current_bank=questions_for(session.roadmap_slug)
+        session, now=utc_now(), current_bank=current_bank_for_session(session)
     )
 
 
@@ -241,7 +255,7 @@ def assessment_result(session: RoadmapAssessmentSession) -> dict[str, Any]:
     if session.result is None:
         raise HTTPException(409, "This assessment does not have a saved result.")
     return project_result_navigation(
-        session, session.result, current_bank=questions_for(session.roadmap_slug)
+        session, session.result, current_bank=current_bank_for_session(session)
     )
 
 
@@ -280,7 +294,7 @@ def reveal_assessment_hint(
                 409,
                 "Hint usage was not tracked for this session. Start a new practice session for tracked hints.",
             )
-        question = assigned_questions(session, questions_for(session.roadmap_slug)).get(question_id)
+        question = assigned_questions(session, current_bank_for_session(session)).get(question_id)
         if question is None:
             raise HTTPException(409, "This assessment's curriculum changed. Start a fresh session.")
         available = question.get("hints", [])
@@ -572,12 +586,40 @@ def start_assessment(
     data = curriculum().get(roadmap_slug)
     if data is None or payload.stage_index != data["stage_index"]:
         raise HTTPException(404, "No authored assessment is available for this stage yet.")
+    try:
+        # A value-preserving UPDATE serializes assignment selection for a profile
+        # on SQLite as well as PostgreSQL; SELECT FOR UPDATE is ignored by SQLite.
+        # Keep the lock until the assignment commits, and recheck a racing replay.
+        db.execute(update(User).where(User.id == user.id).values(name=User.name))
+    except OperationalError as error:
+        db.rollback()
+        raise HTTPException(
+            409, "The assessment start is busy. Retry with the same request ID."
+        ) from error
+    now = utc_now()
+    if request_id is not None:
+        existing = db.scalar(
+            select(RoadmapAssessmentSession).where(
+                RoadmapAssessmentSession.user_id == user.id,
+                RoadmapAssessmentSession.start_request_id == request_id,
+            )
+        )
+        if existing is not None:
+            return replay(existing)
     study_metadata = None
+    bank = questions_for(roadmap_slug)
     if payload.mode == "practice":
         lesson = lesson_for(roadmap_slug, payload.topic_slug or "")
         if lesson is None:
             raise HTTPException(404, "Unknown authored lesson")
-        selected = [question["id"] for question in lesson["questions"] if not question["exam"]]
+        selected = choose_practice_forms(
+            db,
+            user.id,
+            roadmap_slug,
+            [question["id"] for question in lesson["questions"] if not question["exam"]],
+            bank,
+            now=now,
+        )
     elif payload.mode == "exam":
         readiness = readiness_for_stage(
             db, user.id, roadmap_slug, stage_index=payload.stage_index, now=now
@@ -594,25 +636,26 @@ def start_assessment(
             if question["exam"]
         ]
     elif payload.mode == "diagnostic":
-        selected = select_diagnostic_questions(data)
+        selected = choose_practice_forms(
+            db, user.id, roadmap_slug, select_diagnostic_questions(data), bank, now=now
+        )
     elif payload.mode == "study":
         selected, study_metadata = study_assignment(
             db, user.id, roadmap_slug, budget_minutes=payload.budget_minutes, now=now
         )
     else:
         plan = review_plan_for_user(db, user.id, now=now)
-        selected = [
-            item["question_id"] for item in plan["items"] if item["roadmap_slug"] == roadmap_slug
-        ][:SESSION_LIMIT]
+        selected = unique_families(
+            [item["question_id"] for item in plan["items"] if item["roadmap_slug"] == roadmap_slug],
+            bank,
+        )[:SESSION_LIMIT]
         if not selected:
             raise HTTPException(
                 409, "No attempted questions are currently due for review in this subject."
             )
     if payload.mode not in {"review", "study"}:
         random.SystemRandom().shuffle(selected)
-    snapshot = freeze_questions(
-        [questions_for(roadmap_slug)[qid] for qid in selected], mode=payload.mode
-    )
+    snapshot = freeze_questions([bank[qid] for qid in selected], mode=payload.mode)
     if study_metadata is not None:
         snapshot["study_plan"] = study_metadata
     session = RoadmapAssessmentSession(
@@ -669,7 +712,7 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
     answers = {answer.question_id: answer.answer for answer in payload.answers}
     if len(answers) != len(payload.answers) or set(answers) != set(session.question_ids):
         raise HTTPException(422, "Submit exactly one answer for every question in this session.")
-    bank = assigned_questions(session, questions_for(session.roadmap_slug))
+    bank = assigned_questions(session, current_bank_for_session(session))
     feedback = []
     for question_id in session.question_ids:
         question = bank[question_id]
@@ -678,6 +721,7 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
             raise HTTPException(422, f"{question_id}: {validation_error}")
         item = {
             "question_id": question_id,
+            "family_id": family_id(question),
             "prompt": question["prompt"],
             "concept": question["concept"],
             "correct": correct,
@@ -750,7 +794,7 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
     }
     if session.mode == "diagnostic":
         result["diagnostic_summary"] = build_diagnostic_summary(
-            session.roadmap_slug, bank, feedback
+            session.roadmap_slug, bank, feedback, current_bank=current_bank_for_session(session)
         )
     if session.mode == "study":
         metadata = (session.question_snapshot or {}).get("study_plan", {})
@@ -821,5 +865,5 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
             409, "The saved session is busy. Retry with your saved answers."
         ) from error
     return project_result_navigation(
-        session, result, current_bank=questions_for(session.roadmap_slug)
+        session, result, current_bank=current_bank_for_session(session)
     )

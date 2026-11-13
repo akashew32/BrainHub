@@ -29,6 +29,7 @@ const banks = new Map();
 const questions = new Map();
 let lessonCount = 0;
 let questionCount = 0;
+let alternateCount = 0;
 let examCount = 0;
 let mathCount = 0;
 let arithmeticCount = 0;
@@ -184,11 +185,13 @@ function verifyQuestion(
   index,
   seenIds,
   seenPrompts,
+  alternate = false,
 ) {
   const location =
     roadmap + "/" + lesson.topic_slug + "/question-" + (index + 1);
-  const expectedId =
-    lesson.topic_slug + "-" + String(index + 1).padStart(2, "0");
+  const expectedId = alternate
+    ? question.family_id + "--alt-01"
+    : lesson.topic_slug + "-" + String(index + 1).padStart(2, "0");
   assert(question.id === expectedId, location + ": expected id " + expectedId);
   assert(!seenIds.has(question.id), location + ": duplicate id within roadmap");
   seenIds.add(question.id);
@@ -288,7 +291,8 @@ function verifyQuestion(
 
   if (question.exam) examCount++;
   questions.set(roadmap + ":" + question.id, question);
-  questionCount++;
+  if (alternate) alternateCount++;
+  else questionCount++;
 }
 
 const files = readdirSync(directory)
@@ -402,6 +406,94 @@ for (const filename of files) {
     );
     renderMathIn(lesson, location);
   });
+}
+
+const formsDirectory = join(root, "backend", "app", "roadmaps", "variants");
+assert(
+  readdirSync(formsDirectory).filter((name) => name.endsWith(".json"))
+    .length === 5,
+  "Expected five alternate-form files",
+);
+for (const [roadmap, bank] of banks) {
+  let variants;
+  try {
+    variants = JSON.parse(
+      readFileSync(join(formsDirectory, roadmap + ".json"), "utf8"),
+    );
+  } catch (error) {
+    errors.push(
+      roadmap + ": missing or invalid alternate forms: " + error.message,
+    );
+    continue;
+  }
+  assert(
+    variants.version === 1 &&
+      variants.roadmap_slug === roadmap &&
+      Object.keys(variants).sort().join(",") === "forms,roadmap_slug,version",
+    roadmap + ": invalid alternate-form envelope",
+  );
+  assert(
+    Array.isArray(variants.forms) && variants.forms.length === 24,
+    roadmap + ": expected 24 alternate forms",
+  );
+  if (!Array.isArray(variants.forms)) continue;
+  const ids = new Set(
+    bank.lessons.flatMap((lesson) => lesson.questions.map((q) => q.id)),
+  );
+  const prompts = new Set(
+    bank.lessons.flatMap((lesson) => lesson.questions.map((q) => q.prompt)),
+  );
+  const families = new Set();
+  const counts = new Map();
+  for (const form of variants.forms) {
+    const parent = questions.get(roadmap + ":" + form.family_id);
+    const lesson = bank.lessons.find((item) =>
+      item.questions.some((q) => q.id === form.family_id),
+    );
+    assert(
+      parent && lesson && parent.exam === false && parent.kind !== "proof",
+      roadmap +
+        ": alternate parent must be an original non-proof practice exercise",
+    );
+    if (!parent || !lesson) continue;
+    assert(
+      !families.has(form.family_id),
+      roadmap + ": duplicate alternate family",
+    );
+    families.add(form.family_id);
+    assert(
+      form.exam === false &&
+        ["kind", "concept", "difficulty"].every(
+          (key) => form[key] === parent[key],
+        ),
+      form.id + ": alternate metadata must preserve the original skill",
+    );
+    const allowed = new Set([
+      "id",
+      "family_id",
+      "kind",
+      "prompt",
+      "answer",
+      "hints",
+      "solution",
+      "concept",
+      "difficulty",
+      "exam",
+      "choices",
+      "tolerance",
+    ]);
+    assert(
+      Object.keys(form).every((key) => allowed.has(key)),
+      form.id + ": unsupported private field",
+    );
+    counts.set(lesson.topic_slug, (counts.get(lesson.topic_slug) ?? 0) + 1);
+    verifyQuestion(form, lesson, roadmap, 0, ids, prompts, true);
+    renderMathIn(form, roadmap + "/alternate/" + form.id);
+  }
+  assert(
+    bank.lessons.every((lesson) => counts.get(lesson.topic_slug) === 4),
+    roadmap + ": expected four distinct alternate families per lesson",
+  );
 }
 
 // These are independent constructions of selected answer keys, rather than
@@ -801,6 +893,10 @@ assert(
   "Expected 30 authored lessons, found " + lessonCount,
 );
 assert(questionCount === 300, "Expected 300 questions, found " + questionCount);
+assert(
+  alternateCount === 120,
+  "Expected 120 alternate forms, found " + alternateCount,
+);
 assert(proofCount === 21, "Expected 21 structured proofs, found " + proofCount);
 assert(
   examCount === 60,
@@ -827,6 +923,8 @@ if (errors.length) {
       " authored lessons, " +
       questionCount +
       " questions, " +
+      alternateCount +
+      " alternate forms, " +
       examCount +
       " reserved exam items.",
   );

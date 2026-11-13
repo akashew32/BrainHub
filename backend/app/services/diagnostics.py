@@ -9,7 +9,6 @@ from typing import Any
 from fastapi import HTTPException
 
 from app.services.assessment_sessions import diagnostic_study_url
-from app.services.curriculum import questions_for
 
 NOTICE = (
     "This diagnostic samples two questions from each foundation lesson. It suggests where to study; "
@@ -64,6 +63,8 @@ def build_diagnostic_summary(
     roadmap_slug: str,
     assigned: dict[str, dict[str, Any]],
     feedback: list[dict[str, Any]],
+    *,
+    current_bank: dict[str, dict[str, Any]],
 ) -> dict[str, Any]:
     """Use frozen assigned mathematics and final graded evidence, never a new sample."""
     grouped: dict[str, list[dict[str, Any]]] = defaultdict(list)
@@ -76,7 +77,6 @@ def build_diagnostic_summary(
         )
     if len(grouped) != 6 or any(len(items) != 2 for items in grouped.values()):
         raise HTTPException(409, "This saved diagnostic is not a complete balanced sample.")
-    current = questions_for(roadmap_slug)
     topics = []
     guidance = {
         0: "Start with this lesson's definitions and worked examples, then complete its full eight-question practice set.",
@@ -94,7 +94,7 @@ def build_diagnostic_summary(
                 "priority": ("start_here", "review", "verify")[correct],
                 "guidance": guidance[correct],
                 "study_url": diagnostic_study_url(
-                    roadmap_slug, topic_slug, [item["question"] for item in items], current
+                    roadmap_slug, topic_slug, [item["question"] for item in items], current_bank
                 ),
             }
         )

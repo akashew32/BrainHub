@@ -271,16 +271,16 @@ def freeze_api(monkeypatch, at):
     return clock
 
 
-def test_api_empty_plan_covers_all_five_subjects_and_three_hundred_unseen_questions(
+def test_api_empty_plan_covers_all_five_subjects_and_four_hundred_twenty_unseen_forms(
     client, monkeypatch
 ):
     freeze_api(monkeypatch, BASE)
     response = client.get("/api/roadmaps/review-plan")
     assert response.status_code == 200
     plan = response.json()
-    assert plan["summary"]["unseen"] == 300
+    assert plan["summary"]["unseen"] == 420
     assert len(plan["subjects"]) == 5
-    assert all(item["unseen"] == 60 for item in plan["subjects"])
+    assert all(item["unseen"] == 84 for item in plan["subjects"])
     assert plan["items"] == plan["upcoming"] == []
 
 
@@ -393,7 +393,7 @@ def test_api_filters_other_users_mismatched_session_owners_and_removed_questions
 
     monkeypatch.setattr(spaced_review, "questions_for", removed)
     plan = client.get("/api/roadmaps/review-plan").json()
-    assert plan["summary"]["tracked"] == 0 and plan["summary"]["unseen"] == 299
+    assert plan["summary"]["tracked"] == 0 and plan["summary"]["unseen"] == 419
     assert client.get("/api/roadmaps/mistakes").json()["items"] == []
     assert client.get("/api/roadmaps/learning-stats").json()["concepts_to_review"] == 0
     assert (

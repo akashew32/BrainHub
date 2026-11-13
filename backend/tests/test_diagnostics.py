@@ -207,7 +207,6 @@ def test_diagnostic_replay_normalizes_ignored_topic_and_preserves_frozen_archive
     assert changed_mode.status_code == 409
     monkeypatch.setattr(learning, "questions_for", lambda _: {})
     monkeypatch.setattr(learning, "curriculum", lambda: {})
-    monkeypatch.setattr(diagnostics, "questions_for", lambda _: {})
     assert (
         client.post("/api/roadmaps/calculus/assessments", json=payload).json()["id"]
         == session["id"]
@@ -239,7 +238,7 @@ def test_changed_sample_math_disables_stale_study_links_but_editorial_change_doe
     first, second = session["questions"][:2]
     changed[first["id"]]["prompt"] += " Changed requirement."
     changed[second["id"]]["solution"] += " Editorial clarification."
-    monkeypatch.setattr(diagnostics, "questions_for", lambda _: changed)
+    monkeypatch.setattr(learning, "questions_for", lambda _: changed)
     result = submit(client, session, answers(session, original)).json()
     rows = {item["topic_slug"]: item for item in result["diagnostic_summary"]["topics"]}
     assert rows[first["topic_slug"]]["study_url"] is None

@@ -13,8 +13,11 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from fastapi import HTTPException
+
 from app.services.math_input import VERSION, matches_integer, parse_container, parse_number
 from app.services.proof_feedback import grade_proof
+from app.services.question_forms import add_practice_forms
 
 ROOT = Path(__file__).resolve().parents[1] / "roadmaps" / "curriculum"
 PASS_SCORE = 75
@@ -40,7 +43,7 @@ def lesson_for(roadmap_slug: str, topic_slug: str) -> dict[str, Any] | None:
 
 
 def questions_for(roadmap_slug: str) -> dict[str, dict[str, Any]]:
-    return {
+    originals = {
         question["id"]: {
             **question,
             "topic_slug": lesson["topic_slug"],
@@ -49,6 +52,12 @@ def questions_for(roadmap_slug: str) -> dict[str, dict[str, Any]]:
         for lesson in curriculum().get(roadmap_slug, {}).get("lessons", [])
         for question in lesson["questions"]
     }
+    try:
+        return add_practice_forms(roadmap_slug, originals)
+    except (ValueError, OSError, TypeError, KeyError) as error:
+        raise HTTPException(
+            503, "The current practice forms are unavailable. Please try again later."
+        ) from error
 
 
 def public_question(
@@ -85,12 +94,20 @@ def public_question(
 
 
 def public_lesson(roadmap_slug: str, lesson: dict[str, Any]) -> dict[str, Any]:
+    forms = [
+        question
+        for question in questions_for(roadmap_slug).values()
+        if question["topic_slug"] == lesson["topic_slug"] and not question["exam"]
+    ]
     return {
         **{key: value for key, value in lesson.items() if key != "questions"},
         "roadmap_slug": roadmap_slug,
         "sources": curriculum()[roadmap_slug].get("sources", []),
         "practice_count": sum(not question["exam"] for question in lesson["questions"]),
         "question_count": len(lesson["questions"]),
+        "practice_form_count": len(forms),
+        "alternate_form_count": len(forms)
+        - sum(not question["exam"] for question in lesson["questions"]),
         "pass_score": PASS_SCORE,
     }
 

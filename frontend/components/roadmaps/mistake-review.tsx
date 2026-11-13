@@ -151,6 +151,10 @@ export function MistakeReview() {
             <p className="mt-2 text-xs leading-6 text-[#91a4bb]">
               Updated {utcDate(plan.generated_at)}. Daily counts use UTC.
             </p>
+            <p className="mt-2 max-w-3xl text-xs leading-6 text-[#91a4bb]">
+              Each question form keeps its own recall schedule. A review set includes at most one form of each
+              skill; answering it does not clear another form that is still due.
+            </p>
           </div>
           <button className="btn" type="button" onClick={refresh} disabled={loading}>
             {loading ? "Refreshing…" : "Refresh review plan"}

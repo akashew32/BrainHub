@@ -280,10 +280,18 @@ def list_assessment_sessions(
         )
     )
     selected = rows[:limit]
-    banks = {slug: questions_for(slug) for slug in curriculum()}
+    banks = {}
+    for slug in curriculum():
+        try:
+            banks[slug] = questions_for(slug)
+        except HTTPException as error:
+            if error.status_code != 503:
+                raise
+            banks[slug] = {}
     topics = {
         (slug, lesson["topic_slug"])
         for slug, data in curriculum().items()
+        if banks.get(slug)
         for lesson in data["lessons"]
     }
     return {

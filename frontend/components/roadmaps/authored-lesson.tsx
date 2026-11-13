@@ -95,7 +95,8 @@ export function AuthoredLesson({
       ) : null}
       <header className="panel p-6 sm:p-9">
         <p className="metric" style={{ color: accent }}>
-          Foundation · Authored lesson · {lesson.question_count} questions
+          Foundation · Authored lesson · {lesson.question_count} core questions
+          {lesson.alternate_form_count ? ` + ${lesson.alternate_form_count} alternate forms` : ""}
         </p>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-5xl">{lesson.title}</h1>
         <p className="mt-4 max-w-3xl leading-8 text-[#a6b7cc]">
@@ -129,6 +130,13 @@ export function AuthoredLesson({
           A new stage exam requires at least 75% independent practice in all six lessons. Correct answers
           completed without hints count toward that score.
         </p>
+        {lesson.alternate_form_count ? (
+          <p className="mt-2 text-xs leading-6 text-[#91a4bb]">
+            Each practice set covers {lesson.practice_count} distinct skills. Repeat practice varies the
+            exercise when another form is available; earlier valid passes remain evidence. Alternate forms
+            revisit these skills and do not add new topics.
+          </p>
+        ) : null}
       </header>
       <section className="panel p-6 sm:p-8" aria-labelledby="learning-outcomes">
         <h2 className="text-2xl font-semibold" id="learning-outcomes">

@@ -1,0 +1,494 @@
+{
+  "version": 1,
+  "roadmap_slug": "linear-algebra",
+  "forms": [
+    {
+      "id": "vector-arithmetic-and-linear-combinations-01--alt-01",
+      "family_id": "vector-arithmetic-and-linear-combinations-01",
+      "kind": "vector",
+      "prompt": "Two displacement vectors are $u=(1,-2,3)$ and $v=(2,1,-1)$. A route follows $u$ twice and $v$ three times. Find its net displacement $2u+3v$.",
+      "answer": [
+        8,
+        -1,
+        3
+      ],
+      "hints": [
+        "Multiply every coordinate of $u$ by $2$ and every coordinate of $v$ by $3$.",
+        "Add the scaled vectors coordinate by coordinate; a negative coordinate can cancel a positive coordinate."
+      ],
+      "solution": "The repeated displacements are $2u=(2,-4,6)$ and $3v=(6,3,-3)$. Their sum is $(2+6,-4+3,6-3)=(8,-1,3)$. The second coordinate is $-1$, not $-7$, because the second contribution is positive.",
+      "concept": "Coordinatewise vector arithmetic",
+      "difficulty": "foundation",
+      "exam": false
+    },
+    {
+      "id": "vector-arithmetic-and-linear-combinations-02--alt-01",
+      "family_id": "vector-arithmetic-and-linear-combinations-02",
+      "kind": "vector",
+      "prompt": "A target vector is assembled as $a(1,2)+b(3,-1)=(7,0)$. Find the ordered coefficient pair $[a,b]$.",
+      "answer": [
+        1,
+        2
+      ],
+      "hints": [
+        "The two coordinate equations are $a+3b=7$ and $2a-b=0$.",
+        "Use the zero second coordinate to express $b$ in terms of $a$, then substitute into the first equation."
+      ],
+      "solution": "The second coordinate gives $b=2a$. Substitution into $a+3b=7$ yields $a+6a=7$, so $a=1$ and $b=2$. Checking both coordinates gives $(1,2)+2(3,-1)=(7,0)$. The equations determine one coefficient pair, $[1,2]$.",
+      "concept": "Coefficients of a linear combination",
+      "difficulty": "core",
+      "exam": false
+    },
+    {
+      "id": "vector-arithmetic-and-linear-combinations-03--alt-01",
+      "family_id": "vector-arithmetic-and-linear-combinations-03",
+      "kind": "choice",
+      "prompt": "Let $u=(1,0,1)$ and $v=(0,1,1)$. Which vector lies outside $\\operatorname{span}\\{u,v\\}$?",
+      "answer": "$(0,0,1)$",
+      "hints": [
+        "Write a general combination as $au+bv=(a,b,a+b)$.",
+        "Every vector in this span has its third coordinate equal to the sum of its first two coordinates."
+      ],
+      "solution": "All combinations have the form $(a,b,a+b)$. The vectors $(2,3,5)$, $(-1,2,1)$, and $(4,-1,3)$ satisfy the required relation and are obtained using coefficients $(2,3)$, $(-1,2)$, and $(4,-1)$ respectively. For $(0,0,1)$, the first two coordinates force $a=b=0$, which would give third coordinate $0$. Therefore $(0,0,1)$ is the unique listed vector outside the span.",
+      "concept": "Membership in a span",
+      "difficulty": "core",
+      "exam": false,
+      "choices": [
+        "$(2,3,5)$",
+        "$(-1,2,1)$",
+        "$(0,0,1)$",
+        "$(4,-1,3)$"
+      ]
+    },
+    {
+      "id": "vector-arithmetic-and-linear-combinations-08--alt-01",
+      "family_id": "vector-arithmetic-and-linear-combinations-08",
+      "kind": "vector",
+      "prompt": "Let $u=(2,-1,5)$ and $v=(1,4,2)$. Solve the vector equation $3x+u=v$ for $x$. Enter its three coordinates.",
+      "answer": [
+        -0.3333333333333333,
+        1.6666666666666667,
+        -1
+      ],
+      "hints": [
+        "Subtract $u$ from both sides before dividing by $3$.",
+        "The intermediate vector is $v-u=(-1,5,-3)$. Divide each coordinate by $3$."
+      ],
+      "solution": "Subtracting $u$ gives $3x=v-u=(1-2,4-(-1),2-5)=(-1,5,-3)$. Hence $x=(-1/3,5/3,-1)$. Substitution verifies $3x+u=(-1,5,-3)+(2,-1,5)=(1,4,2)=v$.",
+      "concept": "Solving a vector equation",
+      "difficulty": "foundation",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "dot-products-norms-and-angles-02--alt-01",
+      "family_id": "dot-products-norms-and-angles-02",
+      "kind": "number",
+      "prompt": "A displacement is $v=(2,-4,3)$. Find its Euclidean norm. An exact square-root expression is allowed.",
+      "answer": 5.385164807134504,
+      "hints": [
+        "Square all three coordinates, including the negative coordinate.",
+        "The squared norm is $2^2+(-4)^2+3^2$. Take the nonnegative square root of that sum."
+      ],
+      "solution": "The squared Euclidean norm is $v\\cdot v=4+16+9=29$. Therefore $\\|v\\|=\\sqrt{29}\\approx5.385164807$. Adding absolute coordinates would give a different quantity; length here comes from the square root of the sum of squares.",
+      "concept": "Euclidean norm",
+      "difficulty": "foundation",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "dot-products-norms-and-angles-04--alt-01",
+      "family_id": "dot-products-norms-and-angles-04",
+      "kind": "number",
+      "prompt": "Choose the real number $k$ so that $(2,k,1)$ is perpendicular to $(3,-2,4)$.",
+      "answer": 5,
+      "hints": [
+        "Perpendicular vectors have dot product zero.",
+        "The dot product is $2(3)+k(-2)+1(4)=10-2k$."
+      ],
+      "solution": "Orthogonality requires $6-2k+4=0$, so $10-2k=0$ and $k=5$. Checking gives $(2,5,1)\\cdot(3,-2,4)=6-10+4=0$. The nonzero coefficient of $k$ makes this value unique.",
+      "concept": "Solving an orthogonality constraint",
+      "difficulty": "core",
+      "exam": false
+    },
+    {
+      "id": "dot-products-norms-and-angles-05--alt-01",
+      "family_id": "dot-products-norms-and-angles-05",
+      "kind": "number",
+      "prompt": "Find the angle in degrees between $u=(1,0)$ and $v=(-1,\\sqrt{3})$. Use the angle in $[0,180]$.",
+      "answer": 120,
+      "hints": [
+        "Use $\\cos\\theta=(u\\cdot v)/(\\|u\\|\\|v\\|)$.",
+        "The dot product is negative, so the angle must be obtuse. The two norms are $1$ and $2$."
+      ],
+      "solution": "Compute $u\\cdot v=-1$, $\\|u\\|=1$, and $\\|v\\|=\\sqrt{1+3}=2$. Thus $\\cos\\theta=-1/2$. The unique angle in $[0,180]$ degrees with this cosine is $120$ degrees. Taking $60$ degrees would incorrectly discard the sign of the dot product.",
+      "concept": "Angle from a dot product",
+      "difficulty": "core",
+      "exam": false
+    },
+    {
+      "id": "dot-products-norms-and-angles-06--alt-01",
+      "family_id": "dot-products-norms-and-angles-06",
+      "kind": "vector",
+      "prompt": "Find the orthogonal projection of $v=(3,4)$ onto the line spanned by $a=(2,-1)$. Enter the projected vector, not just its scalar coefficient.",
+      "answer": [
+        0.8,
+        -0.4
+      ],
+      "hints": [
+        "The projection is $p=((v\\cdot a)/(a\\cdot a))a$.",
+        "Here $v\\cdot a=2$ and $a\\cdot a=5$. Multiply the coefficient $2/5$ by both coordinates of $a$."
+      ],
+      "solution": "The projection coefficient is $(3(2)+4(-1))/(2^2+(-1)^2)=2/5$. Therefore $p=(2/5)(2,-1)=(4/5,-2/5)$. The residual is $v-p=(11/5,22/5)$, whose dot product with $a$ is $22/5-22/5=0$. This checks both that $p$ lies on the line and that the residual is perpendicular to it.",
+      "concept": "Projection onto a line",
+      "difficulty": "core",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "matrix-arithmetic-02--alt-01",
+      "family_id": "matrix-arithmetic-02",
+      "kind": "matrix",
+      "prompt": "Two data tables have matrices $A=\\begin{pmatrix}1&-1&0\\\\2&3&-2\\end{pmatrix}$ and $B=\\begin{pmatrix}0&2&1\\\\-1&0&4\\end{pmatrix}$. Compute the weighted update $3A+2B$.",
+      "answer": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          4,
+          9,
+          2
+        ]
+      ],
+      "hints": [
+        "Both tables are $2\\times3$, so add matching entries after scaling.",
+        "For example, the top-middle entry is $3(-1)+2(2)$; the bottom-right entry is $3(-2)+2(4)$."
+      ],
+      "solution": "Scale first: $3A=\\begin{pmatrix}3&-3&0\\\\6&9&-6\\end{pmatrix}$ and $2B=\\begin{pmatrix}0&4&2\\\\-2&0&8\\end{pmatrix}$. Entrywise addition gives $\\begin{pmatrix}3&1&2\\\\4&9&2\\end{pmatrix}$. The result retains the common $2\\times3$ shape.",
+      "concept": "Entrywise addition and scalar multiplication",
+      "difficulty": "foundation",
+      "exam": false
+    },
+    {
+      "id": "matrix-arithmetic-03--alt-01",
+      "family_id": "matrix-arithmetic-03",
+      "kind": "matrix",
+      "prompt": "Compute $AB$ for $A=\\begin{pmatrix}1&0&2\\\\-1&3&1\\end{pmatrix}$ and $B=\\begin{pmatrix}2&1\\\\0&-2\\\\1&4\\end{pmatrix}$.",
+      "answer": [
+        [
+          4,
+          9
+        ],
+        [
+          -1,
+          -3
+        ]
+      ],
+      "hints": [
+        "The inner dimensions are both $3$, and the result has shape $2\\times2$.",
+        "Use row-column dot products with three terms each, rather than multiplying matching positions."
+      ],
+      "solution": "The first row gives $1(2)+0(0)+2(1)=4$ and $1(1)+0(-2)+2(4)=9$. The second row gives $(-1)(2)+3(0)+1(1)=-1$ and $(-1)(1)+3(-2)+1(4)=-3$. Therefore $AB=\\begin{pmatrix}4&9\\\\-1&-3\\end{pmatrix}$.",
+      "concept": "Matrix multiplication",
+      "difficulty": "core",
+      "exam": false
+    },
+    {
+      "id": "matrix-arithmetic-05--alt-01",
+      "family_id": "matrix-arithmetic-05",
+      "kind": "matrix",
+      "prompt": "Transpose the column matrix $A=\\begin{pmatrix}2\\\\-3\\\\5\\end{pmatrix}$. Enter a matrix, preserving the distinction between a row matrix and a vector.",
+      "answer": [
+        [
+          2,
+          -3,
+          5
+        ]
+      ],
+      "hints": [
+        "A $3\\times1$ matrix becomes a $1\\times3$ matrix after transposition.",
+        "The entries move into one row, in their original top-to-bottom order."
+      ],
+      "solution": "Transposition sends entry $A_{i1}$ to $(A^T)_{1i}$. Thus $A^T=\\begin{pmatrix}2&-3&5\\end{pmatrix}$, a one-row, three-column matrix. Its nested matrix representation is $[[2,-3,5]]$, rather than a three-row column.",
+      "concept": "Transpose of a rectangular matrix",
+      "difficulty": "foundation",
+      "exam": false
+    },
+    {
+      "id": "matrix-arithmetic-08--alt-01",
+      "family_id": "matrix-arithmetic-08",
+      "kind": "choice",
+      "prompt": "A processing map $A$ has shape $2\\times3$, and a map $B$ has shape $3\\times2$. Which statement correctly describes the two matrix products?",
+      "answer": "$AB$ is $2\\times2$ and $BA$ is $3\\times3$.",
+      "hints": [
+        "Check the inner dimensions separately in each order.",
+        "The output shape comes from the outer dimensions; reversing factors can change that shape even when both products exist."
+      ],
+      "solution": "For $AB$, the shapes $(2\\times3)(3\\times2)$ have matching inner dimension $3$, giving a $2\\times2$ product. For $BA$, $(3\\times2)(2\\times3)$ have matching inner dimension $2$, giving a $3\\times3$ product. Both exist, but their shapes differ; the other listed statements either deny a valid product or use the wrong outer dimensions.",
+      "concept": "Order-dependent dimensional compatibility",
+      "difficulty": "core",
+      "exam": false,
+      "choices": [
+        "$AB$ exists, but $BA$ is undefined.",
+        "$AB$ is $3\\times3$ and $BA$ is $2\\times2$.",
+        "$AB$ is $2\\times2$ and $BA$ is $3\\times3$.",
+        "Both products are $2\\times2$."
+      ]
+    },
+    {
+      "id": "linear-transformations-in-coordinates-01--alt-01",
+      "family_id": "linear-transformations-in-coordinates-01",
+      "kind": "matrix",
+      "prompt": "A linear map $T:\\mathbb R^3\\to\\mathbb R^2$ sends the standard basis vectors to $T(e_1)=(1,-1)$, $T(e_2)=(2,0)$, and $T(e_3)=(-3,4)$. Give its standard matrix.",
+      "answer": [
+        [
+          1,
+          2,
+          -3
+        ],
+        [
+          -1,
+          0,
+          4
+        ]
+      ],
+      "hints": [
+        "There is one matrix column for each input basis vector.",
+        "Each column has two entries because the outputs lie in $\\mathbb R^2$. Keep the basis order $e_1,e_2,e_3$."
+      ],
+      "solution": "The standard matrix is $[T(e_1)\\ T(e_2)\\ T(e_3)]$. Placing the images as columns gives $A=\\begin{pmatrix}1&2&-3\\\\-1&0&4\\end{pmatrix}$. This $2\\times3$ shape is required for a map from $\\mathbb R^3$ to $\\mathbb R^2$; placing the images as rows would give the wrong domain and codomain dimensions.",
+      "concept": "Constructing a matrix from basis images",
+      "difficulty": "foundation",
+      "exam": false
+    },
+    {
+      "id": "linear-transformations-in-coordinates-04--alt-01",
+      "family_id": "linear-transformations-in-coordinates-04",
+      "kind": "vector",
+      "prompt": "Let $S(x,y)=(y,x)$ and $T(x,y)=(x+2y,y)$. Compute $(T\\circ S)(1,-2)$.",
+      "answer": [
+        0,
+        1
+      ],
+      "hints": [
+        "In $T\\circ S$, apply $S$ first.",
+        "After swapping the coordinates, the intermediate vector is $(-2,1)$. Now apply $T$ to that vector."
+      ],
+      "solution": "First, $S(1,-2)=(-2,1)$. Then $T(-2,1)=(-2+2(1),1)=(0,1)$. Reversing the maps would instead give $S(T(1,-2))=S(-3,-2)=(-2,-3)$, so the order matters.",
+      "concept": "Order of composition",
+      "difficulty": "core",
+      "exam": false
+    },
+    {
+      "id": "linear-transformations-in-coordinates-05--alt-01",
+      "family_id": "linear-transformations-in-coordinates-05",
+      "kind": "number",
+      "prompt": "The linear map $T:\\mathbb R^3\\to\\mathbb R^2$ is $T(x,y,z)=(2x-y+3z,4x-2y+6z)$. Find $k$ so that $(k,1,-1)$ belongs to its kernel.",
+      "answer": 2,
+      "hints": [
+        "A kernel input must make every output coordinate zero.",
+        "Substitution gives first coordinate $2k-4$; the second coordinate is twice the first."
+      ],
+      "solution": "Substituting $(k,1,-1)$ gives $T(k,1,-1)=(2k-1-3,4k-2-6)=(2k-4,4k-8)$. Both coordinates vanish precisely when $k=2$. Indeed $T(2,1,-1)=(0,0)$.",
+      "concept": "Kernel constraint",
+      "difficulty": "foundation",
+      "exam": false
+    },
+    {
+      "id": "linear-transformations-in-coordinates-06--alt-01",
+      "family_id": "linear-transformations-in-coordinates-06",
+      "kind": "choice",
+      "prompt": "What is the image of the linear map $T(x,y)=(x-y,-2x+2y,3x-3y)$ from $\\mathbb R^2$ to $\\mathbb R^3$?",
+      "answer": "The line $\\{(t,-2t,3t):t\\in\\mathbb R\\}$.",
+      "hints": [
+        "Factor all three coordinates using the same scalar $x-y$.",
+        "Every real value of $x-y$ is attainable, for example by taking $y=0$."
+      ],
+      "solution": "Factor the map as $T(x,y)=(x-y)(1,-2,3)$. Every output lies on the stated line, and every point $t(1,-2,3)$ is reached at input $(t,0)$. The line with second coordinate $2t$ has the wrong sign, the line with third coordinate $0$ excludes the actual output $(1,-2,3)$, and all of $\\mathbb R^3$ is too large: $(0,1,0)$ cannot be reached.",
+      "concept": "Image as a column span",
+      "difficulty": "core",
+      "exam": false,
+      "choices": [
+        "All of $\\mathbb R^3$.",
+        "The line $\\{(t,2t,3t):t\\in\\mathbb R\\}$.",
+        "The line $\\{(t,-2t,3t):t\\in\\mathbb R\\}$.",
+        "The line $\\{(t,-2t,0):t\\in\\mathbb R\\}$."
+      ]
+    },
+    {
+      "id": "rotations-reflections-projections-and-shears-01--alt-01",
+      "family_id": "rotations-reflections-projections-and-shears-01",
+      "kind": "vector",
+      "prompt": "A vector $v$ becomes $(5,-2)$ after a $90$-degree counterclockwise rotation about the origin. Find the original vector $v$.",
+      "answer": [
+        -2,
+        -5
+      ],
+      "hints": [
+        "Write $v=(x,y)$ and use the quarter-turn rule $(x,y)\\mapsto(-y,x)$.",
+        "Equate $(-y,x)$ with $(5,-2)$ to recover the two input coordinates."
+      ],
+      "solution": "The equation $(-y,x)=(5,-2)$ gives $y=-5$ and $x=-2$. Thus the original vector is $(-2,-5)$. Rotating it forward checks the answer: $(-(-5),-2)=(5,-2)$.",
+      "concept": "Counterclockwise quarter-turn",
+      "difficulty": "foundation",
+      "exam": false
+    },
+    {
+      "id": "rotations-reflections-projections-and-shears-02--alt-01",
+      "family_id": "rotations-reflections-projections-and-shears-02",
+      "kind": "vector",
+      "prompt": "Reflect $(-3,2)$ across the diagonal line $y=-x$. For this reflection the coordinate rule is $(x,y)\\mapsto(-y,-x)$.",
+      "answer": [
+        -2,
+        3
+      ],
+      "hints": [
+        "Swap the two coordinates, then change both signs.",
+        "The negative of the original second coordinate is the new first coordinate."
+      ],
+      "solution": "Applying the given reflection rule gives $(-2,-(-3))=(-2,3)$. It preserves squared length: $(-3)^2+2^2=13=(-2)^2+3^2$. Reflecting the result again returns $(-3,2)$, as a reflection must.",
+      "concept": "Reflection across a diagonal line",
+      "difficulty": "foundation",
+      "exam": false
+    },
+    {
+      "id": "rotations-reflections-projections-and-shears-05--alt-01",
+      "family_id": "rotations-reflections-projections-and-shears-05",
+      "kind": "matrix",
+      "prompt": "A vertical shear is defined by $S(x,y)=(x,y+3x)$. Give the matrix of its inverse in standard coordinates.",
+      "answer": [
+        [
+          1,
+          0
+        ],
+        [
+          -3,
+          1
+        ]
+      ],
+      "hints": [
+        "If the output is $(u,v)$, first solve $u=x$.",
+        "Then undo the vertical shift by solving $v=y+3u$ for $y$."
+      ],
+      "solution": "From $u=x$ and $v=y+3x$, recover $x=u$ and $y=v-3u$. Therefore $S^{-1}(u,v)=(u,-3u+v)$, whose matrix is $\\begin{pmatrix}1&0\\\\-3&1\\end{pmatrix}$. Multiplication by the original shear matrix $\\begin{pmatrix}1&0\\\\3&1\\end{pmatrix}$ gives the identity in either order.",
+      "concept": "Inverse of a shear",
+      "difficulty": "core",
+      "exam": false
+    },
+    {
+      "id": "rotations-reflections-projections-and-shears-06--alt-01",
+      "family_id": "rotations-reflections-projections-and-shears-06",
+      "kind": "matrix",
+      "prompt": "Construct the matrix of orthogonal projection onto the line $y=-x/2$ in $\\mathbb R^2$. Use a direction vector for the line.",
+      "answer": [
+        [
+          0.8,
+          -0.4
+        ],
+        [
+          -0.4,
+          0.2
+        ]
+      ],
+      "hints": [
+        "A nonzero direction vector is $a=(2,-1)$.",
+        "Use $P=aa^T/(a^Ta)$; the denominator is $5$, and the off-diagonal entries have negative signs."
+      ],
+      "solution": "For $a=(2,-1)$, the outer product is $aa^T=\\begin{pmatrix}4&-2\\\\-2&1\\end{pmatrix}$ and $a^Ta=5$. Thus $P=\\begin{pmatrix}4/5&-2/5\\\\-2/5&1/5\\end{pmatrix}$. It fixes the direction $(2,-1)$ and sends the perpendicular vector $(1,2)$ to zero. These checks confirm the target line and the orthogonal direction that is removed.",
+      "concept": "Projection matrix from a direction vector",
+      "difficulty": "core",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "affine-versus-linear-maps-01--alt-01",
+      "family_id": "affine-versus-linear-maps-01",
+      "kind": "choice",
+      "prompt": "Which map $\\mathbb R^2\\to\\mathbb R^2$ is affine but not linear?",
+      "answer": "$F(x,y)=(x+2y,3y-5)$.",
+      "hints": [
+        "Look for a constant translation together with a linear combination of coordinates.",
+        "An affine map with nonzero value at the origin is not linear. Products of input coordinates and absolute values need a separate check."
+      ],
+      "solution": "The correct map has $A=\\begin{pmatrix}1&2\\\\0&3\\end{pmatrix}$ and $b=(0,-5)$, so it is affine and fails $F(0)=0$. The map $(x+2y,3y)$ is linear, so it does not satisfy 'but not linear'. The other two maps vanish at zero but fail homogeneity: $(xy,y)$ sends $(2,2)$ to $(4,2)$ instead of twice $(1,1)$, and $(|x|,y)$ sends $(-1,0)$ to $(1,0)$ instead of the negative of its value at $(1,0)$. Since an affine map vanishing at zero would be linear, neither is affine.",
+      "concept": "Classifying affine and nonlinear maps",
+      "difficulty": "foundation",
+      "exam": false,
+      "choices": [
+        "$F(x,y)=(xy,y)$.",
+        "$F(x,y)=(x+2y,3y)$.",
+        "$F(x,y)=(x+2y,3y-5)$.",
+        "$F(x,y)=(|x|,y)$."
+      ]
+    },
+    {
+      "id": "affine-versus-linear-maps-05--alt-01",
+      "family_id": "affine-versus-linear-maps-05",
+      "kind": "vector",
+      "prompt": "Let $F(x,y)=(2x-y+b_1,x+3y+b_2)$, where $b_1,b_2$ are fixed but unknown. Compute $F(4,-1)-F(1,2)$.",
+      "answer": [
+        9,
+        -6
+      ],
+      "hints": [
+        "The same translation appears in both outputs and cancels on subtraction.",
+        "Use the input displacement $(4,-1)-(1,2)=(3,-3)$ with the linear part of $F$."
+      ],
+      "solution": "Translations cancel because $F(p)-F(q)=A(p-q)$. Here $A=\\begin{pmatrix}2&-1\\\\1&3\\end{pmatrix}$ and $p-q=(3,-3)$, so the output displacement is $(2(3)-(-3),3+3(-3))=(9,-6)$. Direct evaluation gives $(9+b_1,1+b_2)-(b_1,7+b_2)=(9,-6)$, independent of the unknown constants.",
+      "concept": "Affine maps act linearly on displacements",
+      "difficulty": "core",
+      "exam": false
+    },
+    {
+      "id": "affine-versus-linear-maps-06--alt-01",
+      "family_id": "affine-versus-linear-maps-06",
+      "kind": "vector",
+      "prompt": "The affine map is $F(x,y)=(x+y+1,2x-y+3)$. Find the input that maps to $(4,3)$.",
+      "answer": [
+        1,
+        2
+      ],
+      "hints": [
+        "Remove the translation first: the linear equations are $x+y=3$ and $2x-y=0$.",
+        "Adding those two equations eliminates $y$. Check the resulting pair in the original affine map."
+      ],
+      "solution": "The target conditions give $x+y+1=4$ and $2x-y+3=3$, hence $x+y=3$ and $2x-y=0$. Adding gives $3x=3$, so $x=1$ and then $y=2$. Substituting yields $F(1,2)=(4,3)$. The two independent equations determine a unique preimage.",
+      "concept": "Inverting an affine map",
+      "difficulty": "core",
+      "exam": false
+    },
+    {
+      "id": "affine-versus-linear-maps-08--alt-01",
+      "family_id": "affine-versus-linear-maps-08",
+      "kind": "matrix",
+      "prompt": "Give the $3\\times3$ homogeneous-coordinate matrix representing $F(x,y)=(3x-2y+1,2x+4y-5)$ acting on the column $(x,y,1)$.",
+      "answer": [
+        [
+          3,
+          -2,
+          1
+        ],
+        [
+          2,
+          4,
+          -5
+        ],
+        [
+          0,
+          0,
+          1
+        ]
+      ],
+      "hints": [
+        "The first two columns contain the coefficients of $x$ and $y$; the last column contains the translation.",
+        "The last row must preserve the final homogeneous coordinate $1$."
+      ],
+      "solution": "The linear part is $A=\\begin{pmatrix}3&-2\\\\2&4\\end{pmatrix}$ and the translation is $b=(1,-5)$. Placing them in the block matrix gives $\\begin{pmatrix}3&-2&1\\\\2&4&-5\\\\0&0&1\\end{pmatrix}$. Multiplication by $(x,y,1)$ produces $(3x-2y+1,2x+4y-5,1)$, exactly the required affine point.",
+      "concept": "Homogeneous-coordinate representation",
+      "difficulty": "core",
+      "exam": false
+    }
+  ]
+}

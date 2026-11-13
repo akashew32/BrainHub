@@ -15,6 +15,7 @@ from sqlalchemy.orm import Session
 from app.db.base import RoadmapAssessmentSession, RoadmapQuestionAttempt, StudyPreferences
 from app.services.assessment_sessions import frozen_entries, semantic_fingerprint
 from app.services.curriculum import curriculum, grade, questions_for
+from app.services.question_forms import family_id
 from app.services.recorded_time import daily_recording_totals
 from app.services.spaced_review import STATUS_ORDER, ReviewEvidence, schedule_history, utc_naive
 
@@ -22,8 +23,8 @@ NOTICE = "This short retrieval session uses practice questions. Estimates are pl
 ESTIMATED_SECONDS = {"choice": 60, "number": 90, "vector": 120, "matrix": 150, "proof": 180}
 REASONS = {
     "due": "Independent recall is due for this current practice question.",
-    "weak": "Try an unseen practice question from a lesson with an incorrect, assisted, or untracked answer.",
-    "next": "Build coverage with an unseen practice question in your authored foundation sequence.",
+    "weak": "Try an unattempted practice form from a lesson with an incorrect, assisted, or untracked answer.",
+    "next": "Practice an unattempted form in your authored foundation sequence. Alternate forms revisit an existing skill.",
 }
 
 
@@ -217,21 +218,34 @@ def _candidates(
             due.append((STATUS_ORDER[state.status], state.due_at, qid))
     due.sort()
     topic_order = {lesson["topic_slug"]: index for index, lesson in enumerate(data["lessons"])}
+    seen_families = {family_id(bank[qid]) for qid in history}
     unseen = sorted(
         (qid for qid in bank if qid not in history),
         key=lambda qid: (
             topic_order[bank[qid]["topic_slug"]],
             {"foundation": 0, "core": 1, "stretch": 2}.get(bank[qid]["difficulty"], 3),
+            qid != family_id(bank[qid]),
             qid,
         ),
     )
     weak = [qid for qid in unseen if bank[qid]["topic_slug"] in weak_topics]
     remaining = [qid for qid in unseen if bank[qid]["topic_slug"] not in weak_topics]
+    # Teach unattempted skills before filling the set with another form of an
+    # already attempted skill. Due recalls retain their precise physical form.
     ordered = (
         [(qid, "due") for _, _, qid in due]
-        + [(qid, "weak") for qid in weak]
-        + [(qid, "next") for qid in remaining]
+        + [(qid, "weak") for qid in weak if family_id(bank[qid]) not in seen_families]
+        + [(qid, "next") for qid in remaining if family_id(bank[qid]) not in seen_families]
+        + [(qid, "weak") for qid in weak if family_id(bank[qid]) in seen_families]
+        + [(qid, "next") for qid in remaining if family_id(bank[qid]) in seen_families]
     )
+    selected_families: set[str] = set()
+    distinct = []
+    for qid, code in ordered:
+        family = family_id(bank[qid])
+        if family not in selected_families:
+            distinct.append((qid, code))
+            selected_families.add(family)
     candidates = [
         {
             "question_id": qid,
@@ -239,9 +253,13 @@ def _candidates(
             "text": REASONS[code],
             "estimated_seconds": ESTIMATED_SECONDS[bank[qid]["kind"]],
         }
-        for qid, code in ordered
+        for qid, code in distinct
     ]
-    return candidates, {"due": len(due), "weak": len(weak), "unseen": len(unseen)}
+    return candidates, {
+        "due": sum(code == "due" for _, code in distinct),
+        "weak": sum(code == "weak" for _, code in distinct),
+        "unseen": sum(code != "due" for _, code in distinct),
+    }
 
 
 def study_assignment(
@@ -321,7 +339,7 @@ def study_plan(
                     "reason_counts",
                 )
             },
-            "reason": "Practice questions are ordered by due recall, unseen material in weak lessons, then your authored foundation sequence.",
+            "reason": "Due recall comes first, followed by unattempted skills in weak lessons and the foundation sequence, then alternate forms of attempted skills. Each set covers distinct skills.",
         }
         break
     return {

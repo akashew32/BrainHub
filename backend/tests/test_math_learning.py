@@ -34,7 +34,7 @@ def test_authored_curriculum_has_thirty_substantive_lessons_and_three_hundred_qu
                 assert "strongest first move" not in question["prompt"]
                 assert grade(question, question["answer"]) == (True, None)
                 question_ids.append((slug, question["id"]))
-        assert len(questions_for(slug)) == 60
+        assert len(questions_for(slug)) == 84
     assert len(set(question_ids)) == len(question_ids) == 300
 
 

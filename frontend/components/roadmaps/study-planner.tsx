@@ -249,7 +249,7 @@ function StudyPlannerWorkspace() {
                     {roadmapMap[subject.slug]?.title ?? subject.slug}
                   </p>
                   <p>
-                    {subject.due} due · {subject.weak} weak · {subject.unseen} unseen
+                    {subject.due} due · {subject.weak} weak · {subject.unseen} available skills
                   </p>
                 </div>
               ))}

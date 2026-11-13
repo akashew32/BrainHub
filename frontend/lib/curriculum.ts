@@ -2,6 +2,7 @@ import type { AssessmentMode } from "@/lib/assessment-modes";
 
 export type MathQuestion = {
   id: string;
+  family_id?: string;
   kind: "number" | "vector" | "matrix" | "choice" | "proof";
   prompt: string;
   choices?: string[];
@@ -29,6 +30,8 @@ export type AuthoredLesson = {
   sources: Array<{ title: string; url: string }>;
   practice_count: number;
   question_count: number;
+  practice_form_count?: number;
+  alternate_form_count?: number;
   pass_score: number;
 };
 

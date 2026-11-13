@@ -1,0 +1,423 @@
+{
+  "version": 1,
+  "roadmap_slug": "calculus",
+  "forms": [
+    {
+      "id": "function-composition-and-inverses-01--alt-01",
+      "family_id": "function-composition-and-inverses-01",
+      "kind": "number",
+      "concept": "composition order",
+      "difficulty": "foundation",
+      "prompt": "A function table records $g(-2)=5$. A second function is $f(u)=3u-4$. What is $(f\\circ g)(-2)$?",
+      "answer": 11,
+      "hints": [
+        "The rightmost function acts first: the table already gives its output at $-2$.",
+        "Feed that output into $f$; do not evaluate $f(-2)$."
+      ],
+      "solution": "Composition means $(f\\circ g)(-2)=f(g(-2))$. The table gives $g(-2)=5$, so the remaining calculation is $f(5)=3\\cdot5-4=11$. Only the listed table value is needed; a formula for $g$ at other inputs is irrelevant.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "function-composition-and-inverses-03--alt-01",
+      "family_id": "function-composition-and-inverses-03",
+      "kind": "number",
+      "concept": "inverse evaluation",
+      "difficulty": "foundation",
+      "prompt": "A calibration map is $h(x)=(x-6)/4$ on $\\mathbb R$. Which original input produced the reading $-2$? Enter $h^{-1}(-2)$.",
+      "answer": -2,
+      "hints": [
+        "An inverse-value question asks you to solve $h(x)=-2$.",
+        "Multiply by four before adding six."
+      ],
+      "solution": "Solve $(x-6)/4=-2$ to recover the input rather than taking a reciprocal. Multiplication gives $x-6=-8$, hence $x=-2$. Substitution checks $h(-2)=(-2-6)/4=-2$. The nonzero slope makes this affine map bijective on $\\mathbb R$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "function-composition-and-inverses-05--alt-01",
+      "family_id": "function-composition-and-inverses-05",
+      "kind": "vector",
+      "concept": "domain exclusions",
+      "difficulty": "core",
+      "prompt": "Let $f(u)=1/(u-3)$ and $g(x)=x^2-2x$. List, in increasing order, all excluded real inputs of $(f\\circ g)(x)$.",
+      "answer": [
+        -1,
+        3
+      ],
+      "hints": [
+        "The polynomial $g$ accepts every real input, but $f$ excludes an inner output of three.",
+        "Solve $x^2-2x-3=0$ by factoring."
+      ],
+      "solution": "The composite is $1/(x^2-2x-3)$. Its denominator factors as $(x-3)(x+1)$, so it vanishes exactly at $x=3$ and $x=-1$. Those inputs remain excluded from the original composite. In increasing order the requested vector is $[-1,3]$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "function-composition-and-inverses-07--alt-01",
+      "family_id": "function-composition-and-inverses-07",
+      "kind": "number",
+      "concept": "rational inverse",
+      "difficulty": "core",
+      "prompt": "For $f(x)=(3x+2)/(x-1)$ with $x\\ne1$, find $f^{-1}(5)$.",
+      "answer": 3.5,
+      "hints": [
+        "Set the output equal to five and solve for the original input.",
+        "Cross-multiply only while retaining the exclusion $x\\ne1$."
+      ],
+      "solution": "The equation $(3x+2)/(x-1)=5$ gives $3x+2=5x-5$. Thus $2x=7$ and $x=7/2$. This input is not the excluded pole $1$, and direct substitution yields $5$. Therefore $f^{-1}(5)=7/2$, rather than the reciprocal $1/f(5)$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "polynomial-and-rational-behavior-01--alt-01",
+      "family_id": "polynomial-and-rational-behavior-01",
+      "kind": "number",
+      "concept": "root multiplicity",
+      "difficulty": "foundation",
+      "prompt": "What is the multiplicity of the root $x=2$ of $p(x)=(x^2-4x+4)^2(x+3)$?",
+      "answer": 4,
+      "hints": [
+        "Factor the quadratic before counting repeated linear factors.",
+        "Squaring a factor that already equals $(x-2)^2$ doubles its exponent."
+      ],
+      "solution": "The quadratic is $x^2-4x+4=(x-2)^2$. Therefore $p(x)=(x-2)^4(x+3)$. The remaining factor is nonzero at $x=2$, since $2+3=5$, so there are exactly four copies of $x-2$. Its multiplicity is four.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "polynomial-and-rational-behavior-03--alt-01",
+      "family_id": "polynomial-and-rational-behavior-03",
+      "kind": "number",
+      "concept": "horizontal asymptote",
+      "difficulty": "foundation",
+      "prompt": "Give the height of the horizontal asymptote of $R(x)=(-9x^3+2)/(6x^3-x^2+1)$ as $x\\to-\\infty$.",
+      "answer": -1.5,
+      "hints": [
+        "The numerator and denominator have the same degree.",
+        "Divide both by $x^3$ and retain the leading coefficients."
+      ],
+      "solution": "After division by $x^3$, the ratio becomes $(-9+2/x^3)/(6-1/x+1/x^3)$. The terms with negative powers vanish as $x\\to-\\infty$, leaving $-9/6=-3/2$. The horizontal asymptote is $y=-3/2$; the negative direction of the limit does not reverse this ratio.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "polynomial-and-rational-behavior-04--alt-01",
+      "family_id": "polynomial-and-rational-behavior-04",
+      "kind": "vector",
+      "concept": "removable discontinuity",
+      "difficulty": "core",
+      "prompt": "For $R(x)=(x^2+x-6)/(x+3)$, give the removable hole's coordinates $[x,y]$.",
+      "answer": [
+        -3,
+        -5
+      ],
+      "hints": [
+        "Factor the numerator and identify the canceled factor.",
+        "Evaluate the simplified expression at the excluded input to obtain the missing height."
+      ],
+      "solution": "Factor $x^2+x-6=(x+3)(x-2)$. For $x\\ne-3$, the graph agrees with $y=x-2$. The original denominator still excludes $x=-3$, whose simplified height would be $-3-2=-5$. Thus the hole is $(-3,-5)$, not a vertical asymptote.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "polynomial-and-rational-behavior-07--alt-01",
+      "family_id": "polynomial-and-rational-behavior-07",
+      "kind": "vector",
+      "concept": "polynomial division",
+      "difficulty": "core",
+      "prompt": "Write $(2x^2+3x-4)/(x+2)=ax+b+r/(x+2)$ for $x\\ne-2$. Return $[a,b,r]$.",
+      "answer": [
+        2,
+        -1,
+        -2
+      ],
+      "hints": [
+        "Divide the leading term $2x^2$ by $x$, then subtract the resulting product.",
+        "Check the identity $2x^2+3x-4=(x+2)(ax+b)+r$."
+      ],
+      "solution": "The first quotient term is $2x$, leaving $-x-4$ after subtracting $2x(x+2)$. The next term is $-1$, and subtracting $-(x+2)$ leaves $-2$. Hence the ratio is $2x-1-2/(x+2)$ and the coefficient vector is $[2,-1,-2]$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "exponential-and-logarithmic-functions-01--alt-01",
+      "family_id": "exponential-and-logarithmic-functions-01",
+      "kind": "number",
+      "concept": "logarithm definition",
+      "difficulty": "foundation",
+      "prompt": "Evaluate $\\log_{1/2}8$.",
+      "answer": -3,
+      "hints": [
+        "Translate the logarithm into the equation $(1/2)^y=8$.",
+        "A negative exponent turns a reciprocal base into a positive power of two."
+      ],
+      "solution": "By definition, $y=\\log_{1/2}8$ satisfies $(1/2)^y=8=2^3$. Since $(1/2)^y=2^{-y}$ and powers of two are injective, $-y=3$. Thus $y=-3$, consistent with the decreasing logarithm whose base lies between zero and one.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "exponential-and-logarithmic-functions-04--alt-01",
+      "family_id": "exponential-and-logarithmic-functions-04",
+      "kind": "choice",
+      "concept": "logarithm domain",
+      "difficulty": "core",
+      "prompt": "Which is the real domain of $h(x)=\\ln((x-2)(x+1))$?",
+      "answer": "$x<-1$ or $x>2$",
+      "hints": [
+        "A real logarithm requires its entire argument to be strictly positive.",
+        "Use the signs of the two factors on the intervals cut by $-1$ and $2$."
+      ],
+      "solution": "The argument must satisfy $(x-2)(x+1)>0$. Both factors are negative for $x<-1$ and both positive for $x>2$; between the roots they have opposite signs. At either root the logarithm would receive zero. Therefore the domain is $(-\\infty,-1)\\cup(2,\\infty)$.",
+      "exam": false,
+      "choices": [
+        "$x<-1$ or $x>2$",
+        "$x\\le-1$ or $x\\ge2$",
+        "$-1<x<2$",
+        "$x>2$ only"
+      ]
+    },
+    {
+      "id": "exponential-and-logarithmic-functions-05--alt-01",
+      "family_id": "exponential-and-logarithmic-functions-05",
+      "kind": "number",
+      "concept": "doubling time",
+      "difficulty": "core",
+      "prompt": "A population follows an exponential model that doubles every four years. What factor multiplies its present amount to give its amount twelve years earlier?",
+      "answer": 0.125,
+      "hints": [
+        "Twelve years span three of the stated doubling intervals, but the question moves backward in time.",
+        "Undo each forward doubling by dividing by two."
+      ],
+      "solution": "The twelve-year span contains $12/4=3$ doubling intervals. Moving forward multiplies by $2^3=8$, so recovering the earlier amount requires its reciprocal, $2^{-3}=1/8$. Equivalently, if the present amount is $A$, the amount twelve years earlier was $A/8$ because three subsequent doublings restore $A$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "exponential-and-logarithmic-functions-08--alt-01",
+      "family_id": "exponential-and-logarithmic-functions-08",
+      "kind": "number",
+      "concept": "continuous growth",
+      "difficulty": "core",
+      "prompt": "A model is $A(t)=120e^{kt}$ and satisfies $A(4)=30$. Find $A(2)$.",
+      "answer": 60,
+      "hints": [
+        "The four-unit factor is $30/120$.",
+        "The positive two-unit factor has a square equal to the four-unit factor."
+      ],
+      "solution": "From $120e^{4k}=30$, obtain $e^{4k}=1/4$. Since an exponential is positive, $e^{2k}$ is the positive square root, $1/2$. Therefore $A(2)=120(1/2)=60$. Interpolating halfway in time uses a multiplicative square root, not the arithmetic average of the two amounts.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "trigonometric-functions-and-identities-01--alt-01",
+      "family_id": "trigonometric-functions-and-identities-01",
+      "kind": "number",
+      "concept": "radian conversion",
+      "difficulty": "foundation",
+      "prompt": "An angle travels three quarters of a complete turn clockwise from the positive horizontal axis. Using a negative angle, give its coefficient $c$ in $c\\pi$ radians.",
+      "answer": -1.5,
+      "hints": [
+        "One complete turn is $2\\pi$ radians.",
+        "Clockwise motion uses the negative orientation requested in the question."
+      ],
+      "solution": "The magnitude of three quarters of a turn is $(3/4)2\\pi=3\\pi/2$. The requested clockwise orientation makes the angle negative, so it is $-3\\pi/2$. Its coefficient is $c=-3/2$. A coterminal positive angle would not satisfy the explicitly requested negative-angle convention.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "trigonometric-functions-and-identities-03--alt-01",
+      "family_id": "trigonometric-functions-and-identities-03",
+      "kind": "number",
+      "concept": "quadrant signs",
+      "difficulty": "foundation",
+      "prompt": "If $\\sin\\theta=-5/13$ and $\\theta$ is in quadrant III, find $\\cos\\theta$.",
+      "answer": -0.9230769230769231,
+      "hints": [
+        "Use $\\cos^2\\theta=1-\\sin^2\\theta$.",
+        "Cosine is negative in quadrant III, so select the negative square root."
+      ],
+      "solution": "The Pythagorean identity gives $\\cos^2\\theta=1-25/169=144/169$. Thus $|\\cos\\theta|=12/13$. In quadrant III the horizontal coordinate is negative, so $\\cos\\theta=-12/13$. The sign requires the quadrant information; the squared identity alone leaves two possible values.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "trigonometric-functions-and-identities-05--alt-01",
+      "family_id": "trigonometric-functions-and-identities-05",
+      "kind": "number",
+      "concept": "period",
+      "difficulty": "core",
+      "prompt": "For $f(x)=-4\\sin(3x/2+\\pi/5)+2$, give the coefficient $c$ in its fundamental period $c\\pi$.",
+      "answer": 1.3333333333333333,
+      "hints": [
+        "Only the coefficient of $x$ inside the sine determines the period.",
+        "Use $T=2\\pi/|B|$ with $B=3/2$."
+      ],
+      "solution": "The coefficient of $x$ is $B=3/2$, so the fundamental period is $2\\pi/(3/2)=4\\pi/3$. The amplitude sign, vertical translation, and phase shift do not change the period. Therefore the requested coefficient is $c=4/3$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "trigonometric-functions-and-identities-06--alt-01",
+      "family_id": "trigonometric-functions-and-identities-06",
+      "kind": "vector",
+      "concept": "trigonometric equations",
+      "difficulty": "core",
+      "prompt": "Solve $2\\sin\\theta=\\sqrt3$ on $[0,2\\pi)$. Return the solutions as coefficients of $\\pi$, in increasing order.",
+      "answer": [
+        0.3333333333333333,
+        0.6666666666666666
+      ],
+      "hints": [
+        "First isolate the sine value and find its unit-circle reference angle.",
+        "Sine is positive in quadrants I and II; keep only the requested interval."
+      ],
+      "solution": "The equation becomes $\\sin\\theta=\\sqrt3/2$. Its reference angle is $\\pi/3$, giving the quadrant-I angle $\\pi/3$ and the quadrant-II angle $\\pi-\\pi/3=2\\pi/3$. No other angles in $[0,2\\pi)$ have this sine. The coefficient vector is $[1/3,2/3]$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "parametric-and-polar-curves-01--alt-01",
+      "family_id": "parametric-and-polar-curves-01",
+      "kind": "vector",
+      "concept": "parametric evaluation",
+      "difficulty": "foundation",
+      "prompt": "A moving point has $x(t)=5-2t$ and $y(t)=(t+1)^2$. Find $[x,y]$ at $t=-2$.",
+      "answer": [
+        9,
+        1
+      ],
+      "hints": [
+        "Use the same parameter value in both coordinates.",
+        "In the second coordinate, add one before squaring."
+      ],
+      "solution": "Substitution gives $x(-2)=5-2(-2)=9$ and $y(-2)=(-2+1)^2=1$. Hence the point is $(9,1)$ and the requested vector is $[9,1]$. A negative parameter is a permitted input here; it does not itself mean that either Cartesian coordinate must be negative.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "parametric-and-polar-curves-02--alt-01",
+      "family_id": "parametric-and-polar-curves-02",
+      "kind": "vector",
+      "concept": "polar conversion",
+      "difficulty": "foundation",
+      "prompt": "Convert the signed polar coordinates $(r,\\theta)=(-4,\\pi)$ to Cartesian coordinates $[x,y]$.",
+      "answer": [
+        4,
+        0
+      ],
+      "hints": [
+        "Use $x=r\\cos\\theta$ and $y=r\\sin\\theta$ even when $r$ is negative.",
+        "At angle $\\pi$, cosine is $-1$ and sine is zero."
+      ],
+      "solution": "The conversion formulas give $x=(-4)\\cos\\pi=(-4)(-1)=4$ and $y=(-4)\\sin\\pi=0$. Thus the Cartesian point is $(4,0)$. The negative radius reverses the direction indicated by $\\pi$, placing the point on the positive horizontal axis.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "parametric-and-polar-curves-04--alt-01",
+      "family_id": "parametric-and-polar-curves-04",
+      "kind": "choice",
+      "concept": "negative polar radii",
+      "difficulty": "core",
+      "prompt": "Which signed polar point describes the same Cartesian point as $(3,-\\pi/6)$?",
+      "answer": "$(-3,5\\pi/6)$",
+      "hints": [
+        "Changing the sign of the radius requires adding $\\pi$ to the angle.",
+        "Compare directions modulo $2\\pi$, rather than comparing angle symbols alone."
+      ],
+      "solution": "The identity $(r,\\theta)=(-r,\\theta+\\pi)$ gives $(3,-\\pi/6)=(-3,5\\pi/6)$. Both convert to $(3\\sqrt3/2,-3/2)$. Changing only the sign of the radius or adding $\\pi$ without changing that sign gives the opposite point, not an equivalent representation.",
+      "exam": false,
+      "choices": [
+        "$(-3,5\\pi/6)$",
+        "$(-3,-\\pi/6)$",
+        "$(3,\\pi/6)$",
+        "$(-3,\\pi/3)$"
+      ]
+    },
+    {
+      "id": "parametric-and-polar-curves-07--alt-01",
+      "family_id": "parametric-and-polar-curves-07",
+      "kind": "vector",
+      "concept": "polar circle",
+      "difficulty": "core",
+      "prompt": "Convert $r=-8\\sin\\theta$ to a Cartesian circle and return $[center_x,center_y,radius]$.",
+      "answer": [
+        0,
+        -4,
+        4
+      ],
+      "hints": [
+        "Multiply by $r$ and replace $r^2$ and $r\\sin\\theta$ with Cartesian expressions.",
+        "Complete the square in $y$; the radius must be nonnegative."
+      ],
+      "solution": "Multiplication gives $r^2=-8r\\sin\\theta$, hence $x^2+y^2=-8y$. Completing the square yields $x^2+(y+4)^2=16$. The center is $(0,-4)$ and the radius is $4$, so the vector is $[0,-4,4]$. The origin is on the circle and is also represented in the original polar equation.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "sequences-and-informal-limiting-behavior-02--alt-01",
+      "family_id": "sequences-and-informal-limiting-behavior-02",
+      "kind": "number",
+      "concept": "recursive terms",
+      "difficulty": "foundation",
+      "prompt": "Let $a_1=4$ and $a_{n+1}=3a_n-2$ for $n\\ge1$. Find $a_4$.",
+      "answer": 82,
+      "hints": [
+        "The initial value is already $a_1$, so three updates reach $a_4$.",
+        "Compute successive values rather than substituting the index into the recurrence."
+      ],
+      "solution": "Starting from $a_1=4$, obtain $a_2=3(4)-2=10$. Then $a_3=3(10)-2=28$ and $a_4=3(28)-2=82$. Each update uses the preceding term, and the initial index means that four updates would go one term too far.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "sequences-and-informal-limiting-behavior-03--alt-01",
+      "family_id": "sequences-and-informal-limiting-behavior-03",
+      "kind": "number",
+      "concept": "rational sequence limits",
+      "difficulty": "foundation",
+      "prompt": "Find $\\lim_{n\\to\\infty}(4n^2-n+7)/(-2n^2+3n+1)$.",
+      "answer": -2,
+      "hints": [
+        "Divide numerator and denominator by the highest power $n^2$.",
+        "The smaller inverse powers vanish, leaving a nonzero limiting denominator."
+      ],
+      "solution": "Dividing by $n^2$ produces $(4-1/n+7/n^2)/(-2+3/n+1/n^2)$. All terms involving $1/n$ or $1/n^2$ tend to zero. The denominator tends to $-2$, so the ratio tends to $4/(-2)=-2$. Its negative leading coefficient determines the sign.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "sequences-and-informal-limiting-behavior-07--alt-01",
+      "family_id": "sequences-and-informal-limiting-behavior-07",
+      "kind": "number",
+      "concept": "eventual accuracy",
+      "difficulty": "core",
+      "prompt": "What is the smallest positive integer $n$ for which $|3/(2n+1)|<1/10$?",
+      "answer": 15,
+      "hints": [
+        "For positive integers $n$, the denominator is positive, so cross-multiplication preserves the inequality.",
+        "Retain the strict inequality and check the neighboring integer."
+      ],
+      "solution": "The condition is $3/(2n+1)<1/10$, which is equivalent to $30<2n+1$, hence $n>29/2$. The smallest integer is $15$. Indeed, $3/31<1/10$, while at $n=14$ the value $3/29$ is larger than $1/10$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "sequences-and-informal-limiting-behavior-08--alt-01",
+      "family_id": "sequences-and-informal-limiting-behavior-08",
+      "kind": "number",
+      "concept": "stable recurrence",
+      "difficulty": "core",
+      "prompt": "For $a_1=10$ and $a_{n+1}=-a_n/2+12$, find $\\lim_{n\\to\\infty}a_n$.",
+      "answer": 8,
+      "hints": [
+        "First solve the fixed-point equation $L=-L/2+12$.",
+        "Then subtract that fixed point from the recurrence and inspect the error multiplier."
+      ],
+      "solution": "The fixed-point equation gives $(3/2)L=12$, so $L=8$. More than this guess is needed: subtracting eight yields $a_{n+1}-8=-(a_n-8)/2$. Hence $a_n-8=2(-1/2)^{n-1}$, whose magnitude tends to zero. The terms alternate around eight and converge to it.",
+      "exam": false,
+      "tolerance": 0.000001
+    }
+  ]
+}

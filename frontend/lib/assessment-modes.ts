@@ -17,7 +17,7 @@ export const ASSESSMENT_MODE_CONFIG: Record<AssessmentMode, ModeConfig> = {
   practice: {
     title: () => "Practice and mastery",
     intro:
-      "Complete the lesson practice set to check your understanding. A score of 75% completes it. Worked feedback appears after submission.",
+      "Complete eight questions covering eight distinct skills. Repeat practice varies the exercise when an alternate form is available. A score of 75% completes the lesson; exam readiness requires 75% independently correct. Worked feedback appears after submission.",
     supportsHints: true,
     resultKind: "qualification",
     showsPassThreshold: true,

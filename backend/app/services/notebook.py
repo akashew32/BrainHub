@@ -139,11 +139,17 @@ def _notes(db: Session, user_id: int) -> dict[tuple[str, str], RoadmapQuestionNo
 def _availability() -> dict[tuple[str, str], str]:
     # Current curriculum is consulted only for navigation availability, never
     # for historical prompts, answer keys or worked feedback.
-    return {
-        (slug, qid): question["topic_slug"]
-        for slug in curriculum()
-        for qid, question in questions_for(slug).items()
-    }
+    available = {}
+    for slug in curriculum():
+        try:
+            bank = questions_for(slug)
+        except HTTPException as error:
+            if error.status_code != 503:
+                raise
+            continue
+        for qid, question in bank.items():
+            available[(slug, qid)] = question["topic_slug"]
+    return available
 
 
 def _entries(

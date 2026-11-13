@@ -1,0 +1,442 @@
+{
+  "version": 1,
+  "roadmap_slug": "real-analysis",
+  "forms": [
+    {
+      "id": "propositions-quantifiers-and-negation-02--alt-01",
+      "family_id": "propositions-quantifiers-and-negation-02",
+      "kind": "number",
+      "concept": "finite quantified domain",
+      "difficulty": "foundation",
+      "prompt": "How many integers in $D=\\{-3,-2,-1,0,1,2,3,4\\}$ satisfy $(x-1)^2\\le4$?",
+      "answer": 5,
+      "hints": [
+        "The square inequality is equivalent to $|x-1|\\le2$.",
+        "List the allowed integers between the two boundary values, including equality."
+      ],
+      "solution": "The condition $|x-1|\\le2$ gives $-1\\le x\\le3$. Intersecting with the specified finite domain yields $\\{-1,0,1,2,3\\}$. All five satisfy the predicate, including the equality cases $x=-1$ and $x=3$. The quantified domain, not all real numbers, is being counted.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "propositions-quantifiers-and-negation-03--alt-01",
+      "family_id": "propositions-quantifiers-and-negation-03",
+      "kind": "choice",
+      "concept": "universal negation",
+      "difficulty": "foundation",
+      "prompt": "Let $f:\\mathbb R\\to\\mathbb R$ be arbitrary. Which statement is the negation of $\\forall x\\in\\mathbb R:\\ f(x)>2$?",
+      "answer": "$\\exists x\\in\\mathbb R:\\ f(x)\\le2$",
+      "hints": [
+        "Negating a universal statement requires one violating input.",
+        "The negation of a strict greater-than comparison includes equality."
+      ],
+      "solution": "A universal claim fails when at least one input fails its predicate. The predicate $f(x)>2$ fails precisely when $f(x)\\le2$. Therefore the negation is $\\exists x\\in\\mathbb R:\\ f(x)\\le2$. Requiring every input to fail would be stronger than merely negating the original assertion.",
+      "exam": false,
+      "choices": [
+        "$\\exists x\\in\\mathbb R:\\ f(x)\\le2$",
+        "$\\forall x\\in\\mathbb R:\\ f(x)\\le2$",
+        "$\\exists x\\in\\mathbb R:\\ f(x)>2$",
+        "$\\forall x\\in\\mathbb R:\\ f(x)>2$"
+      ]
+    },
+    {
+      "id": "propositions-quantifiers-and-negation-04--alt-01",
+      "family_id": "propositions-quantifiers-and-negation-04",
+      "kind": "choice",
+      "concept": "nested negation",
+      "difficulty": "core",
+      "prompt": "For a real sequence $(a_n)$, which statement negates $\\forall\\epsilon>0\\;\\exists N\\in\\mathbb N\\;\\forall n\\ge N:\\ |a_n-2|<\\epsilon$?",
+      "answer": "$\\exists\\epsilon>0\\;\\forall N\\in\\mathbb N\\;\\exists n\\ge N:\\ |a_n-2|\\ge\\epsilon$",
+      "hints": [
+        "Reverse each quantifier as you move through the statement.",
+        "Failure of eventual closeness means arbitrarily late violating terms for one fixed tolerance."
+      ],
+      "solution": "Negation changes $\\forall\\epsilon$ to $\\exists\\epsilon$, then $\\exists N$ to $\\forall N$, then the final universal tail condition to the existence of a violating tail term. The inequality $|a_n-2|<\\epsilon$ becomes $|a_n-2|\\ge\\epsilon$. Thus one positive tolerance defeats every proposed threshold, without requiring every later term to violate it.",
+      "exam": false,
+      "choices": [
+        "$\\exists\\epsilon>0\\;\\forall N\\in\\mathbb N\\;\\exists n\\ge N:\\ |a_n-2|\\ge\\epsilon$",
+        "$\\forall\\epsilon>0\\;\\forall N\\in\\mathbb N\\;\\exists n\\ge N:\\ |a_n-2|\\ge\\epsilon$",
+        "$\\exists\\epsilon>0\\;\\exists N\\in\\mathbb N\\;\\forall n\\ge N:\\ |a_n-2|\\ge\\epsilon$",
+        "$\\forall\\epsilon>0\\;\\exists N\\in\\mathbb N\\;\\forall n\\ge N:\\ |a_n-2|\\ge\\epsilon$"
+      ]
+    },
+    {
+      "id": "propositions-quantifiers-and-negation-07--alt-01",
+      "family_id": "propositions-quantifiers-and-negation-07",
+      "kind": "number",
+      "concept": "counterexample witness",
+      "difficulty": "core",
+      "prompt": "The claim $\\forall x\\in\\mathbb R:\\ (x-3)^2\\ge4$ is false. Give the smallest nonnegative INTEGER $x$ that is a counterexample.",
+      "answer": 2,
+      "hints": [
+        "A counterexample must make $(x-3)^2<4$, rather than equal to four.",
+        "Check the nonnegative integers in order; the problem does not ask for a minimum among real witnesses."
+      ],
+      "solution": "For $x=0$ the square is $9$, and for $x=1$ it is $4$, so neither violates the claimed inequality. At $x=2$ the square is $1<4$. Therefore the smallest nonnegative integer witness is two. The integer restriction matters because the real counterexample interval $(1,5)$ has no smallest element.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "direct-contrapositive-and-contradiction-proofs-01--alt-01",
+      "family_id": "direct-contrapositive-and-contradiction-proofs-01",
+      "kind": "choice",
+      "concept": "direct parity proof",
+      "difficulty": "foundation",
+      "prompt": "For arbitrary integers $r,s$, which identity directly proves that the sum of the odd integers $2r+1$ and $2s+1$ is even?",
+      "answer": "$(2r+1)+(2s+1)=2(r+s+1)$",
+      "hints": [
+        "Expand the sum and collect its constant terms.",
+        "An even integer must be written as twice an integer; positivity is irrelevant."
+      ],
+      "solution": "Expanding gives $2r+2s+2=2(r+s+1)$. Since $r+s+1$ is an integer, the sum has the defining form of an even integer. This argument works for negative, zero, and positive choices of $r,s$; a few numerical examples alone would not prove the universal claim.",
+      "exam": false,
+      "choices": [
+        "$(2r+1)+(2s+1)=2(r+s+1)$",
+        "$(2r+1)+(2s+1)=2(r+s)+1$",
+        "$(2r+1)+(2s+1)=2rs$",
+        "$(2r+1)+(2s+1)=2(r+s+2)$"
+      ]
+    },
+    {
+      "id": "direct-contrapositive-and-contradiction-proofs-02--alt-01",
+      "family_id": "direct-contrapositive-and-contradiction-proofs-02",
+      "kind": "number",
+      "concept": "counterexample search",
+      "difficulty": "foundation",
+      "prompt": "What is the smallest positive integer counterexample to the claim $2^n\\ge n^2$ for every positive integer $n$?",
+      "answer": 3,
+      "hints": [
+        "Test positive integers starting at one, keeping the equality cases.",
+        "A counterexample requires $2^n<n^2$; it need not make every later case false."
+      ],
+      "solution": "At $n=1$, $2\\ge1$ is true, and at $n=2$, $4\\ge4$ is true. At $n=3$, $8<9$, so the claim fails for the first time. Hence the smallest positive integer counterexample is three, regardless of whether the inequality holds again at some later indices.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "direct-contrapositive-and-contradiction-proofs-04--alt-01",
+      "family_id": "direct-contrapositive-and-contradiction-proofs-04",
+      "kind": "choice",
+      "concept": "false converse",
+      "difficulty": "core",
+      "prompt": "Which real input refutes the implication 'if $x^2=16$, then $x=4$'?",
+      "answer": "$x=-4$",
+      "hints": [
+        "To refute an implication, its hypothesis must be true while its conclusion is false.",
+        "A squared equation can have two real roots, even though the conclusion names only one."
+      ],
+      "solution": "For $x=-4$, the hypothesis $x^2=16$ is true, but the conclusion $x=4$ is false. For $x=4$ both are true, while $x=0$ and $x=-2$ do not satisfy the hypothesis. Therefore only the listed input $x=-4$ is a counterexample.",
+      "exam": false,
+      "choices": [
+        "$x=-4$",
+        "$x=4$",
+        "$x=0$",
+        "$x=-2$"
+      ]
+    },
+    {
+      "id": "direct-contrapositive-and-contradiction-proofs-05--alt-01",
+      "family_id": "direct-contrapositive-and-contradiction-proofs-05",
+      "kind": "number",
+      "concept": "algebra in parity proof",
+      "difficulty": "core",
+      "prompt": "Write $(2k+1)(2k-1)=2m+1$ with $m=ak^2+b$ for all integers $k$. Find $a+b$.",
+      "answer": 1,
+      "hints": [
+        "Use the difference-of-squares product before matching coefficients.",
+        "After subtracting one, divide by two to isolate $m$."
+      ],
+      "solution": "The product is $4k^2-1$. Setting this equal to $2m+1$ gives $m=(4k^2-2)/2=2k^2-1$. Thus $a=2$ and $b=-1$, so $a+b=1$. This also proves the product is odd, because $m$ is an integer for every integer $k$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "induction-and-recursive-arguments-01--alt-01",
+      "family_id": "induction-and-recursive-arguments-01",
+      "kind": "number",
+      "concept": "inductive sum formula",
+      "difficulty": "foundation",
+      "prompt": "Use the triangular-sum formula to find $6+7+\\cdots+15$.",
+      "answer": 105,
+      "hints": [
+        "Subtract the sum through five from the sum through fifteen.",
+        "The formula for the first $n$ positive integers is $n(n+1)/2$."
+      ],
+      "solution": "The sum through fifteen is $15\\cdot16/2=120$, while the sum through five is $5\\cdot6/2=15$. Subtracting removes precisely the terms $1$ through $5$, leaving $6$ through $15$. The requested total is $120-15=105$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "induction-and-recursive-arguments-02--alt-01",
+      "family_id": "induction-and-recursive-arguments-02",
+      "kind": "number",
+      "concept": "geometric sum",
+      "difficulty": "foundation",
+      "prompt": "Find the geometric sum $\\sum_{j=0}^{5}3^j$.",
+      "answer": 364,
+      "hints": [
+        "The zero exponent contributes one, so there are six terms.",
+        "Use $(3^6-1)/(3-1)$ or add the six powers directly."
+      ],
+      "solution": "The terms are $1,3,9,27,81,243$. Their sum is $364$. Equivalently, multiplying the sum by three and subtracting the original cancels the middle terms, giving $2S=3^6-1=728$, hence $S=364$. Including the zero-indexed term is essential.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "induction-and-recursive-arguments-05--alt-01",
+      "family_id": "induction-and-recursive-arguments-05",
+      "kind": "number",
+      "concept": "zero-based recurrence",
+      "difficulty": "core",
+      "prompt": "Let $b_0=-2$ and $b_{n+1}=-2b_n$ for $n\\ge0$. Find $b_5$.",
+      "answer": 64,
+      "hints": [
+        "The initial term is indexed zero, so five updates are required.",
+        "The negative multiplier alternates the signs: $b_n=-2(-2)^n$."
+      ],
+      "solution": "Successive terms are $b_0=-2$, $b_1=4$, $b_2=-8$, $b_3=16$, $b_4=-32$, and $b_5=64$. The explicit rule $b_n=-2(-2)^n$ gives the same result. Confusing the initial index with one would stop one update too early.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "induction-and-recursive-arguments-07--alt-01",
+      "family_id": "induction-and-recursive-arguments-07",
+      "kind": "number",
+      "concept": "solving affine recurrence",
+      "difficulty": "core",
+      "prompt": "For $a_1=5$ and $a_{n+1}=3a_n-4$, an explicit formula is $a_n=c\\,3^{n-1}+2$. Find $c$.",
+      "answer": 3,
+      "hints": [
+        "Apply the initial value to the proposed explicit formula.",
+        "The shift by two is consistent with the fixed-point equation $2=3\\cdot2-4$."
+      ],
+      "solution": "At $n=1$, the formula becomes $a_1=c+2=5$, so $c=3$. The proposed expression is consistent with the recurrence: $3(c3^{n-1}+2)-4=c3^n+2$. Thus the initial value fixes the coefficient, while substitution verifies the formula's update rule.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "sets-functions-images-and-preimages-01--alt-01",
+      "family_id": "sets-functions-images-and-preimages-01",
+      "kind": "number",
+      "concept": "finite image",
+      "difficulty": "foundation",
+      "prompt": "Let $A=\\{-2,-1,0,1,2,3,4\\}$ and $f(x)=|x-1|$. How many distinct elements are in $f(A)$?",
+      "answer": 4,
+      "hints": [
+        "Compute outputs, then discard repeated values because an image is a set.",
+        "Inputs equally far from one have the same output."
+      ],
+      "solution": "The listed inputs yield outputs $3,2,1,0,1,2,3$. Their distinct values form the set $\\{0,1,2,3\\}$, so the image has four elements. Counting all seven inputs would count repeated output values more than once and would not give the cardinality of the image.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "sets-functions-images-and-preimages-02--alt-01",
+      "family_id": "sets-functions-images-and-preimages-02",
+      "kind": "vector",
+      "concept": "finite preimage",
+      "difficulty": "foundation",
+      "prompt": "For $f:\\mathbb R\\to\\mathbb R$, $f(x)=3-2x$, list $f^{-1}(\\{-5,1,7\\})$ in increasing order.",
+      "answer": [
+        -2,
+        1,
+        4
+      ],
+      "hints": [
+        "Solve $3-2x=y$ separately for each of the three target outputs.",
+        "The affine map is decreasing, so sorting outputs does not sort their preimages."
+      ],
+      "solution": "Solving $3-2x=y$ gives $x=(3-y)/2$. The outputs $-5,1,7$ therefore have preimages $4,1,-2$, respectively. In increasing input order the preimage is $\\{-2,1,4\\}$, so the requested vector is $[-2,1,4]$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "sets-functions-images-and-preimages-03--alt-01",
+      "family_id": "sets-functions-images-and-preimages-03",
+      "kind": "vector",
+      "concept": "interval image",
+      "difficulty": "foundation",
+      "prompt": "For $f(x)=(x-1)^2$, give the endpoints $[a,b]$ of $f([-2,3])=[a,b]$.",
+      "answer": [
+        0,
+        9
+      ],
+      "hints": [
+        "The interval contains the point where the square is zero.",
+        "Compare distances from one at the two endpoints to find the largest square."
+      ],
+      "solution": "The value zero is attained at $x=1$, which belongs to the domain interval. The endpoint distances from one are three and two, so the largest value is $(-2-1)^2=9$. Every $y\\in[0,9]$ is attained at $x=1-\\sqrt y\\in[-2,1]$. Thus the image is exactly $[0,9]$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "sets-functions-images-and-preimages-06--alt-01",
+      "family_id": "sets-functions-images-and-preimages-06",
+      "kind": "choice",
+      "concept": "image intersection counterexample",
+      "difficulty": "core",
+      "prompt": "Let $f(x)=x^2$, $A=\\{-2,1\\}$ and $B=\\{2,1\\}$. Which pair correctly describes $f(A\\cap B)$ and $f(A)\\cap f(B)$, in that order?",
+      "answer": "$\\{1\\}$ and $\\{1,4\\}$",
+      "hints": [
+        "First intersect the input sets before taking the first image.",
+        "For the second expression, take each image separately; distinct inputs can merge under squaring."
+      ],
+      "solution": "The input intersection is $A\\cap B=\\{1\\}$, whose image is $\\{1\\}$. Separately, both $A$ and $B$ have image $\\{1,4\\}$, so their image intersection is $\\{1,4\\}$. The first set is a proper subset of the second, demonstrating how a noninjective map merges different witnesses.",
+      "exam": false,
+      "choices": [
+        "$\\{1\\}$ and $\\{1,4\\}$",
+        "$\\{1,4\\}$ and $\\{1,4\\}$",
+        "$\\varnothing$ and $\\{4\\}$",
+        "$\\{1,4\\}$ and $\\{1\\}$"
+      ]
+    },
+    {
+      "id": "countability-and-diagonal-arguments-01--alt-01",
+      "family_id": "countability-and-diagonal-arguments-01",
+      "kind": "choice",
+      "concept": "countable bijection",
+      "difficulty": "foundation",
+      "prompt": "Which function is a bijection from the positive integers onto the negative odd integers $\\{-1,-3,-5,\\ldots\\}$?",
+      "answer": "$f(n)=1-2n$",
+      "hints": [
+        "Check both membership in the target set and whether the first target value is reached.",
+        "For a negative odd integer $y$, solve the candidate equation for its positive integer input."
+      ],
+      "solution": "The map $f(n)=1-2n$ lists $-1,-3,-5,\\ldots$ without repetition. Every negative odd $y$ has the unique positive integer preimage $n=(1-y)/2$. The map $-(2n+1)$ misses $-1$; the other two candidates do not even send every positive integer to an odd output.",
+      "exam": false,
+      "choices": [
+        "$f(n)=1-2n$",
+        "$f(n)=-2n$",
+        "$f(n)=-n^2$",
+        "$f(n)=-(2n+1)$"
+      ]
+    },
+    {
+      "id": "countability-and-diagonal-arguments-02--alt-01",
+      "family_id": "countability-and-diagonal-arguments-02",
+      "kind": "number",
+      "concept": "finite power sets",
+      "difficulty": "foundation",
+      "prompt": "An eight-element set $S$ has two distinct specified elements $a,b$. How many subsets $B\\subseteq S$ contain $a$ and exclude $b$?",
+      "answer": 64,
+      "hints": [
+        "Membership of the two specified elements is already fixed.",
+        "Each remaining element may independently be included or excluded."
+      ],
+      "solution": "Of the eight elements, $a$ must be included and $b$ must be excluded. Each of the other six has two independent membership choices, giving $2^6=64$ subsets. This is a restricted power-set count, not the unrestricted total $2^8$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "countability-and-diagonal-arguments-04--alt-01",
+      "family_id": "countability-and-diagonal-arguments-04",
+      "kind": "vector",
+      "concept": "pair enumeration",
+      "difficulty": "core",
+      "prompt": "List positive integer pairs by increasing $i+j$, and within each diagonal by increasing $i$. What is the twelfth pair $[i,j]$?",
+      "answer": [
+        2,
+        4
+      ],
+      "hints": [
+        "Diagonals of sums two through five contain $1+2+3+4$ pairs in total.",
+        "Continue on the diagonal $i+j=6$ in the specified order."
+      ],
+      "solution": "The diagonals with sums $2,3,4,5$ contribute $1+2+3+4=10$ pairs. On the next diagonal, the eleventh pair is $(1,5)$ and the twelfth is $(2,4)$. Thus the requested vector is $[2,4]$; reversing the within-diagonal order would produce a different enumeration.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "countability-and-diagonal-arguments-06--alt-01",
+      "family_id": "countability-and-diagonal-arguments-06",
+      "kind": "vector",
+      "concept": "diagonal construction",
+      "difficulty": "core",
+      "prompt": "Five infinite binary rows begin with the prefixes $10100$, $10011$, $01101$, $01010$, and $11100$, respectively. Give the first five bits of the diagonal-complement sequence.",
+      "answer": [
+        0,
+        1,
+        0,
+        0,
+        1
+      ],
+      "hints": [
+        "Read bit $i$ from row $i$, with positions counted from one.",
+        "Replace each diagonal bit $b$ by $1-b$; do not complement an entire single row."
+      ],
+      "solution": "The diagonal bits are the first bit of row one, second of row two, and so on: $[1,0,1,1,0]$. Complementing them gives $[0,1,0,0,1]$. The resulting sequence differs from each of these first five rows at that row's diagonal position; the unseen later bits are not needed for this prefix.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "suprema-infima-and-order-01--alt-01",
+      "family_id": "suprema-infima-and-order-01",
+      "kind": "number",
+      "concept": "supremum of interval",
+      "difficulty": "foundation",
+      "prompt": "Find $\\sup\\bigl([-4,2)\\cup\\{5/2\\}\\bigr)$.",
+      "answer": 2.5,
+      "hints": [
+        "An upper bound must cover the isolated point as well as the interval.",
+        "Check whether the largest candidate actually belongs to the union."
+      ],
+      "solution": "Every interval element is less than two, while the additional point $5/2$ is larger than every such element. The number $5/2$ belongs to the union and bounds it above, so it is both its maximum and its supremum. The interval's missing endpoint two does not control the enlarged set.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "suprema-infima-and-order-02--alt-01",
+      "family_id": "suprema-infima-and-order-02",
+      "kind": "number",
+      "concept": "infimum of sequence set",
+      "difficulty": "foundation",
+      "prompt": "Find $\\inf\\{2+5/n:n\\ge1\\}$, where $n$ ranges over positive integers.",
+      "answer": 2,
+      "hints": [
+        "Every added term $5/n$ is positive but tends to zero.",
+        "Show that any proposed lower bound greater than two is eventually exceeded downward by a sequence term."
+      ],
+      "solution": "All elements are greater than two, so two is a lower bound. Given $\\epsilon>0$, choose an integer $n>5/\\epsilon$; then $2+5/n<2+\\epsilon$. Thus no larger number is a lower bound, and the infimum is two. It is not attained, so this set has no minimum.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "suprema-infima-and-order-04--alt-01",
+      "family_id": "suprema-infima-and-order-04",
+      "kind": "vector",
+      "concept": "finite extremal bounds",
+      "difficulty": "core",
+      "prompt": "For $S=\\{-\\sqrt9,\\,7/2,\\,-1/4\\}$, return $[\\inf S,\\sup S]$.",
+      "answer": [
+        -3,
+        3.5
+      ],
+      "hints": [
+        "Evaluate the square root and compare the three real values.",
+        "A nonempty finite set attains both its smallest and largest elements."
+      ],
+      "solution": "The elements are $-3$, $7/2=3.5$, and $-1/4=-0.25$. Their order is $-3<-1/4<7/2$. Hence the infimum is $-3$ and the supremum is $7/2$, both attained in this finite set. The requested vector is $[-3,7/2]$.",
+      "exam": false,
+      "tolerance": 0.000001
+    },
+    {
+      "id": "suprema-infima-and-order-06--alt-01",
+      "family_id": "suprema-infima-and-order-06",
+      "kind": "vector",
+      "concept": "negative scaling",
+      "difficulty": "core",
+      "prompt": "For nonempty bounded $S\\subseteq\\mathbb R$, suppose $\\inf S=-3$ and $\\sup S=4$. Let $T=\\{5-3s:s\\in S\\}$. Return $[\\inf T,\\sup T]$.",
+      "answer": [
+        -7,
+        14
+      ],
+      "hints": [
+        "Multiplication by a negative number reverses the order of bounds.",
+        "Apply the affine map to the supremum to get the new infimum, and to the infimum to get the new supremum."
+      ],
+      "solution": "The map $s\\mapsto5-3s$ is decreasing. Therefore $\\inf T=5-3\\sup S=5-12=-7$ and $\\sup T=5-3\\inf S=5+9=14$. Approaching the old bounds gives arbitrarily close values at the new bounds, even if neither old bound is attained. The output vector is $[-7,14]$.",
+      "exam": false,
+      "tolerance": 0.000001
+    }
+  ]
+}
