@@ -22,6 +22,7 @@ def serialize_progress(item: RoadmapTopicProgress) -> dict[str, Any]:
         "status": item.status if verified else "in_progress",
         "quiz_score": item.quiz_score if verified else 0,
         "quiz_attempts": item.quiz_attempts if verified else 0,
+        "independent_score": item.independent_score if verified else None,
         "time_spent_seconds": item.time_spent_seconds,
         "last_viewed_at": item.last_viewed_at.isoformat(),
         "completed_at": item.completed_at.isoformat() if item.completed_at and verified else None,

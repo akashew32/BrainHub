@@ -51,7 +51,9 @@ def questions_for(roadmap_slug: str) -> dict[str, dict[str, Any]]:
     }
 
 
-def public_question(question: dict[str, Any], *, include_hints: bool = True) -> dict[str, Any]:
+def public_question(
+    question: dict[str, Any], *, include_hints: bool = True, revealed_hints: int = 0
+) -> dict[str, Any]:
     result = {
         key: value
         for key, value in question.items()
@@ -70,8 +72,9 @@ def public_question(question: dict[str, Any], *, include_hints: bool = True) -> 
         result["choices"] = random.SystemRandom().sample(
             question["choices"], k=len(question["choices"])
         )
-    if not include_hints:
-        result["hints"] = []
+    available = question.get("hints", []) if include_hints else []
+    result["hint_count"] = len(available)
+    result["hints"] = available[: max(0, min(revealed_hints, len(available)))]
     integer_answer = question["kind"] == "number" and _integer_key(question["answer"])
     result["math_input_version"] = VERSION
     result["answer_format"] = "integer" if integer_answer else question["kind"]

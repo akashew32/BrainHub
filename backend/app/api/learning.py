@@ -2,15 +2,15 @@ from __future__ import annotations
 
 import math
 import random
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any, Literal
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy import func, select, update
+from sqlalchemy import and_, case, func, or_, select, update
 from sqlalchemy.engine import CursorResult
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 
 from app.api.routes import Database, get_local_user
 from app.db.base import (
@@ -19,6 +19,7 @@ from app.db.base import (
     RoadmapTopicProgress,
     utc_now,
 )
+from app.services.assessment_hints import assistance, hints_used
 from app.services.curriculum import (
     PASS_SCORE,
     curriculum,
@@ -35,6 +36,8 @@ router = APIRouter(prefix="/api/roadmaps", tags=["Mathematics learning"])
 
 
 class StartAssessment(BaseModel):
+    model_config = {"extra": "forbid"}
+
     mode: Literal["practice", "exam", "review"] = "practice"
     topic_slug: str | None = Field(default=None, max_length=160)
     stage_index: int = Field(default=0, ge=0, le=9)
@@ -74,6 +77,8 @@ class Answer(BaseModel):
 
 
 class SubmitAssessment(BaseModel):
+    model_config = {"extra": "forbid"}
+
     answers: list[Answer] = Field(min_length=1, max_length=60)
     time_spent_seconds: int = Field(default=0, ge=0, le=7200)
 
@@ -84,6 +89,128 @@ class AssessmentDraft(BaseModel):
     answers: list[Answer] = Field(default_factory=list, max_length=60)
     time_spent_seconds: int = Field(default=0, ge=0, le=7200)
     revision: int = Field(default=0, ge=0, le=2_147_483_647)
+
+
+class RevealHint(BaseModel):
+    model_config = {"extra": "forbid"}
+
+    index: int = Field(ge=1, le=64, strict=True)
+
+
+def _persist_practice_progress(
+    db: Database,
+    session: RoadmapAssessmentSession,
+    score: int,
+    independent_score: int | None,
+    seconds: int,
+    now: datetime,
+) -> RoadmapTopicProgress:
+    prior_sessions = list(
+        db.scalars(
+            select(RoadmapAssessmentSession).where(
+                RoadmapAssessmentSession.user_id == session.user_id,
+                RoadmapAssessmentSession.roadmap_slug == session.roadmap_slug,
+                RoadmapAssessmentSession.topic_slug == session.topic_slug,
+                RoadmapAssessmentSession.mode == "practice",
+                RoadmapAssessmentSession.completed_at.is_not(None),
+                RoadmapAssessmentSession.id != session.id,
+            )
+        )
+    )
+    prior_results = [item.result for item in prior_sessions if item.result is not None]
+    recorded_score = max([score, *[item["score"] for item in prior_results]])
+    independent_scores = [
+        item["independent_score"]
+        for item in prior_results
+        if type(item.get("independent_score")) is int
+    ]
+    if independent_score is not None:
+        independent_scores.append(independent_score)
+    recorded_independent = max(independent_scores) if independent_scores else None
+    passed = recorded_score >= PASS_SCORE
+    progress = db.scalar(
+        select(RoadmapTopicProgress).where(
+            RoadmapTopicProgress.user_id == session.user_id,
+            RoadmapTopicProgress.roadmap_slug == session.roadmap_slug,
+            RoadmapTopicProgress.topic_slug == session.topic_slug,
+        )
+    )
+    if progress is None:
+        progress = RoadmapTopicProgress(
+            user_id=session.user_id,
+            roadmap_slug=session.roadmap_slug,
+            topic_slug=session.topic_slug,
+            quiz_score=recorded_score,
+            quiz_attempts=len(prior_results) + 1,
+            independent_score=recorded_independent,
+            mastery_version=1,
+            time_spent_seconds=seconds,
+            last_viewed_at=now,
+            status="completed" if passed else "in_progress",
+            completed_at=now if passed else None,
+        )
+        db.add(progress)
+        db.flush()
+        return progress
+    # These expressions inspect the current row at UPDATE time, rather than
+    # replacing it with a stale ORM snapshot from another session's completion.
+    verified = RoadmapTopicProgress.mastery_version == 1
+    established = or_(
+        passed,
+        and_(verified, RoadmapTopicProgress.quiz_score >= PASS_SCORE),
+    )
+    independent_value = (
+        case(
+            (RoadmapTopicProgress.mastery_version != 1, recorded_independent),
+            (RoadmapTopicProgress.independent_score.is_(None), recorded_independent),
+            (RoadmapTopicProgress.independent_score < recorded_independent, recorded_independent),
+            else_=RoadmapTopicProgress.independent_score,
+        )
+        if recorded_independent is not None
+        else case((verified, RoadmapTopicProgress.independent_score), else_=None)
+    )
+    db.execute(
+        update(RoadmapTopicProgress)
+        .where(RoadmapTopicProgress.id == progress.id)
+        .values(
+            quiz_score=case(
+                (
+                    and_(verified, RoadmapTopicProgress.quiz_score > recorded_score),
+                    RoadmapTopicProgress.quiz_score,
+                ),
+                else_=recorded_score,
+            ),
+            quiz_attempts=case(
+                (verified, RoadmapTopicProgress.quiz_attempts + 1),
+                else_=len(prior_results) + 1,
+            ),
+            independent_score=independent_value,
+            mastery_version=1,
+            time_spent_seconds=RoadmapTopicProgress.time_spent_seconds + seconds,
+            last_viewed_at=case(
+                (RoadmapTopicProgress.last_viewed_at > now, RoadmapTopicProgress.last_viewed_at),
+                else_=now,
+            ),
+            status=case((established, "completed"), else_="in_progress"),
+            completed_at=case(
+                (
+                    established,
+                    case(
+                        (
+                            and_(verified, RoadmapTopicProgress.completed_at.is_not(None)),
+                            RoadmapTopicProgress.completed_at,
+                        ),
+                        else_=now,
+                    ),
+                ),
+                else_=None,
+            ),
+        )
+        .execution_options(synchronize_session=False)
+    )
+    db.flush()
+    db.refresh(progress)
+    return progress
 
 
 def assessment_payload(session: RoadmapAssessmentSession) -> dict[str, Any]:
@@ -100,9 +227,15 @@ def assessment_payload(session: RoadmapAssessmentSession) -> dict[str, Any]:
         "expires_at": session.expires_at.isoformat() + "Z",
         "pass_score": PASS_SCORE,
         "questions": [
-            public_question(bank[question_id], include_hints=session.mode != "exam")
+            public_question(
+                bank[question_id],
+                include_hints=session.mode != "exam",
+                revealed_hints=(session.hint_usage or {}).get(question_id, 0),
+            )
             for question_id in session.question_ids
         ],
+        "hint_usage": session.hint_usage,
+        "assistance": assistance(session.hint_usage),
         "draft": {
             "answers": draft.get("answers", []),
             "time_spent_seconds": draft.get("time_spent_seconds", 0),
@@ -112,6 +245,81 @@ def assessment_payload(session: RoadmapAssessmentSession) -> dict[str, Any]:
     if session.result is not None:
         payload["result"] = session.result
     return payload
+
+
+@router.post("/assessments/{session_id}/questions/{question_id}/hints")
+def reveal_assessment_hint(
+    session_id: str, question_id: str, payload: RevealHint, db: Database
+) -> dict[str, Any]:
+    user = get_local_user(db)
+    for _ in range(3):
+        session = db.scalar(
+            select(RoadmapAssessmentSession)
+            .where(
+                RoadmapAssessmentSession.id == session_id,
+                RoadmapAssessmentSession.user_id == user.id,
+            )
+            .with_for_update()
+            .execution_options(populate_existing=True)
+        )
+        if session is None:
+            raise HTTPException(404, "Unknown assessment session")
+        if session.mode == "exam":
+            raise HTTPException(409, "Stage exams do not provide hints.")
+        if session.completed_at is not None:
+            raise HTTPException(409, "This assessment is complete. Start a new practice session.")
+        if session.expires_at <= utc_now():
+            raise HTTPException(410, "This assessment has expired. Start a fresh session.")
+        if question_id not in session.question_ids:
+            raise HTTPException(404, "This question does not belong to the assessment.")
+        if session.hint_usage is None:
+            raise HTTPException(
+                409,
+                "Hint usage was not tracked for this session. Start a new practice session for tracked hints.",
+            )
+        question = questions_for(session.roadmap_slug).get(question_id)
+        if question is None:
+            raise HTTPException(409, "This assessment's curriculum changed. Start a fresh session.")
+        available = question.get("hints", [])
+        if payload.index > len(available):
+            raise HTTPException(422, "This question has no hint at that index.")
+        count = session.hint_usage.get(question_id, 0)
+        if payload.index > count + 1:
+            raise HTTPException(409, "Reveal hints in order, one step at a time.")
+        if payload.index <= count:
+            return {
+                "question_id": question_id,
+                "hint_count": len(available),
+                "hints": available[:count],
+                "hints_used": count,
+                "hint_usage": session.hint_usage,
+            }
+        usage = {**session.hint_usage, question_id: payload.index}
+        try:
+            changed = db.execute(
+                update(RoadmapAssessmentSession)
+                .where(
+                    RoadmapAssessmentSession.id == session.id,
+                    RoadmapAssessmentSession.completed_at.is_(None),
+                    RoadmapAssessmentSession.hint_revision == session.hint_revision,
+                )
+                .values(hint_usage=usage, hint_revision=session.hint_revision + 1)
+                .execution_options(synchronize_session=False)
+            )
+            if not isinstance(changed, CursorResult) or changed.rowcount != 1:
+                db.rollback()
+                continue
+            db.commit()
+            return {
+                "question_id": question_id,
+                "hint_count": len(available),
+                "hints": available[: payload.index],
+                "hints_used": payload.index,
+                "hint_usage": usage,
+            }
+        except OperationalError:
+            db.rollback()
+    raise HTTPException(409, "The saved session changed. Retry the hint request.")
 
 
 @router.get("/assessments/{session_id}")
@@ -385,6 +593,7 @@ def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) 
         stage_index=payload.stage_index,
         mode=payload.mode,
         question_ids=selected,
+        hint_usage={},
         expires_at=utc_now() + timedelta(hours=2),
     )
     db.add(session)
@@ -430,6 +639,8 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
             "expected_answer": question["answer"],
             "solution": question["solution"],
             "topic_slug": question["topic_slug"],
+            "hints_used": hints_used(session.hint_usage, question_id),
+            "assistance": assistance(session.hint_usage, question_id),
         }
         if question["kind"] == "proof":
             details = build_proof_feedback(question, answers[question_id])
@@ -448,65 +659,69 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
                 concept=item["concept"],
                 answer=item["submitted_answer"],
                 correct=item["correct"],
+                hints_used=item["hints_used"],
                 created_at=now,
             )
         )
     score = round(100 * sum(item["correct"] for item in feedback) / len(feedback))
     passed = score >= PASS_SCORE
-    progress = None
-    if session.mode == "practice" and session.topic_slug:
-        prior_sessions = list(
-            db.scalars(
-                select(RoadmapAssessmentSession).where(
-                    RoadmapAssessmentSession.user_id == user.id,
-                    RoadmapAssessmentSession.roadmap_slug == session.roadmap_slug,
-                    RoadmapAssessmentSession.topic_slug == session.topic_slug,
-                    RoadmapAssessmentSession.mode == "practice",
-                    RoadmapAssessmentSession.completed_at.is_not(None),
-                )
-            )
+    independent_score = (
+        round(
+            100
+            * sum(item["correct"] and item["hints_used"] == 0 for item in feedback)
+            / len(feedback)
         )
-        prior_results = [item.result for item in prior_sessions if item.result is not None]
-        progress = db.scalar(
-            select(RoadmapTopicProgress).where(
-                RoadmapTopicProgress.user_id == user.id,
-                RoadmapTopicProgress.roadmap_slug == session.roadmap_slug,
-                RoadmapTopicProgress.topic_slug == session.topic_slug,
-            )
-        )
-        if progress is None:
-            progress = RoadmapTopicProgress(
-                user_id=user.id, roadmap_slug=session.roadmap_slug, topic_slug=session.topic_slug
-            )
-        # Legacy roadmap rows may contain client-graded scores. Only completed
-        # server sessions may establish mastery for an authored lesson.
-        progress.quiz_score = max([score, *[item["score"] for item in prior_results]])
-        progress.quiz_attempts = len(prior_results) + 1
-        progress.mastery_version = 1
-        progress.time_spent_seconds = (
-            progress.time_spent_seconds or 0
-        ) + payload.time_spent_seconds
-        progress.last_viewed_at = now
-        if passed or any(item["passed"] for item in prior_results):
-            progress.status = "completed"
-            progress.completed_at = progress.completed_at or now
-        else:
-            progress.status = "in_progress"
-            progress.completed_at = None
-        db.add(progress)
+        if session.hint_usage is not None
+        else None
+    )
     result = {
         "session_id": session.id,
         "mode": session.mode,
         "score": score,
         "passed": passed,
+        "assistance": assistance(session.hint_usage),
+        "hints_used": hints_used(session.hint_usage),
+        "independent_score": independent_score,
+        "independent_passed": independent_score >= PASS_SCORE
+        if independent_score is not None
+        else None,
         "correct": sum(item["correct"] for item in feedback),
         "total": len(feedback),
         "feedback": feedback,
-        "progress": serialize_progress(progress) if progress else None,
+        "progress": None,
     }
-    session.result = result
-    session.completed_at = now
     try:
+        # Claim completion using the exact hint snapshot used for grading. A
+        # concurrent reveal must never be labeled as independent work.
+        changed = db.execute(
+            update(RoadmapAssessmentSession)
+            .where(
+                RoadmapAssessmentSession.id == session.id,
+                RoadmapAssessmentSession.completed_at.is_(None),
+                RoadmapAssessmentSession.hint_revision == session.hint_revision,
+            )
+            .values(completed_at=now)
+            .execution_options(synchronize_session=False)
+        )
+        if not isinstance(changed, CursorResult) or changed.rowcount != 1:
+            db.rollback()
+            winner = db.get(RoadmapAssessmentSession, session_id)
+            if winner is not None and winner.result is not None:
+                return winner.result
+            raise HTTPException(
+                409, "Hint usage changed while submitting. Retry with your saved answers."
+            )
+        if session.mode == "practice" and session.topic_slug:
+            progress = _persist_practice_progress(
+                db, session, score, independent_score, payload.time_spent_seconds, now
+            )
+            result["progress"] = serialize_progress(progress)
+        db.execute(
+            update(RoadmapAssessmentSession)
+            .where(RoadmapAssessmentSession.id == session.id)
+            .values(result=result)
+            .execution_options(synchronize_session=False)
+        )
         db.commit()
     except IntegrityError as error:
         # PostgreSQL row locks serialize repeated submits. SQLite ignores those
@@ -517,5 +732,10 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
             return winner.result
         raise HTTPException(
             409, "The assessment changed while saving. Retry your submission."
+        ) from error
+    except OperationalError as error:
+        db.rollback()
+        raise HTTPException(
+            409, "The saved session is busy. Retry with your saved answers."
         ) from error
     return result

@@ -224,7 +224,7 @@ describe("learning roadmaps", () => {
     });
     fireEvent.click(screen.getByLabelText("Add the counts."));
     fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
-    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    expect(await screen.findByText("Practice passed. Your progress has been saved.")).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("Completed · Best practice 100%")).toBeInTheDocument());
     const requests = vi.mocked(fetch).mock.calls;
     const submission = requests.find(([input]) => String(input).endsWith("/practice-session/submit"));

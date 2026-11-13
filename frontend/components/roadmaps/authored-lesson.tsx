@@ -106,6 +106,11 @@ export function AuthoredLesson({
             ? `Completed · Best practice ${item?.quiz_score}%`
             : "Read, work through examples, then solve the practice set."}
         </p>
+        <p className="mt-2 text-sm text-[#9bb6d0]">
+          {typeof item?.independent_score === "number"
+            ? "Best independent practice: " + item.independent_score + "%"
+            : "Independent practice: not measured yet"}
+        </p>
         <div className="mt-5 flex flex-wrap gap-3">
           <a className="btn btn-primary" href="#practice">
             Practice questions

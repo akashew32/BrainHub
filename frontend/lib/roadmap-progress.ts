@@ -9,6 +9,7 @@ export type RoadmapProgressItem = {
   topic_slug: string;
   status: RoadmapProgressStatus;
   quiz_score: number;
+  independent_score?: number | null;
   quiz_attempts: number;
   time_spent_seconds: number;
   last_viewed_at: string;

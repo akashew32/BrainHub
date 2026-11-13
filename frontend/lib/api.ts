@@ -34,6 +34,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 export const api = {
+  revealAssessmentHint: (sessionId: string, questionId: string, index: number) =>
+    request<import("@/lib/curriculum").HintReveal>(
+      "/roadmaps/assessments/" + sessionId + "/questions/" + questionId + "/hints",
+      { method: "POST", body: JSON.stringify({ index }), signal: AbortSignal.timeout(12_000) },
+    ),
   resumeAssessment: (sessionId: string) =>
     request<import("@/lib/curriculum").AssessmentSession>(`/roadmaps/assessments/${sessionId}`, {
       signal: AbortSignal.timeout(12_000),

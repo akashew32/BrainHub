@@ -13,7 +13,8 @@ import {
 import { api } from "@/lib/api";
 import { progressKey, type RoadmapProgressItem, type RoadmapProgressUpdate } from "@/lib/roadmap-progress";
 
-const CACHE_KEY = "brainhub:roadmap-progress:v2";
+const CACHE_KEY = "brainhub:roadmap-progress:v3";
+const LEGACY_CACHE_KEY = "brainhub:roadmap-progress:v2";
 const PENDING_KEY = "brainhub:roadmap-progress-pending:v2";
 
 type SyncState = "loading" | "synced" | "offline";
@@ -51,6 +52,12 @@ function isProgressItem(value: unknown): value is RoadmapProgressItem {
     typeof value.topic_slug === "string" &&
     ["in_progress", "completed", "review"].includes(String(value.status)) &&
     typeof value.quiz_score === "number" &&
+    (value.independent_score === undefined ||
+      value.independent_score === null ||
+      (typeof value.independent_score === "number" &&
+        Number.isFinite(value.independent_score) &&
+        value.independent_score >= 0 &&
+        value.independent_score <= 100)) &&
     typeof value.quiz_attempts === "number" &&
     typeof value.time_spent_seconds === "number" &&
     typeof value.last_viewed_at === "string"
@@ -97,6 +104,12 @@ function mergeSnapshots(existing: RoadmapProgressItem | undefined, incoming: Roa
     ...incoming,
     status: preferredStatus,
     quiz_score: Math.max(existing.quiz_score, incoming.quiz_score),
+    independent_score:
+      incoming.independent_score === null
+        ? null
+        : typeof incoming.independent_score === "number"
+          ? Math.max(incoming.independent_score, existing.independent_score ?? 0)
+          : (existing.independent_score ?? null),
     quiz_attempts: Math.max(existing.quiz_attempts, incoming.quiz_attempts),
     time_spent_seconds: Math.max(existing.time_spent_seconds, incoming.time_spent_seconds),
     last_viewed_at:
@@ -151,7 +164,10 @@ export function RoadmapProgressProvider({ children }: { children: ReactNode }) {
   }, [commitItems]);
 
   useEffect(() => {
-    const cached = readList(CACHE_KEY, isProgressItem);
+    const currentCache = readList(CACHE_KEY, isProgressItem);
+    const cached = currentCache.length
+      ? currentCache
+      : readList(LEGACY_CACHE_KEY, isProgressItem).map((item) => ({ ...item, independent_score: null }));
     pendingRef.current = readList(PENDING_KEY, isPendingUpdate);
     if (cached.length) commitItems(() => cached);
     api
@@ -199,6 +215,7 @@ export function RoadmapProgressProvider({ children }: { children: ReactNode }) {
             ? existing.status
             : update.status,
         quiz_score: Math.max(existing?.quiz_score ?? 0, update.quiz_score ?? 0),
+        independent_score: existing?.independent_score ?? null,
         quiz_attempts: (existing?.quiz_attempts ?? 0) + (update.quiz_score === undefined ? 0 : 1),
         time_spent_seconds: (existing?.time_spent_seconds ?? 0) + (update.time_spent_seconds ?? 0),
         last_viewed_at: now,

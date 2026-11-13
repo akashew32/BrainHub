@@ -79,6 +79,7 @@ class RoadmapTopicProgress(Base):
     status: Mapped[str] = mapped_column(String(20), default="in_progress")
     quiz_score: Mapped[int] = mapped_column(Integer, default=0)
     quiz_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    independent_score: Mapped[int | None] = mapped_column(Integer, nullable=True)
     mastery_version: Mapped[int] = mapped_column(Integer, default=0)
     time_spent_seconds: Mapped[int] = mapped_column(Integer, default=0)
     last_viewed_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
@@ -95,6 +96,8 @@ class RoadmapAssessmentSession(Base):
     mode: Mapped[str] = mapped_column(String(20))
     question_ids: Mapped[list[str]] = mapped_column(JSON)
     draft: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, server_default="{}")
+    hint_usage: Mapped[dict[str, int] | None] = mapped_column(JSON, nullable=True, default=dict)
+    hint_revision: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     result: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     started_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now)
     completed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
@@ -113,6 +116,7 @@ class RoadmapQuestionAttempt(Base):
     concept: Mapped[str] = mapped_column(String(160))
     answer: Mapped[Any] = mapped_column(JSON)
     correct: Mapped[bool] = mapped_column(Boolean)
+    hints_used: Mapped[int | None] = mapped_column(Integer, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, index=True)
 
 

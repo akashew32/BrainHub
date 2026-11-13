@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CheckCircle2, CircleAlert, Play, RotateCcw } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
-import type { AssessmentResult, AssessmentSession, MathQuestion } from "@/lib/curriculum";
+import type { AssessmentResult, AssessmentSession, HintReveal, MathQuestion } from "@/lib/curriculum";
 import { MathText } from "@/components/roadmaps/math-text";
 import { MathAnswerPreview } from "@/components/roadmaps/math-answer-preview";
 import { ProofBuilder, parseProofOrder } from "@/components/roadmaps/proof-builder";
+import { QuestionHints } from "@/components/roadmaps/question-hints";
 import { useRoadmapProgress } from "@/components/roadmaps/roadmap-progress-provider";
 
 type Mode = "practice" | "exam" | "review";
@@ -50,6 +51,12 @@ function publicSession(value: unknown): value is AssessmentSession {
     Array.isArray(value.questions) &&
     value.questions.length > 0 &&
     value.questions.length <= 60 &&
+    (value.hint_usage === undefined ||
+      value.hint_usage === null ||
+      (isRecord(value.hint_usage) &&
+        Object.values(value.hint_usage).every(
+          (count) => typeof count === "number" && Number.isInteger(count) && count >= 0 && count <= 64,
+        ))) &&
     new Set(value.questions.map((question) => (isRecord(question) ? question.id : null))).size ===
       value.questions.length &&
     value.questions.every(
@@ -79,6 +86,11 @@ function publicSession(value: unknown): value is AssessmentSession {
             question.numeric_tolerance.relative >= 0)) &&
         Array.isArray(question.hints) &&
         question.hints.every((hint) => typeof hint === "string") &&
+        (question.hint_count === undefined ||
+          (typeof question.hint_count === "number" &&
+            Number.isInteger(question.hint_count) &&
+            question.hint_count >= question.hints.length &&
+            question.hint_count <= 64)) &&
         (question.choices === undefined ||
           (Array.isArray(question.choices) &&
             question.choices.every((choice) => typeof choice === "string"))) &&
@@ -139,12 +151,14 @@ function sessionSnapshot(current: AssessmentSession): AssessmentSession {
     topic_slug: current.topic_slug,
     expires_at: current.expires_at,
     pass_score: current.pass_score,
+    hint_usage: current.hint_usage ?? null,
     questions: current.questions.map((question) => ({
       id: question.id,
       kind: question.kind,
       prompt: question.prompt,
       choices: question.choices,
       hints: question.hints,
+      hint_count: question.hint_count,
       concept: question.concept,
       difficulty: question.difficulty,
       topic_slug: question.topic_slug,
@@ -191,6 +205,28 @@ function questionAnswered(question: MathQuestion, value: string | undefined) {
   return parsed.issue === null && parsed.order.length === question.choices?.length;
 }
 
+function resultMessage(result: AssessmentResult, mode: Mode) {
+  if (!result.passed)
+    return "Review the worked feedback, then try a new session. Your mistakes are saved for targeted practice.";
+  if (mode !== "practice") return "Assessment passed. Your responses have been saved.";
+  if (result.independent_passed === true) return "Independent practice passed. Your progress has been saved.";
+  if (result.assistance === "assisted")
+    return "Practice passed with hints. Try another session without hints to strengthen independent work.";
+  return "Practice passed. Your progress has been saved.";
+}
+
+function answerAssistance(item: AssessmentResult["feedback"][number]) {
+  if (item.assistance === "independent" && item.hints_used === 0) return "Independent answer · No hints used";
+  if (item.assistance === "assisted" || (typeof item.hints_used === "number" && item.hints_used > 0))
+    return (
+      "Assisted answer" +
+      (typeof item.hints_used === "number"
+        ? " · " + item.hints_used + (item.hints_used === 1 ? " hint used" : " hints used")
+        : "")
+    );
+  return "Hint usage untracked";
+}
+
 export function AssessmentPanel({
   roadmapSlug,
   topicSlug,
@@ -234,10 +270,13 @@ function AssessmentWorkspace({
   const [needsResume, setNeedsResume] = useState(false);
   const [draftStatus, setDraftStatus] = useState("Answers are saved on this device while you work.");
   const [saveAttempt, setSaveAttempt] = useState(0);
+  const [hintPending, setHintPending] = useState(false);
   const mounted = useRef(true);
   const startedAt = useRef(0);
   const submitting = useRef(false);
   const currentSession = useRef<AssessmentSession | null>(null);
+  const currentAnswers = useRef<AnswerMap>({});
+  const pendingHints = useRef(new Set<string>());
   const cached = useRef<SavedDraft | null>(null);
   const revision = useRef(0);
   const savedRevision = useRef(0);
@@ -281,6 +320,37 @@ function AssessmentWorkspace({
       }
     },
     [draftKey, mode, roadmapSlug, stageIndex, topicSlug],
+  );
+
+  const markHintPending = useCallback((questionId: string, pending: boolean) => {
+    if (pending) pendingHints.current.add(questionId);
+    else pendingHints.current.delete(questionId);
+    if (mounted.current) setHintPending(pendingHints.current.size > 0);
+  }, []);
+
+  const acceptHints = useCallback(
+    (sessionId: string, response: HintReveal) => {
+      const active = currentSession.current;
+      if (!mounted.current || finished.current || active?.id !== sessionId || active.hint_usage == null)
+        return;
+      const hintUsage = { ...active.hint_usage };
+      for (const [id, count] of Object.entries(response.hint_usage))
+        hintUsage[id] = Math.max(hintUsage[id] ?? 0, count);
+      const next: AssessmentSession = {
+        ...active,
+        hint_usage: hintUsage,
+        questions: active.questions.map((question) =>
+          question.id === response.question_id &&
+          response.hints_used >= (active.hint_usage?.[question.id] ?? 0)
+            ? { ...question, hints: response.hints, hint_count: response.hint_count }
+            : question,
+        ),
+      };
+      currentSession.current = next;
+      setSession(next);
+      remember(next, currentAnswers.current, revision.current);
+    },
+    [remember],
   );
 
   const clearMatchingDraft = useCallback(
@@ -342,6 +412,7 @@ function AssessmentWorkspace({
       );
       startedAt.current = Date.now() - Math.min(MAX_TIME_SECONDS, timeAlreadySpent) * 1000;
       finished.current = false;
+      currentAnswers.current = nextAnswers;
       setAnswers(nextAnswers);
       setResult(null);
       setNeedsResume(false);
@@ -363,6 +434,7 @@ function AssessmentWorkspace({
     savedRevision.current = -1;
     startedAt.current = Date.now() - elapsedSeconds(local.startedAt) * 1000;
     setSession(local.session);
+    currentAnswers.current = local.answers;
     setAnswers(local.answers);
     const noLongerOpen =
       (problem instanceof ApiError && [404, 409, 410].includes(problem.status)) ||
@@ -474,9 +546,10 @@ function AssessmentWorkspace({
   function updateAnswer(questionId: string, value: string) {
     if (submitting.current || !session || expired) return;
     const next = { ...answers, [questionId]: value.slice(0, 4000) };
+    currentAnswers.current = next;
     revision.current = Math.min(MAX_REVISION, revision.current + 1);
     setAnswers(next);
-    const savedLocally = remember(session, next, revision.current);
+    const savedLocally = remember(currentSession.current ?? session, next, revision.current);
     setDraftStatus(
       savedLocally
         ? "Saved on this device. Syncing to your profile…"
@@ -525,6 +598,7 @@ function AssessmentWorkspace({
       setSession(next);
       setSavedSessionId(next.id);
       setResult(null);
+      currentAnswers.current = {};
       setAnswers({});
       setExpired(false);
       setNeedsResume(false);
@@ -546,7 +620,7 @@ function AssessmentWorkspace({
   }
 
   async function submit() {
-    if (!session || expired || submitting.current) return;
+    if (!session || expired || submitting.current || pendingHints.current.size > 0) return;
     const missing = session.questions.find((question) => !questionAnswered(question, answers[question.id]));
     if (missing) {
       setError(
@@ -758,21 +832,26 @@ function AssessmentWorkspace({
                   </>
                 )}
                 {mode !== "exam" ? (
-                  <details className="mt-4 text-sm">
-                    <summary className="cursor-pointer text-[#facc15]">Hints</summary>
-                    <ol className="mt-3 space-y-2 leading-7 text-[#99aabd]">
-                      {question.hints.map((hint, hintIndex) => (
-                        <li key={hint}>
-                          {hintIndex + 1}. <MathText>{hint}</MathText>
-                        </li>
-                      ))}
-                    </ol>
-                  </details>
+                  <QuestionHints
+                    key={session.id + ":" + question.id}
+                    sessionId={session.id}
+                    question={question}
+                    questionNumber={index + 1}
+                    hintUsage={session.hint_usage}
+                    disabled={busy}
+                    onPendingChange={markHintPending}
+                    onReveal={(response) => acceptHints(session.id, response)}
+                  />
                 ) : null}
               </fieldset>
             ))}
           </div>
-          <button className="btn btn-primary mt-6" type="button" onClick={submit} disabled={busy}>
+          <button
+            className="btn btn-primary mt-6"
+            type="button"
+            onClick={submit}
+            disabled={busy || hintPending}
+          >
             {busy ? "Grading…" : "Submit " + mode}
           </button>
         </div>
@@ -790,13 +869,20 @@ function AssessmentWorkspace({
               {result.passed ? <CheckCircle2 size={21} /> : <CircleAlert size={21} />}
               {result.score}% · {result.correct}/{result.total} correct
             </p>
-            <p className="mt-2 leading-7">
-              {result.passed
-                ? mode === "practice"
-                  ? "Lesson mastered. Your progress has been saved."
-                  : "Assessment passed. Your responses have been saved."
-                : "Review the worked feedback, then try a new session. Your mistakes are saved for targeted practice."}
+            <p className="mt-2 leading-7">{resultMessage(result, mode)}</p>
+            <p className="mt-2 text-sm leading-7 text-[#a9c0d7]">
+              {typeof result.independent_score === "number"
+                ? "Independent score: " + result.independent_score + "%"
+                : "Hint usage was not recorded for this older attempt."}
             </p>
+            {typeof result.independent_score === "number" ? (
+              <p className="mt-2 text-xs leading-6 text-[#8fa9c2]">
+                Only correct answers completed without hints count toward the independent score.
+              </p>
+            ) : null}
+            {result.assistance === "assisted" ? (
+              <p className="mt-2 text-xs text-[#f5d67d]">This session included hint assistance.</p>
+            ) : null}
           </div>
           <div className="mt-5 space-y-4">
             {result.feedback.map((item, index) => (
@@ -808,6 +894,7 @@ function AssessmentWorkspace({
                 <summary className="cursor-pointer font-semibold">
                   Question {index + 1}: {item.correct ? "Correct" : "Review needed"} · {item.concept}
                 </summary>
+                <p className="mt-3 text-xs leading-6 text-[#9db4cf]">{answerAssistance(item)}</p>
                 <p className="mt-3 leading-8">
                   <MathText>{item.prompt}</MathText>
                 </p>

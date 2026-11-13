@@ -225,7 +225,7 @@ describe("proof assessment integration", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add step 3 to proof" }));
     expect(screen.getByText("1 of 1 answered · 75% to pass")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
-    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    expect(await screen.findByText("Practice passed. Your progress has been saved.")).toBeInTheDocument();
     const submission = mock.mock.calls.find(([url]) => String(url).endsWith("/submit"));
     expect(JSON.parse(String(submission?.[1]?.body)).answers).toEqual([
       { question_id: "proof-zero", answer: "[1,2,3]" },

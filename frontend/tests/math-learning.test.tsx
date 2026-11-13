@@ -226,7 +226,7 @@ describe("authored mathematics learning", () => {
     );
     expect(screen.getByText("5 of 5 answered · 75% to pass")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
-    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    expect(await screen.findByText("Practice passed. Your progress has been saved.")).toBeInTheDocument();
     const startRequest = mock.mock.calls.find(([input]) => String(input).endsWith("/assessments"));
     expect(JSON.parse(String(startRequest?.[1]?.body))).toEqual({
       mode: "practice",
@@ -295,7 +295,7 @@ describe("authored mathematics learning", () => {
     expect(screen.getByText("Position 2 · Step 1")).toBeInTheDocument();
     expect(screen.getByLabelText("(2, -1)")).toBeChecked();
     fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
-    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    expect(await screen.findByText("Practice passed. Your progress has been saved.")).toBeInTheDocument();
     const submissionsSent = mock.mock.calls.filter(([input]) => String(input).endsWith("/submit"));
     expect(submissionsSent).toHaveLength(2);
     const firstBody = JSON.parse(String(submissionsSent[0]?.[1]?.body));
@@ -312,7 +312,7 @@ describe("authored mathematics learning", () => {
     const result = await screen.findByRole("status");
     expect(result).toHaveTextContent("40% · 2/5 correct");
     expect(result).toHaveTextContent("Your mistakes are saved for targeted practice.");
-    expect(screen.queryByText("Lesson mastered. Your progress has been saved.")).not.toBeInTheDocument();
+    expect(screen.queryByText("Practice passed. Your progress has been saved.")).not.toBeInTheDocument();
     expect(screen.getByText("Question 3: Review needed · Matrix transpose")).toBeInTheDocument();
     expect(screen.getByText("Question 4: Review needed · Proof from additivity")).toBeInTheDocument();
   });
@@ -494,7 +494,7 @@ describe("authored mathematics learning", () => {
     storeDraft({ "fraction-answer": "1/2" });
     mockAssessmentApi({ resume: async () => response({ ...session, result: resultFor() }) });
     renderAssessment();
-    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    expect(await screen.findByText("Practice passed. Your progress has been saved.")).toBeInTheDocument();
     expect(localStorage.getItem(draftKey)).toBeNull();
     expect(screen.queryByRole("button", { name: "Submit practice" })).not.toBeInTheDocument();
   });
@@ -542,7 +542,7 @@ describe("authored mathematics learning", () => {
     renderAssessment();
     await startAndAnswer();
     fireEvent.click(screen.getByRole("button", { name: "Submit practice" }));
-    expect(await screen.findByText("Lesson mastered. Your progress has been saved.")).toBeInTheDocument();
+    expect(await screen.findByText("Practice passed. Your progress has been saved.")).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     expect(localStorage.getItem(draftKey)).toBeNull();
     expect(mock.mock.calls.filter(([input]) => String(input).endsWith("/submit"))).toHaveLength(1);

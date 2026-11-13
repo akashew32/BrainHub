@@ -4,6 +4,7 @@ export type MathQuestion = {
   prompt: string;
   choices?: string[];
   hints: string[];
+  hint_count?: number;
   concept: string;
   difficulty: "foundation" | "core" | "stretch";
   topic_slug: string;
@@ -44,6 +45,17 @@ export type AssessmentSession = {
   questions: MathQuestion[];
   draft?: AssessmentDraft;
   result?: AssessmentResult | null;
+  hint_usage?: Record<string, number> | null;
+};
+
+export type Assistance = "independent" | "assisted" | "untracked";
+
+export type HintReveal = {
+  question_id: string;
+  hint_count: number;
+  hints: string[];
+  hints_used: number;
+  hint_usage: Record<string, number>;
 };
 
 export type ProofDetails = {
@@ -63,6 +75,9 @@ export type AssessmentResult = {
   passed: boolean;
   correct: number;
   total: number;
+  assistance?: Assistance;
+  independent_score?: number | null;
+  independent_passed?: boolean | null;
   feedback: Array<{
     question_id: string;
     prompt: string;
@@ -73,6 +88,8 @@ export type AssessmentResult = {
     solution: string;
     topic_slug: string;
     proof_details?: ProofDetails;
+    hints_used?: number | null;
+    assistance?: Assistance;
   }>;
   progress: import("@/lib/roadmap-progress").RoadmapProgressItem | null;
 };
