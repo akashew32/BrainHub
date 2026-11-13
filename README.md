@@ -106,6 +106,7 @@ Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS`
 - `PATCH /api/roadmaps/{roadmap_slug}/topics/{topic_slug}`
 - `GET /api/roadmaps/curriculum`
 - `GET /api/roadmaps/{roadmap_slug}/lessons/{topic_slug}`
+- `GET /api/roadmaps/{roadmap_slug}/exam-readiness`
 - `POST /api/roadmaps/{roadmap_slug}/assessments`
 - `POST /api/roadmaps/assessments/{session_id}/submit`
 - `GET /api/roadmaps/assessments/{session_id}`
@@ -124,6 +125,8 @@ Authored lesson answer keys live only in `backend/app/roadmaps/curriculum/`. Pub
 In-progress assessments support partial answer drafts. Browser recovery is scoped to the subject, lesson, and assessment mode; server drafts use increasing revisions so late network responses cannot overwrite newer work. Draft saves do not create graded attempts or lesson completion. Submitted sessions can be recovered after a lost response, while expired sessions retain a local copy of the answers for reference.
 
 New assessments reveal hints one at a time through the API and record assistance independently of answer drafts. Results distinguish the total practice score from the independent score: correct answers with no revealed hints divided by the full question count. Both use the 75% passing threshold. Older attempts remain explicitly untracked and never become evidence of independent performance. Exam hints are unavailable. Repeated hint requests are idempotent; a shared revision guard prevents a hint/submission race from creating a false independent score.
+
+Fresh stage exams require at least 75% independently correct answers in each of the six current lesson practice sets. Readiness is recomputed from completed, owned sets and their saved answers rather than client progress or summary flags. One qualifying set is required per lesson; answers from separate failed sets cannot be combined. The exam page shows the same prerequisite evidence enforced by the API and an answer-free coverage blueprint. Earlier results and existing exam sessions remain accessible while new starts follow the current prerequisites.
 
 The daily review plan derives from graded answer history. Mistakes, assisted answers, and older untracked answers are due immediately. Independent correct recall starts at one day and advances through 3, 7, 14, 30, 60, and 90 days when completed on time. Early correct practice preserves the current interval and due date. The review page, review sessions, and due-concept statistics use the same scheduler. Sets contain at most eight due questions per subject; activity totals use UTC days. Viewing lessons, opening sessions, and saving drafts do not advance review schedules.
 

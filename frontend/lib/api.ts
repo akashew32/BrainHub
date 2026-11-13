@@ -34,6 +34,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 export const api = {
+  examReadiness: (roadmapSlug: string, stageIndex = 0) =>
+    request<import("@/lib/curriculum").ExamReadiness>(
+      `/roadmaps/${encodeURIComponent(roadmapSlug)}/exam-readiness?stage_index=${stageIndex}`,
+      { signal: AbortSignal.timeout(12_000) },
+    ),
   roadmapNotebook: (
     query: {
       roadmap_slug?: string;

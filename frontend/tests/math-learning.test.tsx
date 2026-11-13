@@ -145,6 +145,7 @@ function renderAssessment(mode: "practice" | "exam" | "review" = "practice") {
         roadmapSlug="linear-algebra"
         topicSlug={mode === "practice" ? session.topic_slug! : undefined}
         mode={mode}
+        examAvailable={mode === "exam"}
       />
     </RoadmapProgressProvider>,
   );

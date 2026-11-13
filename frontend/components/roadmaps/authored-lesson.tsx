@@ -116,12 +116,16 @@ export function AuthoredLesson({
             Practice questions
           </a>
           <Link className="btn" href={`/roadmaps/${roadmapSlug}/exam`}>
-            Stage examination
+            Check exam readiness
           </Link>
           <Link className="btn" href="/roadmaps/review">
             Review mistakes
           </Link>
         </div>
+        <p className="mt-4 text-xs leading-6 text-[#91a4bb]">
+          A new stage exam requires at least 75% independent practice in all six lessons. Correct answers
+          completed without hints count toward that score.
+        </p>
       </header>
       <section className="panel p-6 sm:p-8" aria-labelledby="learning-outcomes">
         <h2 className="text-2xl font-semibold" id="learning-outcomes">

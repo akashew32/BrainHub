@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AssessmentPanel } from "@/components/roadmaps/assessment-panel";
+import { ExamReadiness } from "@/components/roadmaps/exam-readiness";
 import { learningRoadmaps, roadmapMap } from "@/lib/roadmaps";
 
 export const dynamicParams = false;
@@ -28,10 +28,11 @@ export default async function StageExamPage({ params }: { params: Promise<{ slug
         <h1 className="mt-3 text-4xl font-semibold">{roadmap.title}: stage 1 exam</h1>
         <p className="mt-4 leading-8 text-[#9fb1c7]">
           {roadmap.stages[0]!.checkpoint} The exam draws two reserved questions from each of the six lessons.
-          Solutions are revealed only after submission.
+          Earn at least 75% independent practice in every lesson to start a new exam. There are no hints, and
+          solutions are revealed after submission. Existing exams can still be resumed.
         </p>
       </header>
-      <AssessmentPanel key={slug + ":exam:0"} roadmapSlug={slug} mode="exam" />
+      <ExamReadiness roadmapSlug={slug} />
     </div>
   );
 }

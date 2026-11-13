@@ -114,9 +114,10 @@ export default async function RoadmapDetailPage({ params }: { params: Promise<{ 
                 <h2 className="font-semibold">How to use this outline</h2>
                 <p className="mt-2 text-sm leading-6 text-[#8995a7]">
                   The first six topics include authored explanations, fully solved examples, and
-                  eight-question practice sets. A score of at least 75% completes a lesson. Finish the six
-                  practice sets to take the twelve-question stage exam. Later stages currently provide study
-                  outlines. Individual mistakes and due recall questions appear in your review queue.
+                  eight-question practice sets. A score of at least 75% completes a lesson. Earn at least 75%
+                  independent practice in each of the six lessons to open a new twelve-question stage exam.
+                  Later stages currently provide study outlines. Individual mistakes and due recall questions
+                  appear in your review queue.
                 </p>
               </div>
             </div>

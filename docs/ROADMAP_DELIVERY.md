@@ -27,7 +27,7 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 4 | Per-question hints with assisted/independent mastery | Complete | `c9f9da5`; 316 backend tests, 217 frontend tests, fresh/existing migrations, full build, live 100% overall / 75% independent |
 | 5 | Spaced review scheduling and daily retrieval practice | Complete | `caf3cc5`; 335 backend tests, 228 frontend tests, full build, live due-to-scheduled review flow |
 | 6 | Mistake notebook and concept-level performance | Complete | `744f7a3` + CI test fix `e054ca3`; 351 backend tests, 252 frontend tests, fresh/existing migrations, full build, live two-tab reflection conflict/recovery |
-| 7 | Exam readiness, blueprint, and prerequisite evidence | Pending | |
+| 7 | Exam readiness, blueprint, and prerequisite evidence | Verified; publishing | 380 backend tests, 262 frontend tests, full build, live checklist and direct server gate |
 | 8 | Exam integrity, retry policy, and robust session lifecycle | Pending | |
 | 9 | Learning dashboard and recent learning history | Pending | |
 | 10 | Diagnostic placement across foundation topics | Pending | |
@@ -145,3 +145,13 @@ Cycle 6 GitHub CI caught a frontend test that asserted the note value as soon as
 Cycle 6 release and correction are remote verified at `744f7a31cc7a46738d345e51f83d2d82a6d2d1e3` and `e054ca388237a3943a70d2af2d0a1046487cb1cb` on `main`. The corrected GitHub Actions run passed: https://github.com/akashew32/BrainHub/actions/runs/43345465697. Six of twenty improvement cycles are complete; cycles 7–20 remain part of the active goal.
 
 Next batch (cycle 7): server-derived exam readiness for all five foundation stages, a six-lesson independent-performance checklist, a public question-count/type blueprint without reserved questions or keys, clear study links and legacy-evidence explanations, and matching server-side eligibility. Keep overall lesson completion distinct from evidence of independent performance, and preserve earlier results. The readiness interface and exam gate must change together.
+
+### Cycle 7 batch — exam readiness and prerequisite evidence
+
+Recompute readiness from owned, completed practice sets and their saved question-level answers. Each of the six current eight-question sets must demonstrate at least 75% independently correct answers within one completed set; do not combine answers across separate failed sets. Client progress rows and result flags alone cannot unlock an exam. Older untracked assistance remains unknown. Earlier qualifying evidence is retained after a later failed practice set.
+
+Show the six-lesson checklist, overall and independent scores, legacy/outdated-evidence explanations, lesson links, and an exam blueprint limited to counts and question kinds/difficulties. Lock only new exam starts until server readiness is known and eligible. Existing exams, answer drafts, submissions, and historical results remain accessible even if the new prerequisites are not yet met.
+
+Cycle 7 verification: all 380 backend tests and 262 frontend tests pass, with clean formatting, lint, and type checks; all 536 routes build for production. The content verifier still validates 30 lessons, 300 questions, and all 21 proof graphs. Tests cover all five private blueprints, forged summary/progress flags, exact answer membership, ownership, unknown hint provenance, the 6/8 versus 5/8 boundary, and avoiding cross-session cherry-picking. A six-lesson API flow unlocks the balanced twelve-question exam; already-created exams remain recoverable and submittable.
+
+Cycle 7 live evidence: the current profile shows one of six linear algebra lessons ready, with 100% overall and 75% independent practice. The other five lessons offer study links and no invented score. The exam start button is disabled. A direct fresh-exam POST returns 409 with the independent-practice requirement and leaves the exam-session count unchanged at zero. No browser console errors were observed.

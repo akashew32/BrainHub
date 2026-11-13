@@ -19,6 +19,7 @@ type AssessmentProps = {
   mode?: Mode;
   onCompleted?: (result: AssessmentResult) => void;
   reviewAvailable?: boolean;
+  examAvailable?: boolean;
 };
 type SavedDraft = {
   version: 2;
@@ -236,6 +237,7 @@ export function AssessmentPanel({
   mode = "practice",
   onCompleted,
   reviewAvailable = true,
+  examAvailable = false,
 }: AssessmentProps) {
   const scopedTopic = mode === "practice" ? topicSlug : undefined;
   const draftKey =
@@ -250,6 +252,7 @@ export function AssessmentPanel({
       mode={mode}
       onCompleted={onCompleted}
       reviewAvailable={reviewAvailable}
+      examAvailable={examAvailable}
     />
   );
 }
@@ -262,11 +265,13 @@ function AssessmentWorkspace({
   draftKey,
   onCompleted,
   reviewAvailable,
+  examAvailable,
 }: Required<Pick<AssessmentProps, "roadmapSlug" | "stageIndex" | "mode">> & {
   topicSlug?: string;
   draftKey: string;
   onCompleted?: (result: AssessmentResult) => void;
   reviewAvailable: boolean;
+  examAvailable: boolean;
 }) {
   const { acceptProgress } = useRoadmapProgress();
   const [session, setSession] = useState<AssessmentSession | null>(null);
@@ -597,7 +602,8 @@ function AssessmentWorkspace({
   }
 
   async function start() {
-    if (submitting.current || (mode === "review" && !reviewAvailable)) return;
+    if (submitting.current || (mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable))
+      return;
     submitting.current = true;
     setBusy(true);
     setError(null);
@@ -704,7 +710,7 @@ function AssessmentWorkspace({
       : mode === "review"
         ? "Targeted retrieval practice"
         : "Practice and mastery";
-  const cannotStart = busy || (mode === "review" && !reviewAvailable);
+  const cannotStart = busy || (mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable);
   return (
     <section
       className="panel scroll-mt-24 p-6 sm:p-8"
@@ -718,7 +724,7 @@ function AssessmentWorkspace({
       </h2>
       <p className="mt-3 leading-7 text-[#9ba8b9]">
         {mode === "exam"
-          ? "Twelve reserved questions cover all six lessons. Complete each lesson practice set first. A score of 75% passes the exam."
+          ? "Twelve reserved questions cover all six lessons. Earn at least 75% independent practice in each lesson before starting a new exam. The exam has no hints; a score of 75% passes."
           : mode === "review"
             ? "Revisit questions selected from your recent mistakes and due recall practice."
             : "Solve eight questions to check the lesson. A score of 75% completes it. Worked feedback appears after you submit."}
@@ -742,6 +748,12 @@ function AssessmentWorkspace({
       {mode === "review" && !reviewAvailable ? (
         <p className="mt-4 text-sm leading-7 text-[#9ba8b9]" role="status">
           No more questions are due for this subject. Your current answers and feedback remain available.
+        </p>
+      ) : null}
+      {mode === "exam" && !examAvailable ? (
+        <p className="mt-4 text-sm leading-7 text-[#9ba8b9]">
+          New exams open after your independent practice is confirmed. You can continue and submit an exam you
+          already started.
         </p>
       ) : null}
       {needsResume && savedSessionId && !expired && !result ? (

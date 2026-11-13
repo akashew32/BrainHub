@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from typing import Any, Literal
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import and_, case, func, or_, select, update
 from sqlalchemy.engine import CursorResult
@@ -29,6 +29,7 @@ from app.services.curriculum import (
     public_question,
     questions_for,
 )
+from app.services.exam_readiness import readiness_for_stage
 from app.services.proof_feedback import build_proof_feedback
 from app.services.roadmaps import serialize_progress
 from app.services.spaced_review import SESSION_LIMIT, review_plan_for_user
@@ -501,6 +502,15 @@ def authored_lesson(roadmap_slug: str, topic_slug: str) -> dict[str, Any]:
     return public_lesson(roadmap_slug, lesson)
 
 
+@router.get("/{roadmap_slug}/exam-readiness")
+def exam_readiness(
+    roadmap_slug: str, db: Database, stage_index: int = Query(default=0, ge=0, le=9)
+) -> dict[str, Any]:
+    now = utc_now()
+    user = get_local_user(db)
+    return readiness_for_stage(db, user.id, roadmap_slug, stage_index=stage_index, now=now)
+
+
 @router.post("/{roadmap_slug}/assessments", status_code=201)
 def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) -> dict[str, Any]:
     now = utc_now()
@@ -514,24 +524,13 @@ def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) 
             raise HTTPException(404, "Unknown authored lesson")
         selected = [question["id"] for question in lesson["questions"] if not question["exam"]]
     elif payload.mode == "exam":
-        verified_practice = list(
-            db.scalars(
-                select(RoadmapAssessmentSession).where(
-                    RoadmapAssessmentSession.user_id == user.id,
-                    RoadmapAssessmentSession.roadmap_slug == roadmap_slug,
-                    RoadmapAssessmentSession.mode == "practice",
-                    RoadmapAssessmentSession.completed_at.is_not(None),
-                )
-            )
+        readiness = readiness_for_stage(
+            db, user.id, roadmap_slug, stage_index=payload.stage_index, now=now
         )
-        completed = {
-            item.topic_slug
-            for item in verified_practice
-            if item.result is not None and item.result.get("passed") is True
-        }
-        if any(lesson["topic_slug"] not in completed for lesson in data["lessons"]):
+        if not readiness["eligible"]:
             raise HTTPException(
-                409, "Complete all six lesson practice sets before starting the stage exam."
+                409,
+                "Complete all six lesson practice sets with at least 75% independently correct answers before starting a fresh stage exam.",
             )
         selected = [
             question["id"]

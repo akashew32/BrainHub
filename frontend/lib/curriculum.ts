@@ -248,3 +248,34 @@ export type ConceptPerformance = {
   >;
   trend: Array<ConceptMetrics & { date: string }>;
 };
+
+export type ExamReadiness = {
+  roadmap_slug: string;
+  stage_index: number;
+  generated_at: string;
+  eligible: boolean;
+  ready_lessons: number;
+  required_lessons: number;
+  pass_score: number;
+  lessons: Array<{
+    topic_slug: string;
+    title: string;
+    practice_count: number;
+    exam_count: number;
+    best_score: number | null;
+    best_independent_score: number | null;
+    completed_attempts: number;
+    untracked_attempts: number;
+    outdated_attempts: number;
+    status: "ready" | "practice_needed" | "independent_needed" | "untracked" | "outdated";
+    reason: string;
+    study_url: string;
+    last_attempt_at: string | null;
+  }>;
+  blueprint: {
+    total_questions: number;
+    kinds: Record<string, number>;
+    difficulties: Record<string, number>;
+    hints_allowed: false;
+  };
+};
