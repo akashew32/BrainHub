@@ -46,6 +46,11 @@ export type AssessmentSession = {
   draft?: AssessmentDraft;
   result?: AssessmentResult | null;
   hint_usage?: Record<string, number> | null;
+  request_id?: string | null;
+  state?: "active" | "expired" | "completed";
+  server_now?: string;
+  expires_in_seconds?: number;
+  questions_available?: boolean;
 };
 
 export type Assistance = "independent" | "assisted" | "untracked";

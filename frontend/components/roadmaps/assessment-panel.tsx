@@ -9,6 +9,14 @@ import { MathAnswerPreview } from "@/components/roadmaps/math-answer-preview";
 import { ProofBuilder, parseProofOrder } from "@/components/roadmaps/proof-builder";
 import { QuestionHints } from "@/components/roadmaps/question-hints";
 import { useRoadmapProgress } from "@/components/roadmaps/roadmap-progress-provider";
+import {
+  clearStartIntent,
+  readStartIntent,
+  storeStartIntent,
+  UUID_PATTERN,
+  validAssessmentResult,
+  type StartIntent,
+} from "@/lib/assessment-recovery";
 
 type Mode = "practice" | "exam" | "review";
 type AnswerMap = Record<string, string>;
@@ -43,6 +51,13 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function publicSession(value: unknown): value is AssessmentSession {
   if (!isRecord(value)) return false;
+  const result = validAssessmentResult(value.result, String(value.id), String(value.mode))
+    ? value.result
+    : null;
+  const validResult = result !== null;
+  const questionIds = Array.isArray(value.questions)
+    ? new Set(value.questions.map((question) => (isRecord(question) ? question.id : null)))
+    : new Set();
   return (
     typeof value.id === "string" &&
     typeof value.roadmap_slug === "string" &&
@@ -52,8 +67,26 @@ function publicSession(value: unknown): value is AssessmentSession {
     Number.isFinite(Date.parse(value.expires_at)) &&
     typeof value.pass_score === "number" &&
     Array.isArray(value.questions) &&
-    value.questions.length > 0 &&
+    (value.questions.length > 0 || (value.state === "completed" && validResult)) &&
     value.questions.length <= 60 &&
+    (value.result === undefined || value.result === null || validResult) &&
+    (!validResult ||
+      value.questions.length === 0 ||
+      (result.total === value.questions.length &&
+        result.feedback.every((item) => questionIds.has(item.question_id)))) &&
+    (value.state === undefined || ["active", "expired", "completed"].includes(String(value.state))) &&
+    (value.state !== "completed" || validResult) &&
+    (value.state === undefined || value.state === "completed" || !value.result) &&
+    (value.request_id === undefined ||
+      value.request_id === null ||
+      (typeof value.request_id === "string" && UUID_PATTERN.test(value.request_id))) &&
+    (value.server_now === undefined ||
+      (typeof value.server_now === "string" && Number.isFinite(Date.parse(value.server_now)))) &&
+    (value.expires_in_seconds === undefined ||
+      (typeof value.expires_in_seconds === "number" &&
+        Number.isFinite(value.expires_in_seconds) &&
+        value.expires_in_seconds >= 0)) &&
+    (value.questions_available === undefined || typeof value.questions_available === "boolean") &&
     (value.hint_usage === undefined ||
       value.hint_usage === null ||
       (isRecord(value.hint_usage) &&
@@ -155,6 +188,12 @@ function sessionSnapshot(current: AssessmentSession): AssessmentSession {
     expires_at: current.expires_at,
     pass_score: current.pass_score,
     hint_usage: current.hint_usage ?? null,
+    request_id: current.request_id,
+    state: current.state,
+    server_now: current.server_now,
+    expires_in_seconds: current.expires_in_seconds,
+    questions_available: current.questions_available,
+    ...(current.result ? { result: current.result } : {}),
     questions: current.questions.map((question) => ({
       id: question.id,
       kind: question.kind,
@@ -286,6 +325,10 @@ function AssessmentWorkspace({
   const [draftStatus, setDraftStatus] = useState("Answers are saved on this device while you work.");
   const [saveAttempt, setSaveAttempt] = useState(0);
   const [hintPending, setHintPending] = useState(false);
+  const [pendingStart, setPendingStart] = useState<StartIntent | null>(null);
+  const [intentDurable, setIntentDurable] = useState(true);
+  const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
+  const [expiryConfirmed, setExpiryConfirmed] = useState(false);
   const mounted = useRef(true);
   const startedAt = useRef(0);
   const submitting = useRef(false);
@@ -296,6 +339,10 @@ function AssessmentWorkspace({
   const revision = useRef(0);
   const savedRevision = useRef(0);
   const finished = useRef(false);
+  const pendingStartRef = useRef<StartIntent | null>(null);
+  const confirmedStarts = useRef(new Set<string>());
+  const deadline = useRef<{ id: string; at: number } | null>(null);
+  const intentKey = draftKey.replace("brainhub:assessment:v2:", "brainhub:assessment-start:v1:");
   const notifiedResults = useRef(new Set<string>());
   const completedCallback = useRef(onCompleted);
 
@@ -317,6 +364,33 @@ function AssessmentWorkspace({
       candidate.topic_slug === (topicSlug ?? null),
     [mode, roadmapSlug, topicSlug],
   );
+
+  const synchronizeExpiry = useCallback((candidate: AssessmentSession, fresh: boolean) => {
+    deadline.current = null;
+    if (candidate.state === "completed") {
+      setRemainingSeconds(null);
+      setExpiryConfirmed(true);
+      setExpired(false);
+      return;
+    }
+    if (candidate.state === "expired") {
+      setRemainingSeconds(0);
+      setExpiryConfirmed(true);
+      setExpired(true);
+      return;
+    }
+    let seconds: number | null = null;
+    if (fresh) {
+      if (typeof candidate.expires_in_seconds === "number") seconds = candidate.expires_in_seconds;
+      else if (candidate.server_now)
+        seconds = Math.max(0, (Date.parse(candidate.expires_at) - Date.parse(candidate.server_now)) / 1000);
+      else seconds = Math.max(0, (Date.parse(candidate.expires_at) - Date.now()) / 1000);
+    }
+    setExpiryConfirmed(fresh);
+    setRemainingSeconds(seconds === null ? null : Math.ceil(seconds));
+    setExpired(seconds !== null && seconds <= 0);
+    if (seconds !== null) deadline.current = { id: candidate.id, at: performance.now() + seconds * 1000 };
+  }, []);
 
   const remember = useCallback(
     (activeSession: AssessmentSession, values: AnswerMap, currentRevision: number) => {
@@ -348,6 +422,25 @@ function AssessmentWorkspace({
     else pendingHints.current.delete(questionId);
     if (mounted.current) setHintPending(pendingHints.current.size > 0);
   }, []);
+
+  const closeCurrentAssessment = useCallback(
+    (message: string) => {
+      deadline.current = null;
+      setExpired(true);
+      setRemainingSeconds(0);
+      setExpiryConfirmed(true);
+      setNeedsResume(false);
+      setError(message);
+      const active = currentSession.current;
+      if (active) {
+        const closed: AssessmentSession = { ...active, state: "expired", expires_in_seconds: 0 };
+        currentSession.current = closed;
+        setSession(closed);
+        remember(closed, currentAnswers.current, revision.current);
+      }
+    },
+    [remember],
+  );
 
   const acceptHints = useCallback(
     (sessionId: string, response: HintReveal) => {
@@ -391,6 +484,8 @@ function AssessmentWorkspace({
   const showResult = useCallback(
     (next: AssessmentResult, sessionId: string) => {
       finished.current = true;
+      deadline.current = null;
+      setRemainingSeconds(null);
       setResult(next);
       setExpired(false);
       setNeedsResume(false);
@@ -414,8 +509,9 @@ function AssessmentWorkspace({
       setSession(restored);
       setSavedSessionId(restored.id);
       if (restored.result) {
+        const stored = remember(restored, {}, restored.draft?.revision ?? 0);
         showResult(restored.result, restored.id);
-        return;
+        return stored;
       }
       const serverRevision = restored.draft?.revision ?? 0;
       const applicableLocal = local?.sessionId === restored.id && matchesScope(local.session) ? local : null;
@@ -441,44 +537,62 @@ function AssessmentWorkspace({
       setAnswers(nextAnswers);
       setResult(null);
       setNeedsResume(false);
-      setExpired(Date.parse(restored.expires_at) <= Date.now());
+      synchronizeExpiry(restored, true);
       setError(null);
-      remember(restored, nextAnswers, revision.current);
+      const stored = remember(restored, nextAnswers, revision.current);
       setDraftStatus(
         revision.current > serverRevision
           ? "Restored your latest device answers. Profile sync will retry."
           : "Restored your saved assessment and answers.",
       );
+      return stored;
     },
-    [matchesScope, remember, showResult],
+    [matchesScope, remember, showResult, synchronizeExpiry],
   );
 
-  const keepUnavailableDraft = useCallback((local: SavedDraft, problem: unknown) => {
-    currentSession.current = local.session;
-    revision.current = local.revision;
-    savedRevision.current = -1;
-    startedAt.current = Date.now() - elapsedSeconds(local.startedAt) * 1000;
-    setSession(local.session);
-    currentAnswers.current = local.answers;
-    setAnswers(local.answers);
-    const noLongerOpen =
-      (problem instanceof ApiError && [404, 409, 410].includes(problem.status)) ||
-      Date.parse(local.session.expires_at) <= Date.now();
-    setExpired(noLongerOpen);
-    setNeedsResume(!noLongerOpen);
-    setDraftStatus("Your answers were restored from this device.");
-    setError(
-      problem instanceof ApiError && problem.status === 409
-        ? "The curriculum changed since this assessment started. Your saved answers are preserved below. Start a fresh session when ready."
-        : noLongerOpen
-          ? "This assessment is no longer open. Your saved answers are preserved below. Start a fresh session when ready."
-          : "Profile sync is unavailable. Your saved answers are still here; retry reopening the session when connected.",
-    );
-  }, []);
+  const keepUnavailableDraft = useCallback(
+    (local: SavedDraft, problem: unknown) => {
+      currentSession.current = local.session;
+      revision.current = local.revision;
+      savedRevision.current = -1;
+      startedAt.current = Date.now() - elapsedSeconds(local.startedAt) * 1000;
+      setSession(local.session);
+      currentAnswers.current = local.answers;
+      setAnswers(local.answers);
+      if (local.session.result) {
+        showResult(local.session.result, local.sessionId);
+        return;
+      }
+      synchronizeExpiry(local.session, false);
+      const noLongerOpen =
+        (problem instanceof ApiError && [404, 409, 410].includes(problem.status)) ||
+        local.session.state === "expired";
+      if (noLongerOpen) {
+        const closed: AssessmentSession = { ...local.session, state: "expired", expires_in_seconds: 0 };
+        currentSession.current = closed;
+        setSession(closed);
+        remember(closed, local.answers, local.revision);
+      }
+      setExpired(noLongerOpen);
+      setNeedsResume(!noLongerOpen);
+      setDraftStatus("Your answers were restored from this device.");
+      setError(
+        problem instanceof ApiError && problem.status === 409
+          ? "The curriculum changed since this assessment started. Your saved answers are preserved below. Start a fresh session when ready."
+          : noLongerOpen
+            ? "This assessment is no longer open. Your saved answers are preserved below. Start a fresh session when ready."
+            : "Profile sync is unavailable. Your saved answers are still here; retry reopening the session when connected.",
+      );
+    },
+    [remember, showResult, synchronizeExpiry],
+  );
 
   useEffect(() => {
     let active = true;
     async function recover() {
+      const intent = readStartIntent(intentKey, draftKey);
+      pendingStartRef.current = intent;
+      setPendingStart(intent);
       const local = readDraft(draftKey);
       if (
         local &&
@@ -488,6 +602,12 @@ function AssessmentWorkspace({
         local.mode === mode &&
         matchesScope(local.session)
       ) {
+        if (intent && local.session.request_id === intent.request_id) {
+          confirmedStarts.current.add(intent.request_id);
+          clearStartIntent(intentKey, intent);
+          pendingStartRef.current = null;
+          setPendingStart(null);
+        }
         cached.current = local;
         setSavedSessionId(local.sessionId);
         try {
@@ -503,7 +623,41 @@ function AssessmentWorkspace({
     return () => {
       active = false;
     };
-  }, [draftKey, keepUnavailableDraft, matchesScope, mode, restore, roadmapSlug, stageIndex, topicSlug]);
+  }, [
+    draftKey,
+    intentKey,
+    keepUnavailableDraft,
+    matchesScope,
+    mode,
+    restore,
+    roadmapSlug,
+    stageIndex,
+    topicSlug,
+  ]);
+
+  useEffect(() => {
+    if (!session || result || expired || !deadline.current) return;
+    const clock = deadline.current;
+    const update = () => {
+      if (!mounted.current || currentSession.current?.id !== clock.id || deadline.current !== clock) return;
+      const seconds = Math.max(0, (clock.at - performance.now()) / 1000);
+      setRemainingSeconds(Math.ceil(seconds));
+      if (seconds > 0) return;
+      closeCurrentAssessment(
+        "This assessment expired. Your answers are preserved below. Start a fresh session when ready.",
+      );
+    };
+    update();
+    const timer = window.setInterval(update, 250);
+    const expiryTimer = window.setTimeout(
+      update,
+      Math.min(2_147_483_647, Math.ceil(Math.max(0, clock.at - performance.now()))),
+    );
+    return () => {
+      window.clearInterval(timer);
+      window.clearTimeout(expiryTimer);
+    };
+  }, [session, result, expired, closeCurrentAssessment]);
 
   useEffect(() => {
     if (!session || result || expired || recovering || revision.current <= savedRevision.current) return;
@@ -523,8 +677,7 @@ function AssessmentWorkspace({
       } catch (problem) {
         if (!active || finished.current || revision.current !== savingRevision) return;
         if (problem instanceof ApiError && problem.status === 410) {
-          setExpired(true);
-          setError(
+          closeCurrentAssessment(
             "This assessment expired. Your answers are preserved below. Start a fresh session when ready.",
           );
           return;
@@ -558,7 +711,17 @@ function AssessmentWorkspace({
       active = false;
       window.clearTimeout(timer);
     };
-  }, [answers, expired, keepUnavailableDraft, recovering, restore, result, saveAttempt, session]);
+  }, [
+    answers,
+    closeCurrentAssessment,
+    expired,
+    keepUnavailableDraft,
+    recovering,
+    restore,
+    result,
+    saveAttempt,
+    session,
+  ]);
 
   useEffect(() => {
     function retryOnline() {
@@ -602,8 +765,15 @@ function AssessmentWorkspace({
   }
 
   async function start() {
-    if (submitting.current || (mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable))
-      return;
+    if (submitting.current) return;
+    const storedIntent = pendingStartRef.current ?? readStartIntent(intentKey, draftKey);
+    const reusable =
+      storedIntent && !confirmedStarts.current.has(storedIntent.request_id) ? storedIntent : null;
+    if (!reusable && ((mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable))) return;
+    const intent: StartIntent = reusable ?? { version: 1, scope: draftKey, request_id: crypto.randomUUID() };
+    pendingStartRef.current = intent;
+    setPendingStart(intent);
+    setIntentDurable(storeStartIntent(intentKey, intent));
     submitting.current = true;
     setBusy(true);
     setError(null);
@@ -612,28 +782,24 @@ function AssessmentWorkspace({
         mode,
         topic_slug: topicSlug,
         stage_index: stageIndex,
+        request_id: intent.request_id,
       });
       if (!mounted.current) return;
-      if (!publicSession(next) || !matchesScope(next))
+      if (
+        !publicSession(next) ||
+        !matchesScope(next) ||
+        (next.request_id != null && next.request_id !== intent.request_id)
+      )
         throw new Error("The assessment could not be opened in this learning track.");
-      currentSession.current = next;
-      startedAt.current = Date.now();
-      revision.current = next.draft?.revision ?? 0;
-      savedRevision.current = revision.current;
-      finished.current = false;
-      setSession(next);
-      setSavedSessionId(next.id);
-      setResult(null);
-      currentAnswers.current = {};
-      setAnswers({});
-      setExpired(false);
-      setNeedsResume(false);
-      const savedLocally = remember(next, {}, revision.current);
-      setDraftStatus(
-        savedLocally
-          ? "Your session is saved on this device."
-          : "Device storage is unavailable. Answers can still sync to your profile.",
-      );
+      const savedLocally = restore(next, null);
+      confirmedStarts.current.add(intent.request_id);
+      pendingStartRef.current = null;
+      setPendingStart(null);
+      if (savedLocally) clearStartIntent(intentKey, intent);
+      else
+        setDraftStatus(
+          "Device storage is unavailable. Keep this page open; profile sync can still back up your answers.",
+        );
     } catch (problem) {
       if (mounted.current)
         setError(problem instanceof Error ? problem.message : "Unable to start. Please try again.");
@@ -672,8 +838,7 @@ function AssessmentWorkspace({
     } catch (problem) {
       if (!mounted.current) return;
       if (problem instanceof ApiError && problem.status === 410) {
-        setExpired(true);
-        setError(
+        closeCurrentAssessment(
           "This assessment expired. Your answers are preserved below. Start a fresh session when ready.",
         );
       } else {
@@ -710,7 +875,9 @@ function AssessmentWorkspace({
       : mode === "review"
         ? "Targeted retrieval practice"
         : "Practice and mastery";
-  const cannotStart = busy || (mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable);
+  const cannotStart =
+    busy ||
+    (!pendingStart && ((mode === "review" && !reviewAvailable) || (mode === "exam" && !examAvailable)));
   return (
     <section
       className="panel scroll-mt-24 p-6 sm:p-8"
@@ -742,8 +909,20 @@ function AssessmentWorkspace({
           type="button"
         >
           <Play size={15} />
-          {busy ? "Preparing…" : "Start " + mode}
+          {busy ? "Preparing…" : pendingStart ? "Retry opening saved assignment" : "Start " + mode}
         </button>
+      ) : null}
+      {pendingStart ? (
+        <p className="mt-4 text-sm leading-7 text-[#9ba8b9]">
+          The assignment start has not been confirmed. Retrying opens the same assignment rather than creating
+          a second set.
+        </p>
+      ) : null}
+      {!intentDurable && pendingStart ? (
+        <p className="mt-3 text-sm leading-7 text-[#e3c18f]">
+          Device storage is unavailable. Retry on this page to recover the same assignment; avoid leaving it
+          until the assignment opens.
+        </p>
       ) : null}
       {mode === "review" && !reviewAvailable ? (
         <p className="mt-4 text-sm leading-7 text-[#9ba8b9]" role="status">
@@ -791,6 +970,11 @@ function AssessmentWorkspace({
       ) : null}
       {session && !result && !expired ? (
         <div className="mt-6">
+          <p className="mb-3 text-sm text-[#91a1b5]" aria-label="Assessment time remaining">
+            {expiryConfirmed && remainingSeconds !== null
+              ? `Time remaining: ${Math.floor(remainingSeconds / 60)}:${String(remainingSeconds % 60).padStart(2, "0")} · confirmed by the server`
+              : "Expiry time is unconfirmed while offline. Reconnect to check this assessment."}
+          </p>
           <p className="mb-3 text-sm text-[#91a1b5]" aria-live="polite">
             {answered} of {session.questions.length} answered · {session.pass_score}% to pass
           </p>
@@ -1015,7 +1199,7 @@ function AssessmentWorkspace({
             type="button"
           >
             <RotateCcw size={15} />
-            Start another session
+            {pendingStart ? "Retry opening saved assignment" : "Start another session"}
           </button>
         </div>
       ) : null}

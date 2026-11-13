@@ -202,7 +202,11 @@ describe("server-confirmed exam readiness", () => {
     const request = mock.mock.calls.find(
       ([url, init]) => String(url).endsWith("/assessments") && init?.method === "POST",
     );
-    expect(JSON.parse(String(request?.[1]?.body))).toEqual({ mode: "exam", stage_index: 0 });
+    expect(JSON.parse(String(request?.[1]?.body))).toEqual({
+      mode: "exam",
+      stage_index: 0,
+      request_id: expect.stringMatching(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
+    });
   });
 
   it("distinguishes measured zero from untracked independent practice without borrowing an overall pass", async () => {

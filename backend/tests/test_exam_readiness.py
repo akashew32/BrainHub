@@ -62,7 +62,21 @@ def seed_set(
         hint_usage=None if legacy else usage,
         expires_at=NOW - timedelta(hours=1),
         completed_at=NOW - timedelta(days=1) if completed else None,
-        result={"score": 100, "passed": True, "independent_score": 100, "independent_passed": True}
+        result={
+            "score": 100,
+            "passed": True,
+            "independent_score": 100,
+            "independent_passed": True,
+            "feedback": [
+                {
+                    "question_id": item["id"],
+                    "prompt": item["prompt"],
+                    "submitted_answer": item["answer"],
+                    "expected_answer": item["answer"],
+                }
+                for item in questions
+            ],
+        }
         if result
         else None,
     )

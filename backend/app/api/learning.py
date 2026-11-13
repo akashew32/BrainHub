@@ -4,9 +4,9 @@ import math
 import random
 from datetime import datetime, timedelta
 from typing import Any, Literal
-from uuid import uuid4
+from uuid import UUID, uuid4
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Response
 from pydantic import BaseModel, Field, field_validator
 from sqlalchemy import and_, case, func, or_, select, update
 from sqlalchemy.engine import CursorResult
@@ -20,13 +20,19 @@ from app.db.base import (
     utc_now,
 )
 from app.services.assessment_hints import assistance, hints_used
+from app.services.assessment_sessions import (
+    assessment_payload as serialize_assessment,
+)
+from app.services.assessment_sessions import (
+    assigned_questions,
+    freeze_questions,
+)
 from app.services.curriculum import (
     PASS_SCORE,
     curriculum,
     grade,
     lesson_for,
     public_lesson,
-    public_question,
     questions_for,
 )
 from app.services.exam_readiness import readiness_for_stage
@@ -43,6 +49,7 @@ class StartAssessment(BaseModel):
     mode: Literal["practice", "exam", "review"] = "practice"
     topic_slug: str | None = Field(default=None, max_length=160)
     stage_index: int = Field(default=0, ge=0, le=9)
+    request_id: UUID | None = None
 
 
 class Answer(BaseModel):
@@ -217,36 +224,9 @@ def _persist_practice_progress(
 
 def assessment_payload(session: RoadmapAssessmentSession) -> dict[str, Any]:
     """Serialize the public session without exposing unsubmitted answer keys."""
-    bank = questions_for(session.roadmap_slug)
-    if any(question_id not in bank for question_id in session.question_ids):
-        raise HTTPException(409, "This assessment's curriculum changed. Start a fresh session.")
-    draft = session.draft or {}
-    payload = {
-        "id": session.id,
-        "mode": session.mode,
-        "roadmap_slug": session.roadmap_slug,
-        "topic_slug": session.topic_slug,
-        "expires_at": session.expires_at.isoformat() + "Z",
-        "pass_score": PASS_SCORE,
-        "questions": [
-            public_question(
-                bank[question_id],
-                include_hints=session.mode != "exam",
-                revealed_hints=(session.hint_usage or {}).get(question_id, 0),
-            )
-            for question_id in session.question_ids
-        ],
-        "hint_usage": session.hint_usage,
-        "assistance": assistance(session.hint_usage),
-        "draft": {
-            "answers": draft.get("answers", []),
-            "time_spent_seconds": draft.get("time_spent_seconds", 0),
-            "revision": draft.get("revision", 0),
-        },
-    }
-    if session.result is not None:
-        payload["result"] = session.result
-    return payload
+    return serialize_assessment(
+        session, now=utc_now(), current_bank=questions_for(session.roadmap_slug)
+    )
 
 
 @router.post("/assessments/{session_id}/questions/{question_id}/hints")
@@ -279,7 +259,7 @@ def reveal_assessment_hint(
                 409,
                 "Hint usage was not tracked for this session. Start a new practice session for tracked hints.",
             )
-        question = questions_for(session.roadmap_slug).get(question_id)
+        question = assigned_questions(session, questions_for(session.roadmap_slug)).get(question_id)
         if question is None:
             raise HTTPException(409, "This assessment's curriculum changed. Start a fresh session.")
         available = question.get("hints", [])
@@ -334,8 +314,6 @@ def recover_assessment(session_id: str, db: Database) -> dict[str, Any]:
     )
     if session is None:
         raise HTTPException(404, "Unknown assessment session")
-    if session.result is None and session.expires_at <= utc_now():
-        raise HTTPException(410, "This assessment has expired. Start a fresh session.")
     return assessment_payload(session)
 
 
@@ -512,12 +490,39 @@ def exam_readiness(
 
 
 @router.post("/{roadmap_slug}/assessments", status_code=201)
-def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) -> dict[str, Any]:
+def start_assessment(
+    roadmap_slug: str, payload: StartAssessment, db: Database, response: Response
+) -> dict[str, Any]:
     now = utc_now()
+    user = get_local_user(db)
+    request_id = str(payload.request_id) if payload.request_id is not None else None
+    topic_slug = payload.topic_slug if payload.mode == "practice" else None
+
+    def replay(existing: RoadmapAssessmentSession) -> dict[str, Any]:
+        if (
+            existing.roadmap_slug != roadmap_slug
+            or existing.mode != payload.mode
+            or existing.stage_index != payload.stage_index
+            or existing.topic_slug != topic_slug
+        ):
+            raise HTTPException(
+                409, "This start request ID already belongs to a different assessment request."
+            )
+        response.status_code = 200
+        return assessment_payload(existing)
+
+    if request_id is not None:
+        existing = db.scalar(
+            select(RoadmapAssessmentSession).where(
+                RoadmapAssessmentSession.user_id == user.id,
+                RoadmapAssessmentSession.start_request_id == request_id,
+            )
+        )
+        if existing is not None:
+            return replay(existing)
     data = curriculum().get(roadmap_slug)
     if data is None or payload.stage_index != data["stage_index"]:
         raise HTTPException(404, "No authored assessment is available for this stage yet.")
-    user = get_local_user(db)
     if payload.mode == "practice":
         lesson = lesson_for(roadmap_slug, payload.topic_slug or "")
         if lesson is None:
@@ -553,15 +558,34 @@ def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) 
         id=str(uuid4()),
         user_id=user.id,
         roadmap_slug=roadmap_slug,
-        topic_slug=payload.topic_slug if payload.mode == "practice" else None,
+        topic_slug=topic_slug,
         stage_index=payload.stage_index,
         mode=payload.mode,
         question_ids=selected,
+        question_snapshot=freeze_questions(
+            [questions_for(roadmap_slug)[qid] for qid in selected], mode=payload.mode
+        ),
+        start_request_id=request_id,
         hint_usage={},
         expires_at=now + timedelta(hours=2),
     )
-    db.add(session)
-    db.commit()
+    try:
+        db.add(session)
+        db.commit()
+    except (IntegrityError, OperationalError) as error:
+        db.rollback()
+        if request_id is not None:
+            existing = db.scalar(
+                select(RoadmapAssessmentSession).where(
+                    RoadmapAssessmentSession.user_id == user.id,
+                    RoadmapAssessmentSession.start_request_id == request_id,
+                )
+            )
+            if existing is not None:
+                return replay(existing)
+        raise HTTPException(
+            409, "The assessment start is busy. Retry with the same request ID."
+        ) from error
     return assessment_payload(session)
 
 
@@ -580,14 +604,12 @@ def submit_assessment(session_id: str, payload: SubmitAssessment, db: Database) 
         raise HTTPException(404, "Unknown assessment session")
     if session.result is not None:
         return session.result
-    if session.expires_at < utc_now():
+    if session.expires_at <= utc_now():
         raise HTTPException(410, "This assessment has expired. Start a fresh session.")
     answers = {answer.question_id: answer.answer for answer in payload.answers}
     if len(answers) != len(payload.answers) or set(answers) != set(session.question_ids):
         raise HTTPException(422, "Submit exactly one answer for every question in this session.")
-    bank = questions_for(session.roadmap_slug)
-    if any(question_id not in bank for question_id in session.question_ids):
-        raise HTTPException(409, "This assessment's curriculum changed. Start a fresh session.")
+    bank = assigned_questions(session, questions_for(session.roadmap_slug))
     feedback = []
     for question_id in session.question_ids:
         question = bank[question_id]

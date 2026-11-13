@@ -233,6 +233,7 @@ describe("authored mathematics learning", () => {
       mode: "practice",
       topic_slug: session.topic_slug,
       stage_index: 0,
+      request_id: expect.stringMatching(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
     });
     const submitRequest = mock.mock.calls.find(([input]) => String(input).endsWith("/submit"));
     expect(JSON.parse(String(submitRequest?.[1]?.body))).toEqual({
@@ -332,7 +333,7 @@ describe("authored mathematics learning", () => {
     fireEvent.click(screen.getByRole("button", { name: "Start practice" }));
     expect(await screen.findByRole("alert")).toHaveTextContent("Session creation failed.");
     expect(screen.queryByRole("textbox", { name: "Answer to question 1" })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Start practice" }));
+    fireEvent.click(screen.getByRole("button", { name: "Retry opening saved assignment" }));
     expect(await screen.findByRole("textbox", { name: "Answer to question 1" })).toBeInTheDocument();
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
@@ -346,7 +347,11 @@ describe("authored mathematics learning", () => {
     expect(screen.getByRole("button", { name: "Submit exam" })).toBeInTheDocument();
     await waitFor(() => {
       const startRequest = mock.mock.calls.find(([input]) => String(input).endsWith("/assessments"));
-      expect(JSON.parse(String(startRequest?.[1]?.body))).toEqual({ mode: "exam", stage_index: 0 });
+      expect(JSON.parse(String(startRequest?.[1]?.body))).toEqual({
+        mode: "exam",
+        stage_index: 0,
+        request_id: expect.stringMatching(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i),
+      });
     });
   });
 

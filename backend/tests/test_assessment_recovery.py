@@ -130,14 +130,17 @@ def test_draft_rejects_nonfinite_json_numbers_without_poisoning_saved_state(clie
     assert client.get(f"/api/roadmaps/assessments/{session['id']}").json()["draft"]["answers"] == []
 
 
-def test_expired_unfinished_session_cannot_be_recovered_or_changed(client):
+def test_expired_frozen_session_remains_readable_but_cannot_be_changed(client):
     session = start_practice(client)
     with SessionLocal() as db:
         row = db.get(RoadmapAssessmentSession, session["id"])
         row.expires_at = utc_now() - timedelta(seconds=1)
         db.commit()
     url = f"/api/roadmaps/assessments/{session['id']}"
-    assert client.get(url).status_code == 410
+    recovered = client.get(url)
+    assert recovered.status_code == 200
+    assert recovered.json()["state"] == "expired"
+    assert recovered.json()["questions_available"]
     assert client.put(f"{url}/draft", json={"answers": [], "revision": 1}).status_code == 410
 
 

@@ -7,6 +7,7 @@ from sqlalchemy import (
     DateTime,
     Float,
     ForeignKey,
+    Index,
     Integer,
     String,
     Text,
@@ -98,6 +99,9 @@ class RoadmapTopicProgress(Base):
 
 class RoadmapAssessmentSession(Base):
     __tablename__ = "roadmap_assessment_sessions"
+    __table_args__ = (
+        Index("uq_roadmap_assessment_user_request", "user_id", "start_request_id", unique=True),
+    )
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
     roadmap_slug: Mapped[str] = mapped_column(String(80))
@@ -105,6 +109,8 @@ class RoadmapAssessmentSession(Base):
     stage_index: Mapped[int] = mapped_column(Integer, default=0)
     mode: Mapped[str] = mapped_column(String(20))
     question_ids: Mapped[list[str]] = mapped_column(JSON)
+    question_snapshot: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    start_request_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     draft: Mapped[dict[str, Any]] = mapped_column(JSON, default=dict, server_default="{}")
     hint_usage: Mapped[dict[str, int] | None] = mapped_column(JSON, nullable=True, default=dict)
     hint_revision: Mapped[int] = mapped_column(Integer, default=0, server_default="0")

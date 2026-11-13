@@ -215,23 +215,23 @@ def test_malformed_submission_does_not_leak_proof_feedback_or_save_other_answers
         assert db.scalar(select(func.count()).select_from(RoadmapQuestionAttempt)) == 0
 
 
-def test_changed_curriculum_rejects_open_submission_atomically_but_completed_retry_survives(
-    client, monkeypatch
-):
+def test_frozen_proof_survives_archived_curriculum_and_completed_retry(client, monkeypatch):
     bank, target, session = start_projection_practice(client, monkeypatch)
     answers = session_answers(bank, session, target, [2, 3, 4, 1])
     monkeypatch.setattr("app.api.learning.questions_for", lambda _slug: {})
     changed = client.post(
         f"/api/roadmaps/assessments/{session['id']}/submit", json={"answers": answers}
     )
-    assert changed.status_code == 409
+    assert changed.status_code == 200
+    assert changed.json()["correct"] == 8
     with SessionLocal() as db:
-        assert db.scalar(select(func.count()).select_from(RoadmapQuestionAttempt)) == 0
+        assert db.scalar(select(func.count()).select_from(RoadmapQuestionAttempt)) == 8
     monkeypatch.setattr("app.api.learning.questions_for", lambda _slug: bank)
     completed = client.post(
         f"/api/roadmaps/assessments/{session['id']}/submit", json={"answers": answers}
     )
     assert completed.status_code == 200
+    assert completed.json() == changed.json()
     monkeypatch.setattr("app.api.learning.questions_for", lambda _slug: {})
     assert (
         client.post(

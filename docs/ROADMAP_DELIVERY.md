@@ -27,8 +27,8 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 4 | Per-question hints with assisted/independent mastery | Complete | `c9f9da5`; 316 backend tests, 217 frontend tests, fresh/existing migrations, full build, live 100% overall / 75% independent |
 | 5 | Spaced review scheduling and daily retrieval practice | Complete | `caf3cc5`; 335 backend tests, 228 frontend tests, full build, live due-to-scheduled review flow |
 | 6 | Mistake notebook and concept-level performance | Complete | `744f7a3` + CI test fix `e054ca3`; 351 backend tests, 252 frontend tests, fresh/existing migrations, full build, live two-tab reflection conflict/recovery |
-| 7 | Exam readiness, blueprint, and prerequisite evidence | Verified; publishing | 380 backend tests, 262 frontend tests, full build, live checklist and direct server gate |
-| 8 | Exam integrity, retry policy, and robust session lifecycle | Pending | |
+| 7 | Exam readiness, blueprint, and prerequisite evidence | Complete | `3a31936`; 380 backend tests, 262 frontend tests, full build, live checklist and direct server gate; GitHub CI passed |
+| 8 | Exam integrity, retry policy, and robust session lifecycle | Verified; publishing | 417 backend tests, 284 frontend tests, fresh/existing migrations, full build, live stable assignment and idempotent replay |
 | 9 | Learning dashboard and recent learning history | Pending | |
 | 10 | Diagnostic placement across foundation topics | Pending | |
 | 11 | Personalized study sessions and time goals | Pending | |
@@ -155,3 +155,23 @@ Show the six-lesson checklist, overall and independent scores, legacy/outdated-e
 Cycle 7 verification: all 380 backend tests and 262 frontend tests pass, with clean formatting, lint, and type checks; all 536 routes build for production. The content verifier still validates 30 lessons, 300 questions, and all 21 proof graphs. Tests cover all five private blueprints, forged summary/progress flags, exact answer membership, ownership, unknown hint provenance, the 6/8 versus 5/8 boundary, and avoiding cross-session cherry-picking. A six-lesson API flow unlocks the balanced twelve-question exam; already-created exams remain recoverable and submittable.
 
 Cycle 7 live evidence: the current profile shows one of six linear algebra lessons ready, with 100% overall and 75% independent practice. The other five lessons offer study links and no invented score. The exam start button is disabled. A direct fresh-exam POST returns 409 with the independent-practice requirement and leaves the exam-session count unchanged at zero. No browser console errors were observed.
+
+Cycle 7 remote verified at `3a3193680e8756b66295cfc45ac42eee84f7ca88` on `main`. GitHub Actions passed: https://github.com/akashew32/BrainHub/actions/runs/43347558552.
+
+### Cycle 8 batch — stable assignments and recoverable starts
+
+Freeze the private question definitions and public presentation when a session starts, so an in-progress assessment retains the same questions, choice order, hints, and grading after curriculum edits. Keep private definitions server-side. Recover the same session after a lost start response by using a profile-owned request ID; replay it before fresh-start eligibility checks and reject reuse for another scope.
+
+Expose server-confirmed session state and precise remaining time. Use a monotonic browser countdown after a fresh response, retain expired answers as read-only, and recover completed results even when a legacy question has been archived. Cached time must not restart a deadline after a reload. Preserve compatible historical readiness evidence while recognizing changes to the assigned mathematics.
+
+Cycle 8 migration verification: the existing local database upgrades from 0006 to 0007, and an empty database upgrades through all revisions to 0007. A local SQLite backup was saved before upgrading. The new assignment snapshot and start-request ID are nullable for existing sessions; request IDs are unique per profile.
+
+Cycle 8 backend verification: all 417 backend tests pass, with clean Ruff formatting/lint and mypy. Independent audit tests cover snapshot privacy and deep copying, semantic versus editorial changes, choice order, proof numbering, and the microsecond expiry boundary. Integration tests cover canonical UUIDs, ownership, scope conflicts, concurrent starts, replay before fresh eligibility checks, frozen grading and hints after current-bank removal, and completed legacy archives. The 30-lesson/300-question content verifier still passes.
+
+Cycle 8 live evidence: a new probability practice session persisted an unfinished `26 * (` answer at revision 1. A browser refresh recovered the exact text, preserved the choice order, and continued the server-confirmed countdown. Replaying its original start request returned HTTP 200 with the same session and saved draft, zero duplicate allocations, and eight frozen question definitions. The graded-answer count remained 34. No browser console errors were observed.
+
+Cycle 8 review improvements: validate completed feedback before accepting an archived empty question list; isolate pending start intents by full assessment scope and preserve another tab's newer token; keep retry identity in memory when device storage fails; subtract request latency from the server-relative countdown; use a separate precise expiry timer alongside quiet display updates; and persist known closure after an HTTP 410 so an offline refresh cannot reopen the attempt. Raw fraction, matrix, and proof text remains available for copying.
+
+Cycle 8 final frontend verification: all 284 tests pass with clean ESLint, formatting, and TypeScript checks. Tests exercise lost start responses, deliberate retries after reload, changed exam eligibility, new-session token rotation, storage failures, wrong-token and stale responses, client clock skew and clock jumps, latency, exact expiry, archived results, and preserved choice presentation. All 536 routes build for production with the final timer change included.
+
+Next proposed batch (cycle 9): a learning dashboard across all five roadmaps with due reviews, recent completed work, recoverable active sessions, independent performance, and a clear next lesson. Derive progress from saved server evidence and distinguish authored lessons from the remaining curriculum outlines. Include empty, offline, archived, and unavailable states without inventing activity or scores.

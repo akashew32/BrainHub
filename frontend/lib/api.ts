@@ -33,6 +33,17 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
   return response.json() as Promise<T>;
 }
+async function assessmentRequest(path: string, init?: RequestInit) {
+  const started = performance.now();
+  const session = await request<import("@/lib/curriculum").AssessmentSession>(path, init);
+  // Subtract the whole request duration conservatively; client epoch clocks never set expiry.
+  return typeof session.expires_in_seconds === "number"
+    ? {
+        ...session,
+        expires_in_seconds: Math.max(0, session.expires_in_seconds - (performance.now() - started) / 1000),
+      }
+    : session;
+}
 export const api = {
   examReadiness: (roadmapSlug: string, stageIndex = 0) =>
     request<import("@/lib/curriculum").ExamReadiness>(
@@ -84,7 +95,7 @@ export const api = {
       { method: "POST", body: JSON.stringify({ index }), signal: AbortSignal.timeout(12_000) },
     ),
   resumeAssessment: (sessionId: string) =>
-    request<import("@/lib/curriculum").AssessmentSession>(`/roadmaps/assessments/${sessionId}`, {
+    assessmentRequest(`/roadmaps/assessments/${sessionId}`, {
       signal: AbortSignal.timeout(12_000),
     }),
   saveAssessmentDraft: (sessionId: string, body: import("@/lib/curriculum").AssessmentDraft) =>
@@ -97,9 +108,14 @@ export const api = {
     request<import("@/lib/curriculum").AuthoredLesson>(`/roadmaps/${roadmapSlug}/lessons/${topicSlug}`),
   startAssessment: (
     roadmapSlug: string,
-    body: { mode: "practice" | "exam" | "review"; topic_slug?: string; stage_index?: number },
+    body: {
+      mode: "practice" | "exam" | "review";
+      topic_slug?: string;
+      stage_index?: number;
+      request_id?: string;
+    },
   ) =>
-    request<import("@/lib/curriculum").AssessmentSession>(`/roadmaps/${roadmapSlug}/assessments`, {
+    assessmentRequest(`/roadmaps/${roadmapSlug}/assessments`, {
       method: "POST",
       body: JSON.stringify(body),
     }),

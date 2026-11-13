@@ -17,6 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.base import RoadmapAssessmentSession, RoadmapQuestionAttempt
+from app.services.assessment_sessions import compatible_practice_content
 from app.services.curriculum import PASS_SCORE, curriculum
 from app.services.spaced_review import utc_naive
 
@@ -40,6 +41,8 @@ def _current_set(
         or {item.question_id for item in attempts} != expected
         or any(item.topic_slug != topic_slug for item in attempts)
     ):
+        return None
+    if not compatible_practice_content(session, questions, attempts):
         return None
     score = round(100 * sum(item.correct for item in attempts) / len(attempts))
     usage = session.hint_usage
