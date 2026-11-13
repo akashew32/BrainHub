@@ -26,7 +26,7 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 3 | Structured proof builder and proof-specific feedback | Complete | `cc1f23c`; 295 backend tests, 201 frontend tests, 492 proof permutations, full build, live recovery and dependency feedback |
 | 4 | Per-question hints with assisted/independent mastery | Complete | `c9f9da5`; 316 backend tests, 217 frontend tests, fresh/existing migrations, full build, live 100% overall / 75% independent |
 | 5 | Spaced review scheduling and daily retrieval practice | Complete | `caf3cc5`; 335 backend tests, 228 frontend tests, full build, live due-to-scheduled review flow |
-| 6 | Mistake notebook and concept-level performance | Verified; publishing | 351 backend tests, 252 frontend tests, fresh/existing migrations, full build, live two-tab reflection conflict/recovery |
+| 6 | Mistake notebook and concept-level performance | Complete | `744f7a3` + CI test fix `e054ca3`; 351 backend tests, 252 frontend tests, fresh/existing migrations, full build, live two-tab reflection conflict/recovery |
 | 7 | Exam readiness, blueprint, and prerequisite evidence | Pending | |
 | 8 | Exam integrity, retry policy, and robust session lifecycle | Pending | |
 | 9 | Learning dashboard and recent learning history | Pending | |
@@ -141,3 +141,7 @@ Cycle 6 review improvements: malformed cursor UTC overflow returns validation fe
 Cycle 6 final verification: all 351 backend tests and 252 frontend tests pass, with clean formatting, lint, and type checks. The strict 30-lesson/300-question content verifier passes. All 536 routes, including the notebook page, build for production. A Windows permission error in generated build output was resolved by clearing only the verified workspace `.next` directory and rerunning the successful build. No source workaround was required.
 
 Cycle 6 GitHub CI caught a frontend test that asserted the note value as soon as the editor appeared, before its restoration effect enabled it. The test now waits for the named editor's enabled, restored state and still checks that a late response from the previous question cannot replace it. The same explicit readiness check protects other notebook editor interactions. The correction changes tests only; focused notebook/reflection tests, type checks, lint, and formatting pass.
+
+Cycle 6 release and correction are remote verified at `744f7a31cc7a46738d345e51f83d2d82a6d2d1e3` and `e054ca388237a3943a70d2af2d0a1046487cb1cb` on `main`. The corrected GitHub Actions run passed: https://github.com/akashew32/BrainHub/actions/runs/43345465697. Six of twenty improvement cycles are complete; cycles 7–20 remain part of the active goal.
+
+Next batch (cycle 7): server-derived exam readiness for all five foundation stages, a six-lesson independent-performance checklist, a public question-count/type blueprint without reserved questions or keys, clear study links and legacy-evidence explanations, and matching server-side eligibility. Keep overall lesson completion distinct from evidence of independent performance, and preserve earlier results. The readiness interface and exam gate must change together.
