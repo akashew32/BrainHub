@@ -1,7 +1,7 @@
 """Private authored curriculum and safe deterministic answer evaluation.
 
 Answer keys never leave this module before a learner submits a session. Numeric
-input is parsed as data (decimal/fraction); expressions are never evaluated.
+input uses the bounded arithmetic grammar; arbitrary source code is never run.
 """
 
 from __future__ import annotations
@@ -9,14 +9,13 @@ from __future__ import annotations
 import json
 import math
 import random
-import re
-from fractions import Fraction
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
+from app.services.math_input import VERSION, matches_integer, parse_container, parse_number
+
 ROOT = Path(__file__).resolve().parents[1] / "roadmaps" / "curriculum"
-NUMBER = re.compile(r"^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d{1,3})?(?:/[+-]?\d+)?$")
 PASS_SCORE = 75
 
 
@@ -63,6 +62,12 @@ def public_question(question: dict[str, Any], *, include_hints: bool = True) -> 
         )
     if not include_hints:
         result["hints"] = []
+    integer_answer = question["kind"] == "number" and _integer_key(question["answer"])
+    result["math_input_version"] = VERSION
+    result["answer_format"] = "integer" if integer_answer else question["kind"]
+    if question["kind"] in {"number", "vector", "matrix"}:
+        tolerance = 0.0 if integer_answer else _tolerance(question)
+        result["numeric_tolerance"] = {"absolute": tolerance, "relative": tolerance}
     return result
 
 
@@ -78,30 +83,32 @@ def public_lesson(roadmap_slug: str, lesson: dict[str, Any]) -> dict[str, Any]:
 
 
 def numeric(value: Any) -> float:
-    if isinstance(value, bool) or not isinstance(value, (str, int, float)):
-        raise ValueError("Enter a finite number, decimal, or fraction such as 3/4.")
-    source = str(value).strip().replace("−", "-")
-    if len(source) > 80 or not NUMBER.fullmatch(source):
-        raise ValueError("Enter a finite number, decimal, or fraction such as 3/4.")
-    try:
-        answer = float(Fraction(source))
-    except (ValueError, ZeroDivisionError, OverflowError) as error:
-        raise ValueError("Enter a finite number with a nonzero denominator.") from error
-    if not math.isfinite(answer):
-        raise ValueError("Answers must be finite.")
-    return answer
+    """Compatibility wrapper for the versioned bounded arithmetic parser."""
+    return parse_number(value)
+
+
+def _integer_key(value: Any) -> bool:
+    return type(value) is int or (
+        type(value) is float and math.isfinite(value) and value.is_integer()
+    )
+
+
+def _tolerance(question: dict[str, Any]) -> float:
+    return max(0.0, min(float(question.get("tolerance", 1e-6)), 0.001))
 
 
 def grade(question: dict[str, Any], submitted: Any) -> tuple[bool, str | None]:
     expected = question["answer"]
     kind = question["kind"]
-    tolerance = min(float(question.get("tolerance", 1e-6)), 0.001)
+    tolerance = _tolerance(question)
     try:
         if kind == "choice":
             if not isinstance(submitted, str) or submitted not in question["choices"]:
                 raise ValueError("Choose one of the listed answers.")
             return submitted == expected, None
-        if kind in {"vector", "matrix", "proof"} and isinstance(submitted, str):
+        if kind == "proof" and isinstance(submitted, str):
+            if len(submitted) > 4000:
+                raise ValueError("Use a short JSON array containing the numbered proof steps.")
             try:
                 submitted = json.loads(submitted)
             except (ValueError, TypeError) as error:
@@ -117,33 +124,28 @@ def grade(question: dict[str, Any], submitted: Any) -> tuple[bool, str | None]:
                 raise ValueError("Use every numbered proof step exactly once.")
             return submitted == expected or submitted in question.get("accepted_orders", []), None
         if kind == "vector":
-            if not isinstance(submitted, list) or len(submitted) != len(expected):
+            actual_values = parse_container(submitted, "vector")
+            if len(actual_values) != len(expected):
                 raise ValueError(f"Enter a vector with {len(expected)} entries.")
-            # Validate all entries before comparing. A wrong first coordinate
-            # must not hide a malformed later coordinate through all()'s
-            # short-circuit behavior.
-            actual_values = [numeric(value) for value in submitted]
             expected_values = [numeric(value) for value in expected]
             return all(
                 math.isclose(actual, target, rel_tol=tolerance, abs_tol=tolerance)
                 for actual, target in zip(actual_values, expected_values, strict=True)
             ), None
         if kind == "matrix":
-            if (
-                not isinstance(submitted, list)
-                or len(submitted) != len(expected)
-                or any(
-                    not isinstance(row, list) or len(row) != len(target)
-                    for row, target in zip(submitted, expected, strict=True)
-                )
+            actual_rows = parse_container(submitted, "matrix")
+            if len(actual_rows) != len(expected) or any(
+                len(row) != len(target) for row, target in zip(actual_rows, expected, strict=True)
             ):
                 raise ValueError("The matrix dimensions must match the requested result.")
-            actual_values = [numeric(value) for row in submitted for value in row]
+            actual_values = [value for row in actual_rows for value in row]
             expected_values = [numeric(value) for row in expected for value in row]
             return all(
                 math.isclose(actual, target, rel_tol=tolerance, abs_tol=tolerance)
                 for actual, target in zip(actual_values, expected_values, strict=True)
             ), None
+        if _integer_key(expected):
+            return matches_integer(submitted, int(expected)), None
         return math.isclose(
             numeric(submitted), numeric(expected), rel_tol=tolerance, abs_tol=tolerance
         ), None

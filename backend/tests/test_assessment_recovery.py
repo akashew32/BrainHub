@@ -118,6 +118,18 @@ def test_duplicate_question_ids_are_rejected_without_changing_draft(client):
     assert client.get(f"/api/roadmaps/assessments/{session['id']}").json()["draft"]["answers"] == []
 
 
+def test_draft_rejects_nonfinite_json_numbers_without_poisoning_saved_state(client):
+    session = start_practice(client)
+    question_id = session["questions"][0]["id"]
+    response = client.put(
+        f"/api/roadmaps/assessments/{session['id']}/draft",
+        content='{"answers":[{"question_id":"' + question_id + '","answer":NaN}],"revision":1}',
+        headers={"Content-Type": "application/json"},
+    )
+    assert response.status_code == 422
+    assert client.get(f"/api/roadmaps/assessments/{session['id']}").json()["draft"]["answers"] == []
+
+
 def test_expired_unfinished_session_cannot_be_recovered_or_changed(client):
     session = start_practice(client)
     with SessionLocal() as db:

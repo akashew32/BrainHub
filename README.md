@@ -117,6 +117,10 @@ Authored lesson answer keys live only in `backend/app/roadmaps/curriculum/`. Pub
 
 In-progress assessments support partial answer drafts. Browser recovery is scoped to the subject, lesson, and assessment mode; server drafts use increasing revisions so late network responses cannot overwrite newer work. Draft saves do not create graded attempts or lesson completion. Submitted sessions can be recovered after a lost response, while expired sessions retain a local copy of the answers for reference.
 
+Mathematical input supports `+ - * /`, right-associative `^`/`**`, parentheses, `sqrt(...)`, `pi`/`π`, and `e`. Vectors may use `1/2, sqrt(2)` or bracketed/quoted entries; matrices may use `1,2;3,4` or nested rows. Live previews interpret notation and never determine correctness. They warn when floating-point precision cannot represent an expression reliably; the original answer is preserved for server evaluation. Integer-valued questions require exact integer or rational outcomes: `sqrt(4)` works, while an approximate irrational path such as `sqrt(2)^2` requests an exact form such as `2`. Scalar length, tokens, nesting, operation count, exponent size, numeric magnitude, and exact-rational work are bounded. `fixtures/math-input.json` defines the shared preview/server conformance corpus, including deliberate preview-precision limitations.
+
+Successfully loaded authored lessons are cached on the device. If the API later becomes unavailable, the saved explanation and existing draft remain accessible; creating sessions and grading still require a connection.
+
 ## Quality commands
 
 ```bash

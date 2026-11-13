@@ -5,6 +5,7 @@ import { CheckCircle2, CircleAlert, Play, RotateCcw } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
 import type { AssessmentResult, AssessmentSession, MathQuestion } from "@/lib/curriculum";
 import { MathText } from "@/components/roadmaps/math-text";
+import { MathAnswerPreview } from "@/components/roadmaps/math-answer-preview";
 import { useRoadmapProgress } from "@/components/roadmaps/roadmap-progress-provider";
 
 type Mode = "practice" | "exam" | "review";
@@ -58,6 +59,23 @@ function publicSession(value: unknown): value is AssessmentSession {
         ["number", "vector", "matrix", "choice", "proof"].includes(String(question.kind)) &&
         typeof question.concept === "string" &&
         typeof question.difficulty === "string" &&
+        (question.math_input_version === undefined || question.math_input_version === 1) &&
+        (question.answer_format === undefined ||
+          ["integer", "number", "vector", "matrix", "choice", "proof"].includes(
+            String(question.answer_format),
+          )) &&
+        (question.tolerance === undefined ||
+          (typeof question.tolerance === "number" &&
+            Number.isFinite(question.tolerance) &&
+            question.tolerance >= 0)) &&
+        (question.numeric_tolerance === undefined ||
+          (isRecord(question.numeric_tolerance) &&
+            typeof question.numeric_tolerance.absolute === "number" &&
+            Number.isFinite(question.numeric_tolerance.absolute) &&
+            question.numeric_tolerance.absolute >= 0 &&
+            typeof question.numeric_tolerance.relative === "number" &&
+            Number.isFinite(question.numeric_tolerance.relative) &&
+            question.numeric_tolerance.relative >= 0)) &&
         Array.isArray(question.hints) &&
         question.hints.every((hint) => typeof hint === "string") &&
         (question.choices === undefined ||
@@ -130,6 +148,10 @@ function sessionSnapshot(current: AssessmentSession): AssessmentSession {
       difficulty: question.difficulty,
       topic_slug: question.topic_slug,
       lesson_title: question.lesson_title,
+      math_input_version: question.math_input_version,
+      answer_format: question.answer_format,
+      tolerance: question.tolerance,
+      numeric_tolerance: question.numeric_tolerance,
     })),
   };
 }
@@ -138,12 +160,27 @@ function elapsedSeconds(origin: number) {
   return Math.min(MAX_TIME_SECONDS, Math.max(0, Math.floor((Date.now() - origin) / 1000)));
 }
 
-function answerHelp(kind: MathQuestion["kind"]) {
-  if (kind === "vector") return 'Enter a vector as [1, 2]. Entries may be fractions in quotes: ["1/2", 3].';
-  if (kind === "matrix") return "Enter rows as [[1, 2], [3, 4]]. Check the requested dimensions.";
-  if (kind === "proof")
+function answerHelp(question: MathQuestion) {
+  if (question.kind === "vector")
+    return 'Enter [1/2, sqrt(2)] or 1/2, sqrt(2). Entries may be fractions or expressions; quoted entries such as ["1/2", 3] also work.';
+  if (question.kind === "matrix")
+    return "Enter rows as [[1, 2], [3, 4]] or 1,2;3,4. Each entry accepts fractions, sqrt(...), pi, and powers.";
+  if (question.kind === "proof")
     return "Put the numbered steps in logical order, for example [3, 1, 2]. Use each step once.";
-  return "Enter a number, decimal, or fraction such as 3/4. Decimal answers are accepted within the stated precision.";
+  if (question.answer_format === "integer")
+    return "Enter an exact whole-number answer. Arithmetic expressions such as 2^5 or 12/3 are accepted; the result must be an integer.";
+  const precision = question.numeric_tolerance
+    ? "The absolute tolerance is " +
+      question.numeric_tolerance.absolute +
+      " and relative tolerance is " +
+      question.numeric_tolerance.relative +
+      "."
+    : question.tolerance === undefined
+      ? "Decimal answers are accepted within the stated precision."
+      : "The comparison tolerance is " + question.tolerance + ".";
+  return (
+    "Enter a number or expression such as 3/4, sqrt(2), pi/3, or 2^5. Use * for multiplication. " + precision
+  );
 }
 
 export function AssessmentPanel({
@@ -690,11 +727,16 @@ function AssessmentWorkspace({
                       maxLength={4000}
                       value={answers[question.id] ?? ""}
                       onChange={(event) => updateAnswer(question.id, event.target.value)}
-                      aria-describedby={"help-" + question.id}
+                      aria-describedby={"help-" + question.id + " preview-" + question.id}
                     />
                     <p className="mt-2 text-xs leading-6 text-[#8396ad]" id={"help-" + question.id}>
-                      {answerHelp(question.kind)}
+                      {answerHelp(question)}
                     </p>
+                    <MathAnswerPreview
+                      question={question}
+                      value={answers[question.id] ?? ""}
+                      id={"preview-" + question.id}
+                    />
                   </>
                 )}
                 {mode !== "exam" ? (

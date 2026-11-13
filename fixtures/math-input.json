@@ -1,0 +1,805 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "name": "zero",
+      "kind": "number",
+      "input": "0",
+      "expected": 0
+    },
+    {
+      "name": "leading decimal",
+      "kind": "number",
+      "input": ".5",
+      "expected": 0.5
+    },
+    {
+      "name": "signed decimal",
+      "kind": "number",
+      "input": "-3.5",
+      "expected": -3.5
+    },
+    {
+      "name": "fraction",
+      "kind": "number",
+      "input": "3/4",
+      "expected": 0.75
+    },
+    {
+      "name": "signed denominator",
+      "kind": "number",
+      "input": "-1/-2",
+      "expected": 0.5
+    },
+    {
+      "name": "scientific",
+      "kind": "number",
+      "input": "1e-3",
+      "expected": 0.001
+    },
+    {
+      "name": "decimal fraction",
+      "kind": "number",
+      "input": "1.5/3",
+      "expected": 0.5
+    },
+    {
+      "name": "fraction sum",
+      "kind": "number",
+      "input": "1/2+1/3",
+      "expected": 0.8333333333333334
+    },
+    {
+      "name": "product precedence",
+      "kind": "number",
+      "input": "2+3*4",
+      "expected": 14
+    },
+    {
+      "name": "parentheses",
+      "kind": "number",
+      "input": "(2+3)*4",
+      "expected": 20
+    },
+    {
+      "name": "unary power precedence",
+      "kind": "number",
+      "input": "-2^2",
+      "expected": -4
+    },
+    {
+      "name": "grouped signed power",
+      "kind": "number",
+      "input": "(-2)^2",
+      "expected": 4
+    },
+    {
+      "name": "negative exponent",
+      "kind": "number",
+      "input": "2^-2",
+      "expected": 0.25
+    },
+    {
+      "name": "double star",
+      "kind": "number",
+      "input": "2**3",
+      "expected": 8
+    },
+    {
+      "name": "right associative power",
+      "kind": "number",
+      "input": "2^3^2",
+      "expected": 512
+    },
+    {
+      "name": "square root",
+      "kind": "number",
+      "input": "sqrt(2)",
+      "expected": 1.4142135623730951
+    },
+    {
+      "name": "perfect square root",
+      "kind": "number",
+      "input": "sqrt(9)",
+      "expected": 3
+    },
+    {
+      "name": "square root expression",
+      "kind": "number",
+      "input": "sqrt(16+9)",
+      "expected": 5
+    },
+    {
+      "name": "pi",
+      "kind": "number",
+      "input": "pi",
+      "expected": 3.141592653589793
+    },
+    {
+      "name": "unicode pi",
+      "kind": "number",
+      "input": "π/2",
+      "expected": 1.5707963267948966
+    },
+    {
+      "name": "e constant",
+      "kind": "number",
+      "input": "e-2",
+      "expected": 0.7182818284590451
+    },
+    {
+      "name": "unicode minus",
+      "kind": "number",
+      "input": "−2",
+      "expected": -2
+    },
+    {
+      "name": "two negatives",
+      "kind": "number",
+      "input": "2--3",
+      "expected": 5
+    },
+    {
+      "name": "explicit multiplication",
+      "kind": "number",
+      "input": "2*pi",
+      "expected": 6.283185307179586
+    },
+    {
+      "name": "tiny finite literal",
+      "kind": "number",
+      "input": "1e-300",
+      "expected": 1e-300
+    },
+    {
+      "name": "zero with tiny exponent",
+      "kind": "number",
+      "input": "0e-999",
+      "expected": 0
+    },
+    {
+      "name": "negative zero",
+      "kind": "number",
+      "input": "-0",
+      "expected": 0
+    },
+    {
+      "name": "division by zero",
+      "kind": "number",
+      "input": "1/0",
+      "error": true
+    },
+    {
+      "name": "negative square root",
+      "kind": "number",
+      "input": "sqrt(-1)",
+      "error": true
+    },
+    {
+      "name": "zero negative power",
+      "kind": "number",
+      "input": "0^-1",
+      "error": true
+    },
+    {
+      "name": "nonreal fractional power",
+      "kind": "number",
+      "input": "(-1)^0.5",
+      "error": true
+    },
+    {
+      "name": "undefined zero power",
+      "kind": "number",
+      "input": "0^0",
+      "error": true
+    },
+    {
+      "name": "power limit",
+      "kind": "number",
+      "input": "2^101",
+      "error": true
+    },
+    {
+      "name": "exponent tower",
+      "kind": "number",
+      "input": "9^9^9",
+      "error": true
+    },
+    {
+      "name": "power underflow",
+      "kind": "number",
+      "input": "(1e-100)^4",
+      "error": true
+    },
+    {
+      "name": "literal underflow",
+      "kind": "number",
+      "input": "1e-999",
+      "error": true
+    },
+    {
+      "name": "magnitude overflow",
+      "kind": "number",
+      "input": "1e101",
+      "error": true
+    },
+    {
+      "name": "intermediate overflow",
+      "kind": "number",
+      "input": "(1e100)*10",
+      "error": true
+    },
+    {
+      "name": "division underflow",
+      "kind": "number",
+      "input": "1e-300/1e100",
+      "error": true
+    },
+    {
+      "name": "code injection",
+      "kind": "number",
+      "input": "__import__('os')",
+      "error": true
+    },
+    {
+      "name": "attribute access",
+      "kind": "number",
+      "input": "math.pi",
+      "error": true
+    },
+    {
+      "name": "empty",
+      "kind": "number",
+      "input": "",
+      "error": true
+    },
+    {
+      "name": "whitespace",
+      "kind": "number",
+      "input": "   ",
+      "error": true
+    },
+    {
+      "name": "scalar separator",
+      "kind": "number",
+      "input": "1;2",
+      "error": true
+    },
+    {
+      "name": "boolean",
+      "kind": "number",
+      "input": "true",
+      "error": true
+    },
+    {
+      "name": "nan",
+      "kind": "number",
+      "input": "NaN",
+      "error": true
+    },
+    {
+      "name": "infinity",
+      "kind": "number",
+      "input": "inf",
+      "error": true
+    },
+    {
+      "name": "implicit product",
+      "kind": "number",
+      "input": "2pi",
+      "error": true
+    },
+    {
+      "name": "unsupported function",
+      "kind": "number",
+      "input": "pow(2,3)",
+      "error": true
+    },
+    {
+      "name": "unfinished exponent",
+      "kind": "number",
+      "input": "1e",
+      "error": true
+    },
+    {
+      "name": "unmatched parentheses",
+      "kind": "number",
+      "input": "sqrt(2",
+      "error": true
+    },
+    {
+      "name": "unsupported operator",
+      "kind": "number",
+      "input": "5%2",
+      "error": true
+    },
+    {
+      "name": "nesting bound",
+      "kind": "number",
+      "input": "(((((((((((((1)))))))))))))",
+      "error": true
+    },
+    {
+      "name": "token bound",
+      "kind": "number",
+      "input": "1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1+1",
+      "error": true
+    },
+    {
+      "name": "operation bound",
+      "kind": "number",
+      "input": "----------1+----------1+----------1+----------1",
+      "error": true
+    },
+    {
+      "name": "scalar length bound",
+      "kind": "number",
+      "input": "1                                                                                                                                                                ",
+      "error": true
+    },
+    {
+      "name": "bare vector",
+      "kind": "vector",
+      "input": "1/2, sqrt(2)",
+      "expected": [
+        0.5,
+        1.4142135623730951
+      ]
+    },
+    {
+      "name": "bracket vector",
+      "kind": "vector",
+      "input": "[1/2,sqrt(2)]",
+      "expected": [
+        0.5,
+        1.4142135623730951
+      ]
+    },
+    {
+      "name": "legacy quoted vector",
+      "kind": "vector",
+      "input": "[\"1/2\",3]",
+      "expected": [
+        0.5,
+        3
+      ]
+    },
+    {
+      "name": "constants vector",
+      "kind": "vector",
+      "input": "[pi,e,−2]",
+      "expected": [
+        3.141592653589793,
+        2.718281828459045,
+        -2
+      ]
+    },
+    {
+      "name": "vector limit",
+      "kind": "vector",
+      "input": "[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]",
+      "expected": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "name": "empty vector",
+      "kind": "vector",
+      "input": "[]",
+      "error": true
+    },
+    {
+      "name": "blank vector cell",
+      "kind": "vector",
+      "input": "1,,2",
+      "error": true
+    },
+    {
+      "name": "nested vector",
+      "kind": "vector",
+      "input": "[[1,2],[3,4]]",
+      "error": true
+    },
+    {
+      "name": "vector boolean",
+      "kind": "vector",
+      "input": "[true,1]",
+      "error": true
+    },
+    {
+      "name": "vector null",
+      "kind": "vector",
+      "input": "[null,1]",
+      "error": true
+    },
+    {
+      "name": "vector later malformed",
+      "kind": "vector",
+      "input": "[99,1/0]",
+      "error": true
+    },
+    {
+      "name": "single quoted scalar",
+      "kind": "vector",
+      "input": "['1/2',3]",
+      "error": true
+    },
+    {
+      "name": "vector entry bound",
+      "kind": "vector",
+      "input": "[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]",
+      "error": true
+    },
+    {
+      "name": "semicolon matrix",
+      "kind": "matrix",
+      "input": "1,2;3,4",
+      "expected": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "name": "wrapped semicolon matrix",
+      "kind": "matrix",
+      "input": "[1,2;3,4]",
+      "expected": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "name": "nested expression matrix",
+      "kind": "matrix",
+      "input": "[[1/2,sqrt(2)],[pi,-3]]",
+      "expected": [
+        [
+          0.5,
+          1.4142135623730951
+        ],
+        [
+          3.141592653589793,
+          -3
+        ]
+      ]
+    },
+    {
+      "name": "legacy quoted matrix",
+      "kind": "matrix",
+      "input": "[[\"1/2\",2],[3,4]]",
+      "expected": [
+        [
+          0.5,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "name": "single cell matrix",
+      "kind": "matrix",
+      "input": "[[2]]",
+      "expected": [
+        [
+          2
+        ]
+      ]
+    },
+    {
+      "name": "ragged matrix",
+      "kind": "matrix",
+      "input": "1,2;3",
+      "error": true
+    },
+    {
+      "name": "flat matrix",
+      "kind": "matrix",
+      "input": "[1,2,3,4]",
+      "error": true
+    },
+    {
+      "name": "empty matrix",
+      "kind": "matrix",
+      "input": "[]",
+      "error": true
+    },
+    {
+      "name": "blank matrix row",
+      "kind": "matrix",
+      "input": "1,2;;3,4",
+      "error": true
+    },
+    {
+      "name": "matrix later invalid",
+      "kind": "matrix",
+      "input": "1,2;3,NaN",
+      "error": true
+    },
+    {
+      "name": "matrix empty cell",
+      "kind": "matrix",
+      "input": "1,;3,4",
+      "error": true
+    },
+    {
+      "name": "matrix object",
+      "kind": "matrix",
+      "input": "[[1,2],[3,{}]]",
+      "error": true
+    },
+    {
+      "name": "large integer cancellation",
+      "kind": "number",
+      "input": "9007199254740993-9007199254740992",
+      "expected": 1,
+      "preview_error": true
+    },
+    {
+      "name": "large decimal integer cancellation",
+      "kind": "number",
+      "input": "9999999999999999-9999999999999998",
+      "expected": 1,
+      "preview_error": true
+    },
+    {
+      "name": "large power cancellation",
+      "kind": "number",
+      "input": "(2^53+1)-2^53",
+      "expected": 1,
+      "preview_error": true
+    },
+    {
+      "name": "large vector integer cancellation",
+      "kind": "vector",
+      "input": "[9007199254740993-9007199254740992,2]",
+      "expected": [
+        1,
+        2
+      ],
+      "preview_error": true
+    },
+    {
+      "name": "rational work bound",
+      "kind": "number",
+      "input": "((99/100)^100)^100",
+      "error": true,
+      "preview_error": true
+    },
+    {
+      "name": "huge literal exponent rejected before allocation",
+      "kind": "number",
+      "input": "1e99999999",
+      "error": true
+    },
+    {
+      "name": "huge zero exponent requires no allocation",
+      "kind": "number",
+      "input": "0e99999999",
+      "expected": 0
+    },
+    {
+      "name": "standalone quoted scalar",
+      "kind": "number",
+      "input": "\"1/2\"",
+      "error": true
+    },
+    {
+      "name": "scalar maximum parentheses",
+      "kind": "number",
+      "input": "((((((((((((1))))))))))))",
+      "expected": 1
+    },
+    {
+      "name": "vector aggregate nesting bound",
+      "kind": "vector",
+      "input": "[((((((((((((1))))))))))))]",
+      "error": true
+    },
+    {
+      "name": "fractional exponent cannot round to integer",
+      "kind": "number",
+      "input": "(-1)^(2+1e-20)",
+      "error": true,
+      "preview_error": true
+    },
+    {
+      "name": "small exact denominator survives cancellation",
+      "kind": "number",
+      "input": "1/(1+1e-100-1)",
+      "expected": 1e+100,
+      "preview_error": true
+    },
+    {
+      "name": "decimal near integer retains rational precision",
+      "kind": "number",
+      "input": "1.00000000000000001",
+      "expected": 1,
+      "preview_error": true
+    },
+    {
+      "name": "bracketed semicolon matrix",
+      "kind": "matrix",
+      "input": "[[1,2];[3,4]]",
+      "expected": [
+        [
+          1,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "name": "byte order mark is not input whitespace",
+      "kind": "number",
+      "input": "﻿1",
+      "error": true
+    },
+    {
+      "name": "inclusive magnitude boundary",
+      "kind": "number",
+      "input": "1e100",
+      "expected": 1e+100,
+      "preview_error": true
+    },
+    {
+      "name": "large exact operands cancel safely",
+      "kind": "number",
+      "input": "1e100/1e100",
+      "expected": 1,
+      "preview_error": true
+    },
+    {
+      "name": "next line unicode scalar whitespace",
+      "kind": "number",
+      "input": "1/2",
+      "expected": 0.5
+    },
+    {
+      "name": "file separator unicode scalar whitespace",
+      "kind": "number",
+      "input": "\u001c1/2\u001f",
+      "expected": 0.5
+    },
+    {
+      "name": "nonbreaking arithmetic whitespace",
+      "kind": "number",
+      "input": "1 + 2",
+      "expected": 3
+    },
+    {
+      "name": "unicode whitespace around quoted vector entries",
+      "kind": "vector",
+      "input": "[\u001c\"1/2\"\u001c, \"sqrt(4)\"]",
+      "expected": [
+        0.5,
+        2
+      ]
+    },
+    {
+      "name": "unicode whitespace inside quoted vector entries",
+      "kind": "vector",
+      "input": "[\" 1/2 \",\"2\u001c\"]",
+      "expected": [
+        0.5,
+        2
+      ]
+    },
+    {
+      "name": "escaped unicode whitespace inside quoted vector entries",
+      "kind": "vector",
+      "input": "[\"\\u00851/2\\u001c\",\"\\u00a02\"]",
+      "expected": [
+        0.5,
+        2
+      ]
+    },
+    {
+      "name": "unicode whitespace around matrix row entries",
+      "kind": "matrix",
+      "input": "[[\"1/2\"\u001c,\"2\"]; [\"3\",\"4\"]]",
+      "expected": [
+        [
+          0.5,
+          2
+        ],
+        [
+          3,
+          4
+        ]
+      ]
+    },
+    {
+      "name": "unicode whitespace does not concatenate numbers",
+      "kind": "number",
+      "input": "1 2",
+      "error": true
+    },
+    {
+      "name": "escaped byte order mark in vector cell",
+      "kind": "vector",
+      "input": "[\"\\ufeff1\",2]",
+      "error": true
+    }
+  ]
+}

@@ -46,7 +46,7 @@ def test_numeric_parser_accepts_equivalent_finite_representations(source, expect
 
 
 @pytest.mark.parametrize(
-    "source", ["1/0", "nan", "inf", "2**999", "__import__('os')", True, [1], "1e9999", "9" * 100]
+    "source", ["1/0", "nan", "inf", "2**999", "__import__('os')", True, [1], "1e9999", "9" * 161]
 )
 def test_numeric_parser_rejects_nonfinite_or_executable_input(source):
     with pytest.raises(ValueError):

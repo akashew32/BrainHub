@@ -9,6 +9,7 @@ import { LessonNotes } from "@/components/roadmaps/lesson-notes";
 import { MathText } from "@/components/roadmaps/math-text";
 import { useRoadmapProgress } from "@/components/roadmaps/roadmap-progress-provider";
 import { isCompleted, progressKey } from "@/lib/roadmap-progress";
+import { readLessonCache, saveLessonCache } from "@/lib/lesson-cache";
 
 export function AuthoredLesson({
   roadmapSlug,
@@ -22,6 +23,7 @@ export function AuthoredLesson({
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
+  const [offlineCopy, setOfflineCopy] = useState(false);
   const { progress } = useRoadmapProgress();
   const item = progress.get(progressKey(roadmapSlug, topicSlug));
   useEffect(() => {
@@ -32,10 +34,19 @@ export function AuthoredLesson({
         if (active) {
           setLesson(response);
           setError(null);
+          setOfflineCopy(false);
+          saveLessonCache(response);
         }
       })
       .catch((problem: unknown) => {
-        if (active) setError(problem instanceof Error ? problem.message : "Unable to load this lesson.");
+        if (active) {
+          const saved = readLessonCache(roadmapSlug, topicSlug);
+          if (saved) {
+            setLesson(saved);
+            setOfflineCopy(true);
+            setError(null);
+          } else setError(problem instanceof Error ? problem.message : "Unable to load this lesson.");
+        }
       });
     return () => {
       active = false;
@@ -66,6 +77,22 @@ export function AuthoredLesson({
     );
   return (
     <article className="space-y-6">
+      {offlineCopy ? (
+        <aside
+          className="rounded-xl border border-[#6b5a32] bg-[#201b10] p-4 text-sm leading-7 text-[#e3cfa4]"
+          role="status"
+        >
+          Showing the lesson saved on this device. You can continue an existing draft; grading and new
+          sessions need a connection.{" "}
+          <button
+            className="ml-2 underline underline-offset-4"
+            type="button"
+            onClick={() => setRetry((current) => current + 1)}
+          >
+            Retry connection
+          </button>
+        </aside>
+      ) : null}
       <header className="panel p-6 sm:p-9">
         <p className="metric" style={{ color: accent }}>
           Foundation · Authored lesson · {lesson.question_count} questions

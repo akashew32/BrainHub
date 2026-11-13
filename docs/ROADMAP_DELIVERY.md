@@ -21,8 +21,8 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 
 | Cycle | Planned focus | State | Pushed commit and verification |
 | --- | --- | --- | --- |
-| 1 | Assessment resume, durable answer drafts, and recovery | Verified; pushing | 106 backend tests, 57 frontend tests, full build, live refresh recovery |
-| 2 | Stronger mathematical input handling and answer previews | Pending | |
+| 1 | Assessment resume, durable answer drafts, and recovery | Complete | `64fec27`; 106 backend tests, 57 frontend tests, full build, live refresh recovery |
+| 2 | Stronger mathematical input handling and answer previews | Verified; publishing | 239 backend tests, 183 frontend tests, 107 shared input fixtures, full build, live 8/8 expression grading |
 | 3 | Structured proof builder and proof-specific feedback | Pending | |
 | 4 | Per-question hints with assisted/independent mastery | Pending | |
 | 5 | Spaced review scheduling and daily retrieval practice | Pending | |
@@ -44,7 +44,7 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 
 ## Evidence
 
-Baseline before implementation: commit `6562832`, clean worktree, 300 templated lesson pages. No new delivery cycle has been completed yet.
+Baseline before implementation: commit `6562832`, clean worktree, 300 templated lesson pages. Delivery after that baseline is recorded below.
 
 Initial release remote verified at `b15f1c469c2a04126c10e8b5665edbe92c9c2511` on `main`.
 
@@ -61,3 +61,17 @@ Batch: resume open assessments; save partial answers locally and to the profile;
 Review-driven improvements: increasing draft revisions plus an atomic database predicate prevent late saves from overwriting newer answers; server ownership and expiry checks; draft writes cannot grant mastery; cache keys isolate lessons and practice/exam/review modes; inputs freeze during grading; malformed or unavailable browser storage must not block practice. The first-save predicate uses the completion timestamp rather than SQL `IS NULL` on a JSON column, which distinguishes SQL null from JSON null correctly.
 
 Cycle 1 verification: 106 backend tests and 57 frontend tests pass, along with lint, formatting, type checks, a fresh migration through revision 0004, and a 535-route production build. A live browser test saved an unfinished matrix answer containing a fraction, reloaded the page, and recovered the exact raw answer. Direct SQLite inspection confirmed revision 1 and the unchanged graded-attempt count. Additional review fixed changed-curriculum recovery (HTTP 409), invalid choice/proof cache snapshots, duplicate question IDs, and deletion resurrection during revision reconciliation.
+
+Cycle 1 remote verified at `64fec2760fecb6d6ed46ee634073c4f720ecb11f` on `main`.
+
+Cycle 1 GitHub Actions also passed: https://github.com/akashew32/BrainHub/actions/runs/43332084075.
+
+### Cycle 2 batch — mathematical input
+
+Add a bounded arithmetic grammar for fractions, radicals, powers, and constants; natural vector/matrix entry; syntax-only browser previews; a shared cross-language conformance corpus; and exact grading of integer-valued answers. Review must cover malicious input, parser bounds and precedence, malformed later coordinates, preservation of unfinished drafts, and integer counts that loose relative tolerance could otherwise mark incorrectly.
+
+Review improvements: rational bit-size checks run before expensive operations; integer results require exact rational provenance; unsafe floating-point cancellation cannot grant integer mastery; previews warn instead of showing rounded unsafe values; inclusive `1e100` screening is consistent; whitespace, quoted entries, matrix row syntax, and container-depth boundaries match across parsers. The lesson page now falls back to a validated device copy so a lesson-fetch failure cannot hide an otherwise recoverable assessment draft. Pure parser tests no longer recreate the database; API tests still receive isolated database cleanup.
+
+Live cycle 2 evidence: a browser practice set submitted natural vector expressions, powers, fractions, and exact square roots. The preview interpreted five mathematical answers correctly and the API returned 100% (8/8), saving the result. The clean verification tab reported no console errors.
+
+Cycle 2 final verification: 239 backend tests and 183 frontend tests pass; lint, formatting, type checks, the strict 30-lesson/300-question curriculum verifier, and the 535-route production build pass. All 107 shared parser fixtures conform, including explicit browser precision-warning cases. Independent final review found no remaining contradictions. Nonfinite draft input now returns a safe validation response without changing the saved draft.

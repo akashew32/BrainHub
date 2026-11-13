@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import random
 from datetime import timedelta
 from typing import Any, Literal
@@ -61,6 +62,8 @@ class Answer(BaseModel):
                     raise ValueError("Use at most 64 entries in one answer array.")
                 pending.extend(item)
             elif type(item) in {str, int, float}:
+                if type(item) is float and not math.isfinite(item):
+                    raise ValueError("Use finite numeric values in an answer.")
                 character_count += len(str(item))
                 if character_count > 4000:
                     raise ValueError("The answer is too long.")

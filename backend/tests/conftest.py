@@ -11,7 +11,7 @@ from app.db.session import engine
 from app.main import app
 
 
-@pytest.fixture(autouse=True)
+@pytest.fixture
 def clean_database():
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
@@ -19,7 +19,7 @@ def clean_database():
 
 
 @pytest.fixture
-def client():
+def client(clean_database):
     with TestClient(app) as test_client:
         yield test_client
 

@@ -8,6 +8,10 @@ export type MathQuestion = {
   difficulty: "foundation" | "core" | "stretch";
   topic_slug: string;
   lesson_title: string;
+  math_input_version?: 1;
+  answer_format?: "integer" | "number" | "vector" | "matrix" | "choice" | "proof";
+  tolerance?: number;
+  numeric_tolerance?: { absolute: number; relative: number };
 };
 
 export type AuthoredLesson = {

@@ -1,7 +1,9 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from sqlalchemy import select
 
 from app.api.learning import router as learning_router
@@ -44,6 +46,27 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title="BrainHub API", version="0.1.0", lifespan=lifespan)
+
+
+@app.exception_handler(RequestValidationError)
+async def invalid_request(_request: Request, error: RequestValidationError) -> JSONResponse:
+    # Do not echo raw answers or non-JSON float values in validation responses.
+    # Nonfinite input must produce a normal 422, rather than crashing JSONResponse.
+    return JSONResponse(
+        status_code=422,
+        content={
+            "detail": [
+                {
+                    "loc": list(item.get("loc", ())),
+                    "msg": str(item.get("msg", "Invalid request")),
+                    "type": str(item.get("type", "validation_error")),
+                }
+                for item in error.errors()
+            ]
+        },
+    )
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().origins,
