@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import type { AuthoredLesson as Lesson } from "@/lib/curriculum";
+import { explorationForLesson } from "@/lib/roadmap-explorations";
 import { AssessmentPanel } from "@/components/roadmaps/assessment-panel";
 import { LessonNotes } from "@/components/roadmaps/lesson-notes";
 import { MathText } from "@/components/roadmaps/math-text";
@@ -75,6 +76,7 @@ export function AuthoredLesson({
         Loading the lesson and worked examples…
       </div>
     );
+  const explorationUrl = explorationForLesson(roadmapSlug, lesson.topic_slug);
   return (
     <article className="space-y-6">
       {offlineCopy ? (
@@ -125,6 +127,11 @@ export function AuthoredLesson({
           <Link className="btn" href="/roadmaps/review">
             Review mistakes
           </Link>
+          {explorationUrl ? (
+            <Link className="btn" href={explorationUrl}>
+              Open this experiment
+            </Link>
+          ) : null}
         </div>
         <p className="mt-4 text-xs leading-6 text-[#91a4bb]">
           A new stage exam requires at least 75% independent practice in all six lessons. Correct answers
