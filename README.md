@@ -112,6 +112,7 @@ Copy `.env.example` to `.env`. `DATABASE_URL` selects PostgreSQL, `CORS_ORIGINS`
 - `PUT /api/roadmaps/assessments/{session_id}/draft`
 - `POST /api/roadmaps/assessments/{session_id}/questions/{question_id}/hints`
 - `GET /api/roadmaps/mistakes`
+- `GET /api/roadmaps/review-plan`
 - `GET /api/roadmaps/learning-stats`
 
 Authored lesson answer keys live only in `backend/app/roadmaps/curriculum/`. Public lesson/session responses exclude correct answers and worked assessment solutions until submission. Proof tasks use structured step construction and counterexample selection; unrestricted prose proofs are not claimed to be automatically graded. Both lesson and exam questions are original BrainHub material. The implementation and twenty-cycle improvement ledger is in `docs/ROADMAP_DELIVERY.md`.
@@ -119,6 +120,8 @@ Authored lesson answer keys live only in `backend/app/roadmaps/curriculum/`. Pub
 In-progress assessments support partial answer drafts. Browser recovery is scoped to the subject, lesson, and assessment mode; server drafts use increasing revisions so late network responses cannot overwrite newer work. Draft saves do not create graded attempts or lesson completion. Submitted sessions can be recovered after a lost response, while expired sessions retain a local copy of the answers for reference.
 
 New assessments reveal hints one at a time through the API and record assistance independently of answer drafts. Results distinguish the total practice score from the independent score: correct answers with no revealed hints divided by the full question count. Both use the 75% passing threshold. Older attempts remain explicitly untracked and never become evidence of independent performance. Exam hints are unavailable. Repeated hint requests are idempotent; a shared revision guard prevents a hint/submission race from creating a false independent score.
+
+The daily review plan derives from graded answer history. Mistakes, assisted answers, and older untracked answers are due immediately. Independent correct recall starts at one day and advances through 3, 7, 14, 30, 60, and 90 days when completed on time. Early correct practice preserves the current interval and due date. The review page, review sessions, and due-concept statistics use the same scheduler. Sets contain at most eight due questions per subject; activity totals use UTC days. Viewing lessons, opening sessions, and saving drafts do not advance review schedules.
 
 All 21 structured proof problems have private prerequisite graphs and per-step justifications. The proof composer supports selecting, removing, and reordering numbered steps with native keyboard-accessible buttons, while preserving partial work and existing raw-order drafts. A complete proof earns credit whenever its order satisfies every logical prerequisite. After submission, feedback identifies violated dependencies and displays one valid proof; it does not award partial mastery or claim that a reference sequence is the only possible mathematical argument.
 

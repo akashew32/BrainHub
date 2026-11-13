@@ -31,6 +31,7 @@ from app.services.curriculum import (
 )
 from app.services.proof_feedback import build_proof_feedback
 from app.services.roadmaps import serialize_progress
+from app.services.spaced_review import SESSION_LIMIT, review_plan_for_user
 
 router = APIRouter(prefix="/api/roadmaps", tags=["Mathematics learning"])
 
@@ -426,6 +427,7 @@ def curriculum_index() -> dict[str, Any]:
 
 @router.get("/learning-stats")
 def learning_stats(db: Database) -> dict[str, Any]:
+    now = utc_now()
     user = get_local_user(db)
     attempts = list(
         db.scalars(
@@ -434,7 +436,7 @@ def learning_stats(db: Database) -> dict[str, Any]:
             .order_by(RoadmapQuestionAttempt.created_at, RoadmapQuestionAttempt.id)
         )
     )
-    latest = {(item.roadmap_slug, item.question_id): item for item in attempts}
+    plan = review_plan_for_user(db, user.id, now=now)
     sessions = list(
         db.scalars(
             select(RoadmapAssessmentSession).where(
@@ -450,7 +452,7 @@ def learning_stats(db: Database) -> dict[str, Any]:
         if attempts
         else 0,
         "concepts_to_review": len(
-            {(item.roadmap_slug, item.concept) for item in latest.values() if not item.correct}
+            {(item["roadmap_slug"], item["concept"]) for item in plan["items"]}
         ),
         "exams": [
             {
@@ -468,47 +470,24 @@ def learning_stats(db: Database) -> dict[str, Any]:
 
 @router.get("/mistakes")
 def mistakes(db: Database) -> dict[str, Any]:
-    user = get_local_user(db)
-    attempts = list(
-        db.scalars(
-            select(RoadmapQuestionAttempt)
-            .where(RoadmapQuestionAttempt.user_id == user.id)
-            .order_by(RoadmapQuestionAttempt.created_at, RoadmapQuestionAttempt.id)
-        )
-    )
-    grouped: dict[tuple[str, str], list[RoadmapQuestionAttempt]] = {}
-    for attempt in attempts:
-        grouped.setdefault((attempt.roadmap_slug, attempt.question_id), []).append(attempt)
     now = utc_now()
-    items = []
-    for (_, question_id), history in grouped.items():
-        recent = history[-1]
-        bank = questions_for(recent.roadmap_slug)
-        question = bank.get(question_id)
-        if question is None:
-            continue
-        interval = 3 if recent.correct else 1
-        due_at = recent.created_at + timedelta(days=interval)
-        if not recent.correct or due_at <= now:
-            items.append(
-                {
-                    "question_id": question_id,
-                    "roadmap_slug": recent.roadmap_slug,
-                    "topic_slug": recent.topic_slug,
-                    "lesson_title": question["lesson_title"],
-                    "concept": recent.concept,
-                    "last_correct": recent.correct,
-                    "attempts": len(history),
-                    "last_attempt_at": recent.created_at.isoformat() + "Z",
-                    "due_at": due_at.isoformat() + "Z",
-                    "reason": "Recent mistake" if not recent.correct else "Recall practice due",
-                    "prompt": question["prompt"],
-                }
-            )
+    user = get_local_user(db)
+    plan = review_plan_for_user(db, user.id, now=now)
     return {
-        "items": sorted(items, key=lambda item: (item["last_correct"], item["due_at"])),
-        "total_attempts": len(attempts),
+        "items": plan["items"],
+        "total_attempts": db.scalar(
+            select(func.count())
+            .select_from(RoadmapQuestionAttempt)
+            .where(RoadmapQuestionAttempt.user_id == user.id)
+        ),
     }
+
+
+@router.get("/review-plan")
+def review_plan(db: Database) -> dict[str, Any]:
+    now = utc_now()
+    user = get_local_user(db)
+    return review_plan_for_user(db, user.id, now=now)
 
 
 @router.get("/{roadmap_slug}/lessons/{topic_slug}")
@@ -524,10 +503,10 @@ def authored_lesson(roadmap_slug: str, topic_slug: str) -> dict[str, Any]:
 
 @router.post("/{roadmap_slug}/assessments", status_code=201)
 def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) -> dict[str, Any]:
+    now = utc_now()
     data = curriculum().get(roadmap_slug)
     if data is None or payload.stage_index != data["stage_index"]:
         raise HTTPException(404, "No authored assessment is available for this stage yet.")
-    bank = questions_for(roadmap_slug)
     user = get_local_user(db)
     if payload.mode == "practice":
         lesson = lesson_for(roadmap_slug, payload.topic_slug or "")
@@ -561,30 +540,16 @@ def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) 
             if question["exam"]
         ]
     else:
-        rows = list(
-            db.scalars(
-                select(RoadmapQuestionAttempt)
-                .where(
-                    RoadmapQuestionAttempt.user_id == user.id,
-                    RoadmapQuestionAttempt.roadmap_slug == roadmap_slug,
-                )
-                .order_by(RoadmapQuestionAttempt.created_at, RoadmapQuestionAttempt.id)
-            )
-        )
-        latest = {item.question_id: item for item in rows}
+        plan = review_plan_for_user(db, user.id, now=now)
         selected = [
-            question_id
-            for question_id, item in sorted(
-                latest.items(), key=lambda pair: (pair[1].correct, pair[1].created_at, pair[0])
-            )
-            if question_id in bank
-            and (not item.correct or item.created_at + timedelta(days=3) <= utc_now())
-        ][:8]
+            item["question_id"] for item in plan["items"] if item["roadmap_slug"] == roadmap_slug
+        ][:SESSION_LIMIT]
         if not selected:
             raise HTTPException(
                 409, "No attempted questions are currently due for review in this subject."
             )
-    random.SystemRandom().shuffle(selected)
+    if payload.mode != "review":
+        random.SystemRandom().shuffle(selected)
     session = RoadmapAssessmentSession(
         id=str(uuid4()),
         user_id=user.id,
@@ -594,7 +559,7 @@ def start_assessment(roadmap_slug: str, payload: StartAssessment, db: Database) 
         mode=payload.mode,
         question_ids=selected,
         hint_usage={},
-        expires_at=utc_now() + timedelta(hours=2),
+        expires_at=now + timedelta(hours=2),
     )
     db.add(session)
     db.commit()

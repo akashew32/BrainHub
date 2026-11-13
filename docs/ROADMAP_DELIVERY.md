@@ -25,7 +25,7 @@ Each cycle must identify a batch of useful changes, implement them, review and i
 | 2 | Stronger mathematical input handling and answer previews | Complete | `dff08d9`; 239 backend tests, 183 frontend tests, 107 shared input fixtures, full build, live 8/8 expression grading |
 | 3 | Structured proof builder and proof-specific feedback | Complete | `cc1f23c`; 295 backend tests, 201 frontend tests, 492 proof permutations, full build, live recovery and dependency feedback |
 | 4 | Per-question hints with assisted/independent mastery | Complete | `c9f9da5`; 316 backend tests, 217 frontend tests, fresh/existing migrations, full build, live 100% overall / 75% independent |
-| 5 | Spaced review scheduling and daily retrieval practice | Pending | |
+| 5 | Spaced review scheduling and daily retrieval practice | Verified; publishing | 335 backend tests, 228 frontend tests, full build, live due-to-scheduled review flow |
 | 6 | Mistake notebook and concept-level performance | Pending | |
 | 7 | Exam readiness, blueprint, and prerequisite evidence | Pending | |
 | 8 | Exam integrity, retry policy, and robust session lifecycle | Pending | |
@@ -113,3 +113,13 @@ Cycle 4 remote verified at `c9f9da5fde3f4d01cc93ba6dab4a11c792ee57b6` on `main`.
 Cycle 4 GitHub Actions passed: https://github.com/akashew32/BrainHub/actions/runs/43339530111.
 
 Next recommended batch (cycle 5): a daily spaced-review queue using missed, assisted, and independent responses. Bring missed and assisted questions back sooner, lengthen intervals after independent recall, show why each item is due, and cap daily sessions so review stays manageable. Page visits must not advance the review schedule.
+
+### Cycle 5 batch — adaptive spaced review
+
+Use one deterministic scheduler for the displayed queue, review-session selection, and due-concept statistics. Missed, hinted, and assistance-untracked answers return immediately. Independent correct answers start a one-day interval, then advance through 3, 7, 14, 30, 60, and 90 days when recalled on time. Early correct practice neither advances the interval nor postpones the existing due time. These are transparent product rules, not a claim of an optimal learning schedule.
+
+Build a daily review page with all five subject totals, reasons and due dates, upcoming reviews, and sets of at most eight questions. Refresh the queue after grading while keeping the submitted feedback visible. Schedules derive from immutable graded attempts; reading a page, saving a draft, or opening a session does not change them. Daily activity uses explicit UTC boundaries.
+
+Cycle 5 review improvements: compare due times as datetimes so fractional-second formatting cannot reverse chronological order; isolate matching question IDs across roadmaps; preserve the original due date through early practice; keep zero-due subject contexts available for draft recovery; preserve active work after a refresh failure; and retain submitted feedback when the queue refreshes to zero.
+
+Cycle 5 verification: all 335 backend tests and 228 frontend tests pass, with clean formatting, lint, and type checks; all 535 routes build for production. Live browser evidence started with two hint-assisted questions due and six scheduled. Reading the plan and opening a review session left the graded-attempt count unchanged at 32. Submitting two correct answers without hints returned 100%, refreshed the queue to zero due/eight scheduled, recorded two independent recalls for the UTC day, retained worked feedback, and disabled starting another empty set. Direct SQLite inspection confirms 34 saved answers with the two new review answers marked correct and unhinted. Final review also fixed composite React keys for identical question IDs in different subjects and added a filtering regression test.

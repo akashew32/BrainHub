@@ -17,6 +17,8 @@ type AssessmentProps = {
   topicSlug?: string;
   stageIndex?: number;
   mode?: Mode;
+  onCompleted?: (result: AssessmentResult) => void;
+  reviewAvailable?: boolean;
 };
 type SavedDraft = {
   version: 2;
@@ -232,6 +234,8 @@ export function AssessmentPanel({
   topicSlug,
   stageIndex = 0,
   mode = "practice",
+  onCompleted,
+  reviewAvailable = true,
 }: AssessmentProps) {
   const scopedTopic = mode === "practice" ? topicSlug : undefined;
   const draftKey =
@@ -244,6 +248,8 @@ export function AssessmentPanel({
       topicSlug={scopedTopic}
       stageIndex={stageIndex}
       mode={mode}
+      onCompleted={onCompleted}
+      reviewAvailable={reviewAvailable}
     />
   );
 }
@@ -254,9 +260,13 @@ function AssessmentWorkspace({
   stageIndex,
   mode,
   draftKey,
+  onCompleted,
+  reviewAvailable,
 }: Required<Pick<AssessmentProps, "roadmapSlug" | "stageIndex" | "mode">> & {
   topicSlug?: string;
   draftKey: string;
+  onCompleted?: (result: AssessmentResult) => void;
+  reviewAvailable: boolean;
 }) {
   const { acceptProgress } = useRoadmapProgress();
   const [session, setSession] = useState<AssessmentSession | null>(null);
@@ -281,6 +291,12 @@ function AssessmentWorkspace({
   const revision = useRef(0);
   const savedRevision = useRef(0);
   const finished = useRef(false);
+  const notifiedResults = useRef(new Set<string>());
+  const completedCallback = useRef(onCompleted);
+
+  useEffect(() => {
+    completedCallback.current = onCompleted;
+  }, [onCompleted]);
 
   useEffect(() => {
     mounted.current = true;
@@ -376,6 +392,10 @@ function AssessmentWorkspace({
       setError(null);
       clearMatchingDraft(sessionId);
       if (next.progress) acceptProgress(next.progress);
+      if (!notifiedResults.current.has(sessionId)) {
+        notifiedResults.current.add(sessionId);
+        completedCallback.current?.(next);
+      }
     },
     [acceptProgress, clearMatchingDraft],
   );
@@ -577,7 +597,7 @@ function AssessmentWorkspace({
   }
 
   async function start() {
-    if (submitting.current) return;
+    if (submitting.current || (mode === "review" && !reviewAvailable)) return;
     submitting.current = true;
     setBusy(true);
     setError(null);
@@ -684,6 +704,7 @@ function AssessmentWorkspace({
       : mode === "review"
         ? "Targeted retrieval practice"
         : "Practice and mastery";
+  const cannotStart = busy || (mode === "review" && !reviewAvailable);
   return (
     <section
       className="panel scroll-mt-24 p-6 sm:p-8"
@@ -711,12 +732,17 @@ function AssessmentWorkspace({
         <button
           className="btn btn-primary mt-5 inline-flex items-center gap-2"
           onClick={start}
-          disabled={busy}
+          disabled={cannotStart}
           type="button"
         >
           <Play size={15} />
           {busy ? "Preparing…" : "Start " + mode}
         </button>
+      ) : null}
+      {mode === "review" && !reviewAvailable ? (
+        <p className="mt-4 text-sm leading-7 text-[#9ba8b9]" role="status">
+          No more questions are due for this subject. Your current answers and feedback remain available.
+        </p>
       ) : null}
       {needsResume && savedSessionId && !expired && !result ? (
         <button className="btn mt-5" onClick={resumeSaved} disabled={busy} type="button">
@@ -746,7 +772,7 @@ function AssessmentWorkspace({
                 </li>
               ))}
           </ol>
-          <button className="btn btn-primary mt-5" type="button" disabled={busy} onClick={start}>
+          <button className="btn btn-primary mt-5" type="button" disabled={cannotStart} onClick={start}>
             {busy ? "Preparing…" : "Start a fresh session"}
           </button>
         </div>
@@ -973,7 +999,7 @@ function AssessmentWorkspace({
           <button
             className="btn mt-5 inline-flex items-center gap-2"
             onClick={start}
-            disabled={busy}
+            disabled={cannotStart}
             type="button"
           >
             <RotateCcw size={15} />

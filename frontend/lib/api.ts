@@ -68,6 +68,10 @@ export const api = {
       body: JSON.stringify(body),
     }),
   roadmapMistakes: () => request<import("@/lib/curriculum").MistakeQueue>("/roadmaps/mistakes"),
+  roadmapReviewPlan: () =>
+    request<import("@/lib/curriculum").ReviewPlan>("/roadmaps/review-plan", {
+      signal: AbortSignal.timeout(12_000),
+    }),
   learningStats: () => request<import("@/lib/curriculum").LearningStats>("/roadmaps/learning-stats"),
   roadmapProgress: () => request<RoadmapProgressResponse>("/roadmaps/progress"),
   updateRoadmapProgress: (roadmapSlug: string, topicSlug: string, body: RoadmapProgressUpdate) =>

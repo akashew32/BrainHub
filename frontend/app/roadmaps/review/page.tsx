@@ -4,8 +4,8 @@ import { ArrowLeft, RotateCcw } from "lucide-react";
 import { MistakeReview } from "@/components/roadmaps/mistake-review";
 
 export const metadata: Metadata = {
-  title: "Roadmap Review Queue — BrainHub",
-  description: "Continue unfinished mathematics lessons and revisit weak or aging concepts.",
+  title: "Daily Mathematics Review — BrainHub",
+  description: "Practise due mathematics questions and follow your personal spaced recall schedule.",
 };
 
 export default function RoadmapReviewPage() {
@@ -19,14 +19,15 @@ export default function RoadmapReviewPage() {
       </Link>
       <section className="mb-8 max-w-3xl">
         <p className="metric flex items-center gap-2 text-[#c084fc]">
-          <RotateCcw size={15} /> Adaptive review
+          <RotateCcw size={15} /> Daily spaced review
         </p>
         <h1 className="mt-3 text-4xl font-semibold tracking-[-.04em] sm:text-6xl">
           Return at the right time.
         </h1>
         <p className="mt-4 max-w-2xl leading-7 text-[#98a4b5]">
-          Practice the concepts behind your recent mistakes. Recommendations use individual answers and
-          retrieval dates, so revisiting a lesson page does not reset your review schedule.
+          Review mistakes, hint-assisted answers, and questions ready for independent recall across all five
+          subjects. Your schedule follows graded answers. Visiting a page or saving a draft does not change a
+          review date.
         </p>
       </section>
       <MistakeReview />

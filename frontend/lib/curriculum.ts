@@ -111,6 +111,44 @@ export type MistakeQueue = {
   total_attempts: number;
 };
 
+export type ReviewItem = MistakeQueue["items"][number] & {
+  status: "mistake" | "assisted" | "untracked" | "recall";
+  independent_streak: number;
+  interval_days: number;
+  is_due: boolean;
+  last_hints_used: number | null;
+};
+
+export type ReviewPlan = {
+  generated_at: string;
+  policy: {
+    version: 1;
+    interval_days: number[];
+    session_limit: number;
+    timezone: "UTC";
+    early_practice_advances: false;
+  };
+  summary: {
+    due: number;
+    scheduled: number;
+    tracked: number;
+    unseen: number;
+    reviewed_today: number;
+    independent_today: number;
+    next_due_at: string | null;
+  };
+  subjects: Array<{
+    slug: string;
+    due: number;
+    scheduled: number;
+    tracked: number;
+    unseen: number;
+    next_due_at: string | null;
+  }>;
+  items: ReviewItem[];
+  upcoming: ReviewItem[];
+};
+
 export type LearningStats = {
   answers: number;
   correct: number;
